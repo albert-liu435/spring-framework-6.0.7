@@ -312,7 +312,8 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	/**
 	 * findCandidateComponents方法中，Spring支持两种获取类名的方式：
 	 *
-	 * 在resources/META-INF/spring.components文件中指定
+	 * 在resources/META-INF/spring.components文件中指定，// 类名=注解名
+	 * com.lizhi.service.UserService=org.springframework.stereotype.Component
 	 *
 	 * Scan the class path for candidate components.
 	 *
@@ -429,12 +430,14 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
 		try {
-			// 获取basePackage下所有的文件资源
+			// 获取basePackage下所有的文件资源路径
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+			//加载资源文件
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
+			//遍历资源
 			for (Resource resource : resources) {
 				String filename = resource.getFilename();
 				if (filename != null && filename.contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
