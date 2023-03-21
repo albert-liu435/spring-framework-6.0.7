@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -908,7 +908,7 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
 				logger.debug("Response " + statusCode);
 			}
 			catch (IOException ex) {
-				// ignore
+				logger.debug("Failed to obtain response status code", ex);
 			}
 		}
 		if (hasError) {
@@ -1006,7 +1006,7 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
 
 		private Stream<MediaType> getSupportedMediaTypes(Type type, HttpMessageConverter<?> converter) {
 			Type rawType = (type instanceof ParameterizedType parameterizedType ? parameterizedType.getRawType() : type);
-			Class<?> clazz = (rawType instanceof Class ? (Class<?>) rawType : null);
+			Class<?> clazz = (rawType instanceof Class<?> rawClass ? rawClass : null);
 			return (clazz != null ? converter.getSupportedMediaTypes(clazz) : converter.getSupportedMediaTypes())
 					.stream()
 					.map(mediaType -> {

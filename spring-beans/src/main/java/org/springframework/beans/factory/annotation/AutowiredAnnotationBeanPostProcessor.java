@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -266,11 +266,11 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
-		if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+		if (!(beanFactory instanceof ConfigurableListableBeanFactory clbf)) {
 			throw new IllegalArgumentException(
 					"AutowiredAnnotationBeanPostProcessor requires a ConfigurableListableBeanFactory: " + beanFactory);
 		}
-		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+		this.beanFactory = clbf;
 	}
 
 
@@ -280,6 +280,7 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 	}
 
 	@Override
+	@Nullable
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		Class<?> beanClass = registeredBean.getBeanClass();
 		String beanName = registeredBean.getBeanName();
@@ -323,10 +324,10 @@ public class AutowiredAnnotationBeanPostProcessor implements SmartInstantiationA
 		checkLookupMethods(beanClass, beanName);
 
 		// Pick up subclass with fresh lookup method override from above
-		if (this.beanFactory instanceof AbstractAutowireCapableBeanFactory aacbf) {
+		if (this.beanFactory instanceof AbstractAutowireCapableBeanFactory aacBeanFactory) {
 			RootBeanDefinition mbd = (RootBeanDefinition) this.beanFactory.getMergedBeanDefinition(beanName);
 			if (mbd.getFactoryMethodName() == null && mbd.hasBeanClass()) {
-				return aacbf.getInstantiationStrategy().getActualBeanClass(mbd, beanName, this.beanFactory);
+				return aacBeanFactory.getInstantiationStrategy().getActualBeanClass(mbd, beanName, aacBeanFactory);
 			}
 		}
 		return beanClass;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -416,7 +416,7 @@ public class MessageHeaderAccessor {
 		if (value == null) {
 			return null;
 		}
-		return (value instanceof UUID ? (UUID) value : UUID.fromString(value.toString()));
+		return (value instanceof UUID uuid ? uuid : UUID.fromString(value.toString()));
 	}
 
 	@Nullable
@@ -425,7 +425,7 @@ public class MessageHeaderAccessor {
 		if (value == null) {
 			return null;
 		}
-		return (value instanceof Long ? (Long) value : Long.parseLong(value.toString()));
+		return (value instanceof Long num ? num : Long.parseLong(value.toString()));
 	}
 
 	public void setContentType(MimeType contentType) {
@@ -438,7 +438,7 @@ public class MessageHeaderAccessor {
 		if (value == null) {
 			return null;
 		}
-		return (value instanceof MimeType ? (MimeType) value : MimeType.valueOf(value.toString()));
+		return (value instanceof MimeType mimeType ? mimeType : MimeType.valueOf(value.toString()));
 	}
 
 	private Charset getCharset() {
@@ -617,8 +617,7 @@ public class MessageHeaderAccessor {
 	 * @since 4.1
 	 */
 	public static MessageHeaderAccessor getMutableAccessor(Message<?> message) {
-		if (message.getHeaders() instanceof MutableMessageHeaders) {
-			MutableMessageHeaders mutableHeaders = (MutableMessageHeaders) message.getHeaders();
+		if (message.getHeaders() instanceof MutableMessageHeaders mutableHeaders) {
 			MessageHeaderAccessor accessor = mutableHeaders.getAccessor();
 			return (accessor.isMutable() ? accessor : accessor.createAccessor(message));
 		}

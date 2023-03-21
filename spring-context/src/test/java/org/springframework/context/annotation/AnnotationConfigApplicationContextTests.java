@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.context.annotation6.Jsr330NamedForScanning;
 import org.springframework.context.testfixture.context.annotation.CglibConfiguration;
 import org.springframework.context.testfixture.context.annotation.LambdaBeanConfiguration;
 import org.springframework.core.ResolvableType;
+import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 
 import static java.lang.String.format;
@@ -518,6 +519,9 @@ class AnnotationConfigApplicationContextTests {
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
 						MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.DECLARED_FIELDS))
 				.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(CglibConfiguration.class)
+				.withMemberCategories(MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INVOKE_DECLARED_METHODS))
+				.accepts(runtimeHints);
 	}
 
 	@Test
@@ -729,7 +733,7 @@ class TestBean {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

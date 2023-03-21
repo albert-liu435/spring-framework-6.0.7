@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
@@ -43,7 +42,6 @@ import reactor.util.context.Context;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -394,30 +392,7 @@ class DefaultWebClient implements WebClient {
 		@Override
 		public ResponseSpec retrieve() {
 			return new DefaultResponseSpec(
-					exchange(), this::createRequest, DefaultWebClient.this.defaultStatusHandlers);
-		}
-
-		private HttpRequest createRequest() {
-			return new HttpRequest() {
-				private final URI uri = initUri();
-
-				private final HttpHeaders headers = initHeaders();
-
-				@Override
-				public HttpMethod getMethod() {
-					return httpMethod;
-				}
-
-				@Override
-				public URI getURI() {
-					return this.uri;
-				}
-
-				@Override
-				public HttpHeaders getHeaders() {
-					return this.headers;
-				}
-			};
+					this.httpMethod, initUri(), exchange(), DefaultWebClient.this.defaultStatusHandlers);
 		}
 
 		@Override
@@ -478,7 +453,8 @@ class DefaultWebClient implements WebClient {
 							observationContext.setAborted(true);
 							observation.stop();
 						})
-						.doOnTerminate(observation::stop);
+						.doOnTerminate(observation::stop)
+						.contextWrite(context -> context.put(ObservationThreadLocalAccessor.KEY, observation));
 			});
 		}
 
@@ -487,8 +463,8 @@ class DefaultWebClient implements WebClient {
 				defaultRequest.accept(this);
 			}
 			ClientRequest.Builder builder = ClientRequest.create(this.httpMethod, initUri())
-					.headers(headers -> headers.addAll(initHeaders()))
-					.cookies(cookies -> cookies.addAll(initCookies()))
+					.headers(this::initHeaders)
+					.cookies(this::initCookies)
 					.attributes(attributes -> attributes.putAll(this.attributes));
 			if (this.httpRequestConsumer != null) {
 				builder.httpRequest(this.httpRequestConsumer);
@@ -500,33 +476,21 @@ class DefaultWebClient implements WebClient {
 			return (this.uri != null ? this.uri : uriBuilderFactory.expand(""));
 		}
 
-		private HttpHeaders initHeaders() {
-			if (CollectionUtils.isEmpty(this.headers)) {
-				return (defaultHeaders != null ? defaultHeaders : new HttpHeaders());
+		private void initHeaders(HttpHeaders out) {
+			if (!CollectionUtils.isEmpty(defaultHeaders)) {
+				out.putAll(defaultHeaders);
 			}
-			else if (CollectionUtils.isEmpty(defaultHeaders)) {
-				return this.headers;
-			}
-			else {
-				HttpHeaders result = new HttpHeaders();
-				result.putAll(defaultHeaders);
-				result.putAll(this.headers);
-				return result;
+			if (!CollectionUtils.isEmpty(this.headers)) {
+				out.putAll(this.headers);
 			}
 		}
 
-		private MultiValueMap<String, String> initCookies() {
-			if (CollectionUtils.isEmpty(this.cookies)) {
-				return (defaultCookies != null ? defaultCookies : new LinkedMultiValueMap<>());
+		private void initCookies(MultiValueMap<String, String> out) {
+			if (!CollectionUtils.isEmpty(defaultCookies)) {
+				out.putAll(defaultCookies);
 			}
-			else if (CollectionUtils.isEmpty(defaultCookies)) {
-				return this.cookies;
-			}
-			else {
-				MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
-				result.putAll(defaultCookies);
-				result.putAll(this.cookies);
-				return result;
+			if (!CollectionUtils.isEmpty(this.cookies)) {
+				out.putAll(this.cookies);
 			}
 		}
 	}
@@ -539,9 +503,12 @@ class DefaultWebClient implements WebClient {
 		private static final StatusHandler DEFAULT_STATUS_HANDLER =
 				new StatusHandler(STATUS_CODE_ERROR, ClientResponse::createException);
 
-		private final Mono<ClientResponse> responseMono;
 
-		private final Supplier<HttpRequest> requestSupplier;
+		private final HttpMethod httpMethod;
+
+		private final URI uri;
+
+		private final Mono<ClientResponse> responseMono;
 
 		private final List<StatusHandler> statusHandlers = new ArrayList<>(1);
 
@@ -549,11 +516,12 @@ class DefaultWebClient implements WebClient {
 
 
 		DefaultResponseSpec(
-				Mono<ClientResponse> responseMono, Supplier<HttpRequest> requestSupplier,
+				HttpMethod httpMethod, URI uri, Mono<ClientResponse> responseMono,
 				List<StatusHandler> defaultStatusHandlers) {
 
+			this.httpMethod = httpMethod;
+			this.uri = uri;
 			this.responseMono = responseMono;
-			this.requestSupplier = requestSupplier;
 			this.statusHandlers.addAll(defaultStatusHandlers);
 			this.statusHandlers.add(DEFAULT_STATUS_HANDLER);
 			this.defaultStatusHandlerCount = this.statusHandlers.size();
@@ -707,21 +675,14 @@ class DefaultWebClient implements WebClient {
 						exMono = releaseIfNotConsumed(response, ex2);
 					}
 					Mono<T> result = exMono.flatMap(Mono::error);
-					HttpRequest request = this.requestSupplier.get();
-					return insertCheckpoint(result, statusCode, request);
+					return result.checkpoint(statusCode + " from " +
+							this.httpMethod + " " + getUriToLog(this.uri) + " [DefaultWebClient]");
 				}
 			}
 			return null;
 		}
 
-		private <T> Mono<T> insertCheckpoint(Mono<T> result, HttpStatusCode statusCode, HttpRequest request) {
-			HttpMethod method = request.getMethod();
-			URI uri = getUriToLog(request);
-			return result.checkpoint(statusCode + " from " + method + " " + uri + " [DefaultWebClient]");
-		}
-
-		private static URI getUriToLog(HttpRequest request) {
-			URI uri = request.getURI();
+		private static URI getUriToLog(URI uri) {
 			if (StringUtils.hasText(uri.getQuery())) {
 				try {
 					uri = new URI(uri.getScheme(), uri.getHost(), uri.getPath(), null);

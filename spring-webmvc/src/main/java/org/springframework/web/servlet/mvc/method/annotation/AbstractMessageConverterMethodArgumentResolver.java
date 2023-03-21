@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,10 +138,17 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 	 * @throws IOException if the reading from the request fails
 	 * @throws HttpMediaTypeNotSupportedException if no suitable message converter is found
 	 */
-	@SuppressWarnings("unchecked")
 	@Nullable
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T> Object readWithMessageConverters(HttpInputMessage inputMessage, MethodParameter parameter,
 			Type targetType) throws IOException, HttpMediaTypeNotSupportedException, HttpMessageNotReadableException {
+
+		Class<?> contextClass = parameter.getContainingClass();
+		Class<T> targetClass = (targetType instanceof Class clazz ? clazz : null);
+		if (targetClass == null) {
+			ResolvableType resolvableType = ResolvableType.forMethodParameter(parameter);
+			targetClass = (Class<T>) resolvableType.resolve();
+		}
 
 		MediaType contentType;
 		boolean noContentType = false;
@@ -149,21 +156,15 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 			contentType = inputMessage.getHeaders().getContentType();
 		}
 		catch (InvalidMediaTypeException ex) {
-			throw new HttpMediaTypeNotSupportedException(ex.getMessage());
+			throw new HttpMediaTypeNotSupportedException(
+					ex.getMessage(), getSupportedMediaTypes(targetClass != null ? targetClass : Object.class));
 		}
 		if (contentType == null) {
 			noContentType = true;
 			contentType = MediaType.APPLICATION_OCTET_STREAM;
 		}
 
-		Class<?> contextClass = parameter.getContainingClass();
-		Class<T> targetClass = (targetType instanceof Class ? (Class<T>) targetType : null);
-		if (targetClass == null) {
-			ResolvableType resolvableType = ResolvableType.forMethodParameter(parameter);
-			targetClass = (Class<T>) resolvableType.resolve();
-		}
-
-		HttpMethod httpMethod = (inputMessage instanceof HttpRequest ? ((HttpRequest) inputMessage).getMethod() : null);
+		HttpMethod httpMethod = (inputMessage instanceof HttpRequest httpRequest ? httpRequest.getMethod() : null);
 		Object body = NO_VALUE;
 
 		EmptyBodyCheckingHttpInputMessage message = null;
@@ -173,7 +174,7 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 			for (HttpMessageConverter<?> converter : this.messageConverters) {
 				Class<HttpMessageConverter<?>> converterType = (Class<HttpMessageConverter<?>>) converter.getClass();
 				GenericHttpMessageConverter<?> genericConverter =
-						(converter instanceof GenericHttpMessageConverter ? (GenericHttpMessageConverter<?>) converter : null);
+						(converter instanceof GenericHttpMessageConverter ghmc ? ghmc : null);
 				if (genericConverter != null ? genericConverter.canRead(targetType, contextClass, contentType) :
 						(targetClass != null && converter.canRead(targetClass, contentType))) {
 					if (message.hasBody()) {
@@ -289,8 +290,8 @@ public abstract class AbstractMessageConverterMethodArgumentResolver implements 
 	@Nullable
 	protected Object adaptArgumentIfNecessary(@Nullable Object arg, MethodParameter parameter) {
 		if (parameter.getParameterType() == Optional.class) {
-			if (arg == null || (arg instanceof Collection && ((Collection<?>) arg).isEmpty()) ||
-					(arg instanceof Object[] && ((Object[]) arg).length == 0)) {
+			if (arg == null || (arg instanceof Collection<?> collection && collection.isEmpty()) ||
+					(arg instanceof Object[] array && array.length == 0)) {
 				return Optional.empty();
 			}
 			else {

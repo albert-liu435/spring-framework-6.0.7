@@ -1,9 +1,9 @@
 /**
- * Support for an HTTP service proxy created from an interface declaration.
+ * AspectJ-based caching support.
  */
 @NonNullApi
 @NonNullFields
-package org.springframework.web.reactive.service;
+package org.springframework.cache.aspectj;
 
 import org.springframework.lang.NonNullApi;
 import org.springframework.lang.NonNullFields;

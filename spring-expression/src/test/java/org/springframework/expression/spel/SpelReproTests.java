@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1811,7 +1811,6 @@ class SpelReproTests extends AbstractExpressionTests {
 	static class CCC {
 
 		public boolean method(Object o) {
-			System.out.println(o);
 			return false;
 		}
 	}
@@ -1883,7 +1882,6 @@ class SpelReproTests extends AbstractExpressionTests {
 	static class Foo2 {
 
 		public void execute(String str) {
-			System.out.println("Value: " + str);
 		}
 	}
 
@@ -1958,7 +1956,6 @@ class SpelReproTests extends AbstractExpressionTests {
 	public static class ReflectionUtil<T extends Number> {
 
 		public Object methodToCall(T param) {
-			System.out.println(param + " " + param.getClass());
 			return "Object methodToCall(T param)";
 		}
 
@@ -2251,7 +2248,7 @@ class SpelReproTests extends AbstractExpressionTests {
 		}
 
 		@Override
-		public boolean equals(Object other) {
+		public boolean equals(@Nullable Object other) {
 			return (this == other || (other instanceof TestClass2 &&
 					this.string.equals(((TestClass2) other).string)));
 		}

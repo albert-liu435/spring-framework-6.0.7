@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,9 +127,9 @@ public class StaticListableBeanFactory implements ListableBeanFactory {
 			throw new BeanIsNotAFactoryException(beanName, bean.getClass());
 		}
 
-		if (bean instanceof FactoryBean && !BeanFactoryUtils.isFactoryDereference(name)) {
+		if (bean instanceof FactoryBean<?> factoryBean && !BeanFactoryUtils.isFactoryDereference(name)) {
 			try {
-				Object exposedObject = ((FactoryBean<?>) bean).getObject();
+				Object exposedObject = factoryBean.getObject();
 				if (exposedObject == null) {
 					throw new BeanCreationException(beanName, "FactoryBean exposed null object");
 				}
@@ -205,8 +205,8 @@ public class StaticListableBeanFactory implements ListableBeanFactory {
 	public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
 		Object bean = getBean(name);
 		// In case of FactoryBean, return singleton status of created object.
-		if (bean instanceof FactoryBean) {
-			return ((FactoryBean<?>) bean).isSingleton();
+		if (bean instanceof FactoryBean<?> factoryBean) {
+			return factoryBean.isSingleton();
 		}
 		return true;
 	}
@@ -215,8 +215,8 @@ public class StaticListableBeanFactory implements ListableBeanFactory {
 	public boolean isPrototype(String name) throws NoSuchBeanDefinitionException {
 		Object bean = getBean(name);
 		// In case of FactoryBean, return prototype status of created object.
-		return ((bean instanceof SmartFactoryBean && ((SmartFactoryBean<?>) bean).isPrototype()) ||
-				(bean instanceof FactoryBean && !((FactoryBean<?>) bean).isSingleton()));
+		return ((bean instanceof SmartFactoryBean<?> smartFactoryBean && smartFactoryBean.isPrototype()) ||
+				(bean instanceof FactoryBean<?> factoryBean && !factoryBean.isSingleton()));
 	}
 
 	@Override
@@ -246,9 +246,9 @@ public class StaticListableBeanFactory implements ListableBeanFactory {
 					"Defined beans are [" + StringUtils.collectionToCommaDelimitedString(this.beans.keySet()) + "]");
 		}
 
-		if (bean instanceof FactoryBean && !BeanFactoryUtils.isFactoryDereference(name)) {
+		if (bean instanceof FactoryBean<?> factoryBean && !BeanFactoryUtils.isFactoryDereference(name)) {
 			// If it's a FactoryBean, we want to look at what it creates, not the factory class.
-			return ((FactoryBean<?>) bean).getObjectType();
+			return factoryBean.getObjectType();
 		}
 		return bean.getClass();
 	}
@@ -365,8 +365,7 @@ public class StaticListableBeanFactory implements ListableBeanFactory {
 		for (Map.Entry<String, Object> entry : this.beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object beanInstance = entry.getValue();
-			if (beanInstance instanceof FactoryBean && !isFactoryType) {
-				FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
+			if (beanInstance instanceof FactoryBean<?> factoryBean && !isFactoryType) {
 				Class<?> objectType = factoryBean.getObjectType();
 				if ((includeNonSingletons || factoryBean.isSingleton()) &&
 						objectType != null && (type == null || type.isAssignableFrom(objectType))) {
@@ -409,11 +408,10 @@ public class StaticListableBeanFactory implements ListableBeanFactory {
 			String beanName = entry.getKey();
 			Object beanInstance = entry.getValue();
 			// Is bean a FactoryBean?
-			if (beanInstance instanceof FactoryBean && !isFactoryType) {
+			if (beanInstance instanceof FactoryBean<?> factoryBean && !isFactoryType) {
 				// Match object created by FactoryBean.
-				FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
-				Class<?> objectType = factory.getObjectType();
-				if ((includeNonSingletons || factory.isSingleton()) &&
+				Class<?> objectType = factoryBean.getObjectType();
+				if ((includeNonSingletons || factoryBean.isSingleton()) &&
 						objectType != null && (type == null || type.isAssignableFrom(objectType))) {
 					matches.put(beanName, getBean(beanName, type));
 				}

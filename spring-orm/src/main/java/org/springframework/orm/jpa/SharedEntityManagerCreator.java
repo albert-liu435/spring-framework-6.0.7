@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  * @author Rod Johnson
  * @author Oliver Gierke
  * @author Mark Paluch
+ * @author Sam Brannen
  * @since 2.0
  * @see jakarta.persistence.PersistenceContext
  * @see jakarta.persistence.PersistenceContextType#TRANSACTION
@@ -81,12 +82,15 @@ public abstract class SharedEntityManagerCreator {
 			"refresh");
 
 	private static final Set<String> queryTerminatingMethods = Set.of(
-			"execute",  // JPA 2.1 StoredProcedureQuery
-			"executeUpdate",
-			"getSingleResult",
-			"getResultStream",
-			"getResultList",
-			"list"  // Hibernate Query.list() method
+			"execute",  // jakarta.persistence.StoredProcedureQuery.execute()
+			"executeUpdate", // jakarta.persistence.Query.executeUpdate()
+			"getSingleResult",  // jakarta.persistence.Query.getSingleResult()
+			"getResultStream",  // jakarta.persistence.Query.getResultStream()
+			"getResultList",  // jakarta.persistence.Query.getResultList()
+			"list",  // org.hibernate.query.Query.list()
+			"stream",  // org.hibernate.query.Query.stream()
+			"uniqueResult",  // org.hibernate.query.Query.uniqueResult()
+			"uniqueResultOptional"  // org.hibernate.query.Query.uniqueResultOptional()
 		);
 
 
@@ -123,8 +127,8 @@ public abstract class SharedEntityManagerCreator {
 	public static EntityManager createSharedEntityManager(
 			EntityManagerFactory emf, @Nullable Map<?, ?> properties, boolean synchronizedWithTransaction) {
 
-		Class<?> emIfc = (emf instanceof EntityManagerFactoryInfo ?
-				((EntityManagerFactoryInfo) emf).getEntityManagerInterface() : EntityManager.class);
+		Class<?> emIfc = (emf instanceof EntityManagerFactoryInfo emfInfo ?
+				emfInfo.getEntityManagerInterface() : EntityManager.class);
 		return createSharedEntityManager(emf, properties, synchronizedWithTransaction,
 				(emIfc == null ? NO_ENTITY_MANAGER_INTERFACES : new Class<?>[] {emIfc}));
 	}
@@ -160,8 +164,8 @@ public abstract class SharedEntityManagerCreator {
 			boolean synchronizedWithTransaction, Class<?>... entityManagerInterfaces) {
 
 		ClassLoader cl = null;
-		if (emf instanceof EntityManagerFactoryInfo) {
-			cl = ((EntityManagerFactoryInfo) emf).getBeanClassLoader();
+		if (emf instanceof EntityManagerFactoryInfo emfInfo) {
+			cl = emfInfo.getBeanClassLoader();
 		}
 		Class<?>[] ifcs = new Class<?>[entityManagerInterfaces.length + 1];
 		System.arraycopy(entityManagerInterfaces, 0, ifcs, 0, entityManagerInterfaces.length);
@@ -202,8 +206,8 @@ public abstract class SharedEntityManagerCreator {
 		}
 
 		private void initProxyClassLoader() {
-			if (this.targetFactory instanceof EntityManagerFactoryInfo) {
-				this.proxyClassLoader = ((EntityManagerFactoryInfo) this.targetFactory).getBeanClassLoader();
+			if (this.targetFactory instanceof EntityManagerFactoryInfo emfInfo) {
+				this.proxyClassLoader = emfInfo.getBeanClassLoader();
 			}
 			else {
 				this.proxyClassLoader = this.targetFactory.getClass().getClassLoader();
@@ -388,8 +392,8 @@ public abstract class SharedEntityManagerCreator {
 							throw new IllegalArgumentException("OUT/INOUT parameter not available: " + key);
 						}
 						Object value = this.outputParameters.get(key);
-						if (value instanceof IllegalArgumentException) {
-							throw (IllegalArgumentException) value;
+						if (value instanceof IllegalArgumentException iae) {
+							throw iae;
 						}
 						return value;
 					}
@@ -419,8 +423,8 @@ public abstract class SharedEntityManagerCreator {
 						for (Map.Entry<Object, Object> entry : this.outputParameters.entrySet()) {
 							try {
 								Object key = entry.getKey();
-								if (key instanceof Integer) {
-									entry.setValue(storedProc.getOutputParameterValue((Integer) key));
+								if (key instanceof Integer number) {
+									entry.setValue(storedProc.getOutputParameterValue(number));
 								}
 								else {
 									entry.setValue(storedProc.getOutputParameterValue(key.toString()));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,6 +169,14 @@ class ContentDispositionTests {
 		assertThat(cd.toString()).isEqualTo("form-data; name=\"foo\"; filename=\"bar\\\\\"");
 	}
 
+	@Test
+	void parseWindowsPath() {
+		ContentDisposition cd = ContentDisposition.parse("form-data; name=\"foo\"; filename=\"D:\\foo\\bar.txt\"");
+		assertThat(cd.getName()).isEqualTo("foo");
+		assertThat(cd.getFilename()).isEqualTo("D:\\foo\\bar.txt");
+		assertThat(cd.toString()).isEqualTo("form-data; name=\"foo\"; filename=\"D:\\\\foo\\\\bar.txt\"");
+	}
+
 
 	@SuppressWarnings("deprecation")
 	@Test
@@ -249,7 +257,9 @@ class ContentDispositionTests {
 						.name("name")
 						.filename("中文.txt", StandardCharsets.UTF_8)
 						.build().toString())
-				.isEqualTo("form-data; name=\"name\"; filename*=UTF-8''%E4%B8%AD%E6%96%87.txt");
+				.isEqualTo("form-data; name=\"name\"; " +
+						"filename=\"=?UTF-8?Q?=E4=B8=AD=E6=96=87.txt?=\"; " +
+						"filename*=UTF-8''%E4%B8%AD%E6%96%87.txt");
 	}
 
 	@Test

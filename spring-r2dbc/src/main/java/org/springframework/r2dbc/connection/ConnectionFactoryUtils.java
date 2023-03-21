@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -256,7 +256,7 @@ public abstract class ConnectionFactoryUtils {
 	static boolean indicatesDuplicateKey(@Nullable String sqlState, int errorCode) {
 		return ("23505".equals(sqlState) ||
 				("23000".equals(sqlState) &&
-						(errorCode == 1 || errorCode == 1062 || errorCode == 2627)));
+						(errorCode == 1 || errorCode == 1062 || errorCode == 2601 || errorCode == 2627)));
 	}
 
 	/**
@@ -301,13 +301,13 @@ public abstract class ConnectionFactoryUtils {
 	 * @return the innermost target Connection, or the passed-in one if not wrapped
 	 * @see Wrapped#unwrap()
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Connection getTargetConnection(Connection con) {
-		Connection conToUse = con;
-		while (conToUse instanceof Wrapped<?>) {
-			conToUse = ((Wrapped<Connection>) conToUse).unwrap();
+		Object conToUse = con;
+		while (conToUse instanceof Wrapped wrapped) {
+			conToUse = wrapped.unwrap();
 		}
-		return conToUse;
+		return (Connection) conToUse;
 	}
 
 	/**
@@ -321,9 +321,9 @@ public abstract class ConnectionFactoryUtils {
 	private static int getConnectionSynchronizationOrder(ConnectionFactory connectionFactory) {
 		int order = CONNECTION_SYNCHRONIZATION_ORDER;
 		ConnectionFactory current = connectionFactory;
-		while (current instanceof DelegatingConnectionFactory) {
+		while (current instanceof DelegatingConnectionFactory delegatingConnectionFactory) {
 			order--;
-			current = ((DelegatingConnectionFactory) current).getTargetConnectionFactory();
+			current = delegatingConnectionFactory.getTargetConnectionFactory();
 		}
 		return order;
 	}

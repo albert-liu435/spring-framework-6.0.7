@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,8 +141,8 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 		super.handleMatch(info, lookupPath, request);
 
 		RequestCondition<?> condition = info.getActivePatternsCondition();
-		if (condition instanceof PathPatternsRequestCondition) {
-			extractMatchDetails((PathPatternsRequestCondition) condition, lookupPath, request);
+		if (condition instanceof PathPatternsRequestCondition pprc) {
+			extractMatchDetails(pprc, lookupPath, request);
 		}
 		else {
 			extractMatchDetails((PatternsRequestCondition) condition, lookupPath, request);
@@ -273,7 +273,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 					contentType = MediaType.parseMediaType(request.getContentType());
 				}
 				catch (InvalidMediaTypeException ex) {
-					throw new HttpMediaTypeNotSupportedException(ex.getMessage());
+					throw new HttpMediaTypeNotSupportedException(ex.getMessage(), new ArrayList<>(mediaTypes));
 				}
 			}
 			throw new HttpMediaTypeNotSupportedException(

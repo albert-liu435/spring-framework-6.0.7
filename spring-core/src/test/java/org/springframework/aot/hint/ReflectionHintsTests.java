@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Tests for {@link ReflectionHints}.
  *
  * @author Stephane Nicoll
+ * @author Sebastien Deleuze
  */
 class ReflectionHintsTests {
 
@@ -57,7 +58,7 @@ class ReflectionHintsTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void registerTypeIfPresentIgnoresMissingClass() {
-		Consumer<TypeHint.Builder> hintBuilder = mock(Consumer.class);
+		Consumer<TypeHint.Builder> hintBuilder = mock();
 		this.reflectionHints.registerTypeIfPresent(null, "com.example.DoesNotExist", hintBuilder);
 		assertThat(this.reflectionHints.typeHints()).isEmpty();
 		verifyNoInteractions(hintBuilder);
@@ -130,6 +131,16 @@ class ReflectionHintsTests {
 		this.reflectionHints.registerField(field);
 		assertTestTypeFieldHint(fieldHint ->
 				assertThat(fieldHint.getName()).isEqualTo("field"));
+	}
+
+	@Test
+	void registerTypeIgnoresLambda() {
+		Runnable lambda = () -> { };
+		Consumer<TypeHint.Builder> hintBuilder = mock();
+		this.reflectionHints.registerType(lambda.getClass());
+		this.reflectionHints.registerType(lambda.getClass(), hintBuilder);
+		assertThat(this.reflectionHints.typeHints()).isEmpty();
+		verifyNoInteractions(hintBuilder);
 	}
 
 	private void assertTestTypeFieldHint(Consumer<FieldHint> fieldHint) {

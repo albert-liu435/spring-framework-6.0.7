@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -522,7 +522,7 @@ public class TypeDescriptor implements Serializable {
 	/**
 	 * Create a new type descriptor for an object.
 	 * <p>Use this factory method to introspect a source object before asking the
-	 * conversion system to convert it to some another type.
+	 * conversion system to convert it to some other type.
 	 * <p>If the provided object is {@code null}, returns {@code null}, else calls
 	 * {@link #valueOf(Class)} to build a TypeDescriptor from the object's class.
 	 * @param source the source object
@@ -779,9 +779,9 @@ public class TypeDescriptor implements Serializable {
 		}
 
 		@Override
-		public boolean equals(@Nullable Object other) {
-			return (this == other || (other instanceof AnnotatedElementAdapter &&
-					Arrays.equals(this.annotations, ((AnnotatedElementAdapter) other).annotations)));
+		public boolean equals(@Nullable Object obj) {
+			return (this == obj || (obj instanceof AnnotatedElementAdapter that &&
+					Arrays.equals(this.annotations, that.annotations)));
 		}
 
 		@Override
