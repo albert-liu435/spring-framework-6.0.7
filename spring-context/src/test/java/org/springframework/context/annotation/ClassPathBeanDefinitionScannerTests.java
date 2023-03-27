@@ -33,6 +33,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.beans.testfixture.beans.TestBean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation2.NamedStubDao2;
 import org.springframework.context.support.GenericApplicationContext;
@@ -58,6 +59,7 @@ public class ClassPathBeanDefinitionScannerTests {
 
 	@Test
 	public void testSimpleScanWithDefaultFiltersAndPostProcessors() {
+
 		GenericApplicationContext context = new GenericApplicationContext();
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(context);
 		int beanCount = scanner.scan(BASE_PACKAGE);

@@ -48,7 +48,17 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
- * 通用的应用上下文
+ * GenericApplicationContext通用应用程序上下文实现，该实现内部有一个 DefaultListableBeanFactory 实例。可以采用混合方式处理bean的定义，而不是采用特定的bean定义方式来创建bean。
+ * <p>
+ * GenericApplicationContext基本就是对DefaultListableBeanFactory 做了个简易的封装，几乎所有方法都是使用了DefaultListableBeanFactory的方法去实现。
+ * <p>
+ * GenericApplicationContext更多是作为一个通用的上下文（通用的IOC容器）而存在，BeanFactory本质上也就是一个IOC容器，一个用来生产和获取beans的工厂。
+ * <p>
+ * 几乎可以把GenericApplicationContext等价于DefaultListableBeanFactory+上下文刷新等其他功能
+ * ————————————————
+ * 版权声明：本文为CSDN博主「鸭梨的药丸哥」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+ * 原文链接：https://blog.csdn.net/qq_43203949/article/details/125454746
+ * <p>
  * Generic ApplicationContext implementation that holds a single internal
  * {@link org.springframework.beans.factory.support.DefaultListableBeanFactory}
  * instance and does not assume a specific bean definition format. Implements
