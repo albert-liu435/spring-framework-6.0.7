@@ -17,6 +17,7 @@
 package org.springframework.core.metrics;
 
 /**
+ * 应用起始设置
  * Instruments the application startup phase using {@link StartupStep steps}.
  * <p>The core container and its infrastructure components can use the {@code ApplicationStartup}
  * to mark steps during the application startup and collect data about the execution context
@@ -38,6 +39,7 @@ public interface ApplicationStartup {
 	 * <p>A step name describes the current action or phase. This technical
 	 * name should be "." namespaced and can be reused to describe other instances of
 	 * the same step during application startup.
+	 *
 	 * @param name the step name
 	 */
 	StartupStep start(String name);

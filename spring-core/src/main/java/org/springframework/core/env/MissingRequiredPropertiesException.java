@@ -20,13 +20,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
+ * 当需要的properties不存在时抛出异常
  * Exception thrown when required properties are not found.
  *
  * @author Chris Beams
- * @since 3.1
  * @see ConfigurablePropertyResolver#setRequiredProperties(String...)
  * @see ConfigurablePropertyResolver#validateRequiredProperties()
  * @see org.springframework.context.support.AbstractApplicationContext#prepareRefresh()
+ * @since 3.1
  */
 @SuppressWarnings("serial")
 public class MissingRequiredPropertiesException extends IllegalStateException {
@@ -47,6 +48,7 @@ public class MissingRequiredPropertiesException extends IllegalStateException {
 	/**
 	 * Return the set of properties marked as required but not present
 	 * upon validation.
+	 *
 	 * @see ConfigurablePropertyResolver#setRequiredProperties(String...)
 	 * @see ConfigurablePropertyResolver#validateRequiredProperties()
 	 */

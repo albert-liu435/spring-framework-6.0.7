@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import org.springframework.lang.Nullable;
 
 /**
+ * 步骤记录有关ApplicationStartup期间发生的特定阶段或操作的度量
  * Step recording metrics about a particular phase or action happening during the {@link ApplicationStartup}.
  *
  * <p>The lifecycle of a {@code StartupStep} goes as follows:
@@ -61,14 +62,16 @@ public interface StartupStep {
 
 	/**
 	 * Add a {@link Tag} to the step.
-	 * @param key tag key
+	 *
+	 * @param key   tag key
 	 * @param value tag value
 	 */
 	StartupStep tag(String key, String value);
 
 	/**
 	 * Add a {@link Tag} to the step.
-	 * @param key tag key
+	 *
+	 * @param key   tag key
 	 * @param value {@link Supplier} for the tag value
 	 */
 	StartupStep tag(String key, Supplier<String> value);
@@ -93,6 +96,7 @@ public interface StartupStep {
 
 
 	/**
+	 * 用于存储步骤元数据的简单键/值关联。
 	 * Simple key/value association for storing step metadata.
 	 */
 	interface Tag {
