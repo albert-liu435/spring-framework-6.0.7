@@ -33,6 +33,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 注解Bean名称生成器
  * {@link BeanNameGenerator} implementation for bean classes annotated with the
  * {@link org.springframework.stereotype.Component @Component} annotation or
  * with another annotation that is itself annotated with {@code @Component} as a
@@ -53,19 +54,20 @@ import org.springframework.util.StringUtils;
  *
  * @author Juergen Hoeller
  * @author Mark Fisher
- * @since 2.5
  * @see org.springframework.stereotype.Component#value()
  * @see org.springframework.stereotype.Repository#value()
  * @see org.springframework.stereotype.Service#value()
  * @see org.springframework.stereotype.Controller#value()
  * @see jakarta.inject.Named#value()
  * @see FullyQualifiedAnnotationBeanNameGenerator
+ * @since 2.5
  */
 public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 
 	/**
 	 * A convenient constant for a default {@code AnnotationBeanNameGenerator} instance,
 	 * as used for component scanning purposes.
+	 *
 	 * @since 5.2
 	 */
 	public static final AnnotationBeanNameGenerator INSTANCE = new AnnotationBeanNameGenerator();
@@ -74,10 +76,18 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 
 	private final Map<String, Set<String>> metaAnnotationTypesCache = new ConcurrentHashMap<>();
 
-
+	/**
+	 * 调用AnnotationBeanNameGenerator的generateBeanName()方法来生成beanName，如果是扫描生成的BeanDefinition，则判断注解有没有指定beanName
+	 *
+	 * @param definition the bean definition to generate a name for
+	 * @param registry   the bean definition registry that the given definition
+	 *                   is supposed to be registered with
+	 * @return
+	 */
 	@Override
 	public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
 		if (definition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+			// 获取注解所指定的beanName
 			String beanName = determineBeanNameFromAnnotation(annotatedBeanDefinition);
 			if (StringUtils.hasText(beanName)) {
 				// Explicit bean name found.
@@ -85,11 +95,13 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 			}
 		}
 		// Fallback: generate a unique default bean name.
+		//如果注解没有指定，则调用buildDefaultBeanName()生成默认的beanName
 		return buildDefaultBeanName(definition, registry);
 	}
 
 	/**
 	 * Derive a bean name from one of the annotations on the class.
+	 *
 	 * @param annotatedDef the annotation-aware bean definition
 	 * @return the bean name, or {@code null} if none is found
 	 */
@@ -123,13 +135,14 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	/**
 	 * Check whether the given annotation is a stereotype that is allowed
 	 * to suggest a component name through its annotation {@code value()}.
-	 * @param annotationType the name of the annotation class to check
+	 *
+	 * @param annotationType      the name of the annotation class to check
 	 * @param metaAnnotationTypes the names of meta-annotations on the given annotation
-	 * @param attributes the map of attributes for the given annotation
+	 * @param attributes          the map of attributes for the given annotation
 	 * @return whether the annotation qualifies as a stereotype with component name
 	 */
 	protected boolean isStereotypeWithNameValue(String annotationType,
-			Set<String> metaAnnotationTypes, @Nullable Map<String, Object> attributes) {
+												Set<String> metaAnnotationTypes, @Nullable Map<String, Object> attributes) {
 
 		boolean isStereotype = annotationType.equals(COMPONENT_ANNOTATION_CLASSNAME) ||
 				metaAnnotationTypes.contains(COMPONENT_ANNOTATION_CLASSNAME) ||
@@ -140,10 +153,13 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	}
 
 	/**
+	 * 如果注解没有指定，则调用buildDefaultBeanName()生成默认的beanName
+	 * =
 	 * Derive a default bean name from the given bean definition.
 	 * <p>The default implementation delegates to {@link #buildDefaultBeanName(BeanDefinition)}.
+	 *
 	 * @param definition the bean definition to build a bean name for
-	 * @param registry the registry that the given bean definition is being registered with
+	 * @param registry   the registry that the given bean definition is being registered with
 	 * @return the default bean name (never {@code null})
 	 */
 	protected String buildDefaultBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
@@ -157,10 +173,12 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 * <p>Note that inner classes will thus have names of the form
 	 * "outerClassName.InnerClassName", which because of the period in the
 	 * name may be an issue if you are autowiring by name.
+	 *
 	 * @param definition the bean definition to build a bean name for
 	 * @return the default bean name (never {@code null})
 	 */
 	protected String buildDefaultBeanName(BeanDefinition definition) {
+		//扫描的时候如果没有指定className,将会抛出异常
 		String beanClassName = definition.getBeanClassName();
 		Assert.state(beanClassName != null, "No bean class name set");
 		String shortClassName = ClassUtils.getShortName(beanClassName);

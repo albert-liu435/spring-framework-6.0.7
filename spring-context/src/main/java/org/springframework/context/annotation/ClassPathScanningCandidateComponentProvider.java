@@ -209,6 +209,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {
+		// 注册@Component对应的AnnotationTypeFilter
 		this.includeFilters.add(new AnnotationTypeFilter(Component.class));
 		ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
 		try {
@@ -448,7 +449,14 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 					//原文链接：https://blog.csdn.net/sermonlizhi/article/details/120611484
 					MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
 					// 下面根据类的元数据判断是否可以生成BeanDefinition
+					// excludeFilters、includeFilters判断
+
 					if (isCandidateComponent(metadataReader)) {
+						//经过了过滤器和条件鉴定器之后，生成BeanDefinition，这个时候BeanDefinition的beanClass属性是beanClassName，而不是Class对象，因为此时只是扫描，还没进行加载
+						//
+						//还需要判断这个BeanDefinition是否可以实例化成一个对象
+
+
 						ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
 						sbd.setSource(resource);
 						if (isCandidateComponent(sbd)) {
@@ -503,11 +511,14 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return whether the class qualifies as a candidate component
 	 */
 	protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
+		//首先判断当前类是否被排除，如果与某个排除过滤器匹配则不能生成BeanDefinition，然后再判断是否能匹配到包含过滤器
 		for (TypeFilter tf : this.excludeFilters) {
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				return false;
 			}
 		}
+		// 符合includeFilters的会进行条件匹配，也就是先看有没有@Component，再看是否符合@Conditional
+		//如果一个类有对应的包含过滤器它可能还不能生成BeanDefinition，还需要判断条件注解是否满足
 		for (TypeFilter tf : this.includeFilters) {
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				return isConditionMatch(metadataReader);
@@ -517,6 +528,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
+	 * 条件鉴定器根据类上的注解来进行匹配
+	 * <p>
+	 * <p>
 	 * Determine whether the given class is a candidate component based on any
 	 * {@code @Conditional} annotations.
 	 *
@@ -528,10 +542,19 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			this.conditionEvaluator =
 					new ConditionEvaluator(getRegistry(), this.environment, this.resourcePatternResolver);
 		}
+		// 参数为该类的所有注解
 		return !this.conditionEvaluator.shouldSkip(metadataReader.getAnnotationMetadata());
 	}
 
 	/**
+	 * 下面代码的isIndependent()判断当前类是否是独立的，对于一个普通的内部类来说，编译后它也是一个独立的class文件，但它的实例化依赖顶级类，而顶级类和静态内部类可以直接实例化
+	 * <p>
+	 * isConcrete()判断该类是否是接口或抽象类，接口和抽象类编译后也是一个class文件，但它们都不能进行实例化
+	 * <p>
+	 * 如果该类是一个抽象类，但是有Lookup注解定义的方法，那么也可以进行实例化
+	 * ————————————————
+	 * 版权声明：本文为CSDN博主「sermonlizhi」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+	 * 原文链接：https://blog.csdn.net/sermonlizhi/article/details/120611484
 	 * Determine whether the given bean definition qualifies as candidate.
 	 * <p>The default implementation checks whether the class is not an interface
 	 * and not dependent on an enclosing class.

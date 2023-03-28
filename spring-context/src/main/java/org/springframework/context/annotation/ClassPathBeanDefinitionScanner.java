@@ -87,6 +87,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	}
 
 	/**
+	 * 以AnnotationConfigApplicationContext为例,Spring容器在启动的时候,会创建BeanDefinitionScanner扫描器,在创建Scnner的时候会注册一个Component的默认包含过滤器
 	 * Create a new {@code ClassPathBeanDefinitionScanner} for the given bean factory.
 	 * <p>If the passed-in bean factory does not only implement the
 	 * {@code BeanDefinitionRegistry} interface but also the {@code ResourceLoader}
@@ -273,6 +274,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	}
 
 	/**
+	 * 填充扫描生成BeanDefinition的各个属性
 	 * Perform a scan within the specified base packages,
 	 * returning the registered bean definitions.
 	 * <p>This method does <i>not</i> register an annotation config processor
@@ -286,22 +288,29 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		for (String basePackage : basePackages) {
 			//调用findCandidateComponents方法，生成BeanDefinition
+			//扫描生成BeanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {
+				//填充Scope属性值,如果注解Scope有值,用该值填充
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
+				//生成beanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
+				//设置默认值以及是否可以作为依赖注入
 				if (candidate instanceof AbstractBeanDefinition abstractBeanDefinition) {
 					postProcessBeanDefinition(abstractBeanDefinition, beanName);
 				}
 				if (candidate instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+					// 解析@Lazy、@Primary、@DependsOn、@Role、@Description
 					AnnotationConfigUtils.processCommonDefinitionAnnotations(annotatedBeanDefinition);
 				}
+				// 检查Spring容器中是否已经存在该beanName
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
 					definitionHolder =
 							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					beanDefinitions.add(definitionHolder);
+					// 注册 --放入到registry的BeanfinitionMap中
 					registerBeanDefinition(definitionHolder, this.registry);
 				}
 			}
@@ -317,7 +326,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @param beanName       the generated bean name for the given bean
 	 */
 	protected void postProcessBeanDefinition(AbstractBeanDefinition beanDefinition, String beanName) {
+		// 设置BeanDefinition的默认值
 		beanDefinition.applyDefaults(this.beanDefinitionDefaults);
+		// AutowireCandidate表示某个Bean能否被用来做依赖注入
 		if (this.autowireCandidatePatterns != null) {
 			beanDefinition.setAutowireCandidate(PatternMatchUtils.simpleMatch(this.autowireCandidatePatterns, beanName));
 		}
@@ -337,6 +348,13 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
 
 	/**
+	 * 如果BeanfinitionMap中不存在当前beanName，则返回True，生成一个新的Beanfinition注册到BeanfinitionMap
+	 *
+	 * 如果存在beanName，则从BeanfinitionMap中根据beanName取出Beanfinition，与当前的Beanfinition比较，判断是否相等，如果相等说明同一个类被扫描了两次，无需再向BeanfinitionMap中添加，如果不相等，则直接抛出异常
+	 * ————————————————
+	 * 版权声明：本文为CSDN博主「sermonlizhi」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+	 * 原文链接：https://blog.csdn.net/sermonlizhi/article/details/120611484
+	 *
 	 * Check the given candidate's bean name, determining whether the corresponding
 	 * bean definition needs to be registered or conflicts with an existing definition.
 	 *
@@ -357,6 +375,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		if (originatingDef != null) {
 			existingDef = originatingDef;
 		}
+		// 是否兼容，如果兼容返回false表示不会重新注册到Spring容器中，如果不冲突则会抛异常。
 		if (isCompatible(beanDefinition, existingDef)) {
 			return false;
 		}
