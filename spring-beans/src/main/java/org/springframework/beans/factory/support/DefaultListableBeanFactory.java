@@ -175,6 +175,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(16);
 
 	/**
+	 * 用于存储BeanDefinition的map
 	 * Map of bean definition objects, keyed by bean name.
 	 */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
@@ -982,6 +983,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return super.obtainInstanceFromSupplier(supplier, beanName, mbd);
 	}
 
+	/**
+	 * Spring扫描注册类的BeanDefinition的时候，会将beanName也保存一份，存在beanDefinitionNames中，这是一个ArrayList，实例化非懒加载的单例Bean时，遍历beanNam的列表，获取对应的BeanDefinition
+	 *
+	 * @throws BeansException
+	 */
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
 		if (logger.isTraceEnabled()) {
@@ -994,14 +1000,18 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
+			// 获取合并后的BeanDefinition
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
 				if (isFactoryBean(beanName)) {
+					// 获取FactoryBean对象
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof SmartFactoryBean<?> smartFactoryBean && smartFactoryBean.isEagerInit()) {
+						// FactoryBean实例化
 						getBean(beanName);
 					}
 				} else {
+					// 创建Bean对象
 					getBean(beanName);
 				}
 			}

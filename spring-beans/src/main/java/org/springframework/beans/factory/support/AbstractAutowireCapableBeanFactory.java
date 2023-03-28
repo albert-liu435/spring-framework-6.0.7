@@ -489,6 +489,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	//---------------------------------------------------------------------
 
 	/**
+	 * 第一个参数为beanName，第二个为beanName对应的RootBeanDefinition，第三个参数为构造器的参数列表，实例化的时候需要参数列表推断使用哪一个构造器来进行实例化
+	 * <p>
 	 * Central method of this class: creates a bean instance,
 	 * populates the bean instance, applies post-processors, etc.
 	 *
@@ -506,6 +508,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Make sure bean class is actually resolved at this point, and
 		// clone the bean definition in case of a dynamically resolved Class
 		// which cannot be stored in the shared merged bean definition.
+		// 马上就要实例化Bean了，确保beanClass被加载了
 		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
 		if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
 			mbdToUse = new RootBeanDefinition(mbd);
@@ -513,6 +516,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Prepare method overrides.
+		//在实例化前操作的前面，会调用prepareMethodOverrides()处理带有@Lookup注解的方法，然后再进行实例化前的操作
 		try {
 			mbdToUse.prepareMethodOverrides();
 		} catch (BeanDefinitionValidationException ex) {
@@ -522,6 +526,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			//在对Bean进行实例化之前，调用resolveBeforeInstantiation()执行初始化前的操作，如果初始化前的操作直接就生成了Bean对象，则直接返回，没必要再执行后面的实例化操作
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -1102,6 +1107,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object bean = null;
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
 			// Make sure bean class is actually resolved at this point.
+			//resolveBeforeInstantiation()中，hasInstantiationAwareBeanPostProcessors()会判断当前Spring容器的Bean中是否有实现了InstantiationAwareBeanPostProcessor接口的Bean
+			// synthetic表示合成，如果某些Bean式合成的，那么则不会经过BeanPostProcessor的处理
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {

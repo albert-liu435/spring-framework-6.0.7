@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.PatternMatchUtils;
 
 /**
+ * https://blog.csdn.net/sermonlizhi/article/details/120611484
  * A bean definition scanner that detects bean candidates on the classpath,
  * registering corresponding bean definitions with a given registry ({@code BeanFactory}
  * or {@code ApplicationContext}).
@@ -349,12 +350,12 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
 	/**
 	 * 如果BeanfinitionMap中不存在当前beanName，则返回True，生成一个新的Beanfinition注册到BeanfinitionMap
-	 *
+	 * <p>
 	 * 如果存在beanName，则从BeanfinitionMap中根据beanName取出Beanfinition，与当前的Beanfinition比较，判断是否相等，如果相等说明同一个类被扫描了两次，无需再向BeanfinitionMap中添加，如果不相等，则直接抛出异常
 	 * ————————————————
 	 * 版权声明：本文为CSDN博主「sermonlizhi」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 	 * 原文链接：https://blog.csdn.net/sermonlizhi/article/details/120611484
-	 *
+	 * <p>
 	 * Check the given candidate's bean name, determining whether the corresponding
 	 * bean definition needs to be registered or conflicts with an existing definition.
 	 *
