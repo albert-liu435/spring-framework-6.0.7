@@ -55,6 +55,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 
 	/**
 	 * Set the factory method currently being invoked or {@code null} to reset.
+	 *
 	 * @param method the factory method currently being invoked or {@code null}
 	 * @since 6.0
 	 */
@@ -62,32 +63,43 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 		currentlyInvokedFactoryMethod.set(method);
 	}
 
-
+	// 使用初始化策略实例化 bean对象
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
 		// Don't override the class with CGLIB if no overrides.
+		// 如果 配置的bean 中没有方法覆盖，则使用 Java 的反射机制实例化对象，否则使用 CGLIB
 		if (!bd.hasMethodOverrides()) {
 			Constructor<?> constructorToUse;
 			synchronized (bd.constructorArgumentLock) {
+				// 获取对象的构造方法对 bean 进行实例化
 				constructorToUse = (Constructor<?>) bd.resolvedConstructorOrFactoryMethod;
+				// 如果前面没有获取到构造方法，则通过反射获取
 				if (constructorToUse == null) {
+					// 使用 JDK 的反射机制，判断要实例化的 bean 是否是接口
 					final Class<?> clazz = bd.getBeanClass();
+					// 如果 clazz 是一个接口，直接抛出异常
 					if (clazz.isInterface()) {
 						throw new BeanInstantiationException(clazz, "Specified class is an interface");
 					}
 					try {
 						constructorToUse = clazz.getDeclaredConstructor();
 						bd.resolvedConstructorOrFactoryMethod = constructorToUse;
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						throw new BeanInstantiationException(clazz, "No default constructor found", ex);
 					}
 				}
 			}
+			// 根据传入的 Constructor，在 BeanUtils 中调用该 Constructor 的
+			// newInstance(Object...) 方法，实例化指定对象
 			return BeanUtils.instantiateClass(constructorToUse);
-		}
-		else {
+		} else {
 			// Must generate CGLIB subclass.
+			/**
+			 * ！！！！！！！！！！！！！！
+			 * 使用 CGLIB 来实例化对象
+			 * 调用了 CglibSubclassingInstantiationStrategy 中的实现
+			 * ！！！！！！！！！！！！！！
+			 */
 			return instantiateWithMethodInjection(bd, beanName, owner);
 		}
 	}
@@ -104,12 +116,11 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
-			final Constructor<?> ctor, Object... args) {
+							  final Constructor<?> ctor, Object... args) {
 
 		if (!bd.hasMethodOverrides()) {
 			return BeanUtils.instantiateClass(ctor, args);
-		}
-		else {
+		} else {
 			return instantiateWithMethodInjection(bd, beanName, owner, ctor, args);
 		}
 	}
@@ -121,14 +132,14 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	 * Instantiation should use the given constructor and parameters.
 	 */
 	protected Object instantiateWithMethodInjection(RootBeanDefinition bd, @Nullable String beanName,
-			BeanFactory owner, @Nullable Constructor<?> ctor, Object... args) {
+													BeanFactory owner, @Nullable Constructor<?> ctor, Object... args) {
 
 		throw new UnsupportedOperationException("Method Injection not supported in SimpleInstantiationStrategy");
 	}
 
 	@Override
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
-			@Nullable Object factoryBean, final Method factoryMethod, Object... args) {
+							  @Nullable Object factoryBean, final Method factoryMethod, Object... args) {
 
 		try {
 			ReflectionUtils.makeAccessible(factoryMethod);
@@ -141,26 +152,21 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					result = new NullBean();
 				}
 				return result;
-			}
-			finally {
+			} finally {
 				if (priorInvokedFactoryMethod != null) {
 					currentlyInvokedFactoryMethod.set(priorInvokedFactoryMethod);
-				}
-				else {
+				} else {
 					currentlyInvokedFactoryMethod.remove();
 				}
 			}
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			throw new BeanInstantiationException(factoryMethod,
 					"Illegal arguments to factory method '" + factoryMethod.getName() + "'; " +
-					"args: " + StringUtils.arrayToCommaDelimitedString(args), ex);
-		}
-		catch (IllegalAccessException ex) {
+							"args: " + StringUtils.arrayToCommaDelimitedString(args), ex);
+		} catch (IllegalAccessException ex) {
 			throw new BeanInstantiationException(factoryMethod,
 					"Cannot access factory method '" + factoryMethod.getName() + "'; is it public?", ex);
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			String msg = "Factory method '" + factoryMethod.getName() + "' threw exception with message: " +
 					ex.getTargetException().getMessage();
 			if (bd.getFactoryBeanName() != null && owner instanceof ConfigurableBeanFactory cbf &&

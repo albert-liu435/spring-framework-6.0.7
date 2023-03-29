@@ -59,8 +59,8 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @author Stephane Nicoll
- * @since 1.2
  * @see AbstractAutowireCapableBeanFactory
+ * @since 1.2
  */
 public class BeanDefinitionValueResolver {
 
@@ -76,13 +76,14 @@ public class BeanDefinitionValueResolver {
 	/**
 	 * Create a BeanDefinitionValueResolver for the given BeanFactory and BeanDefinition,
 	 * using the given {@link TypeConverter}.
-	 * @param beanFactory the BeanFactory to resolve against
-	 * @param beanName the name of the bean that we work on
+	 *
+	 * @param beanFactory    the BeanFactory to resolve against
+	 * @param beanName       the name of the bean that we work on
 	 * @param beanDefinition the BeanDefinition of the bean that we work on
-	 * @param typeConverter the TypeConverter to use for resolving TypedStringValues
+	 * @param typeConverter  the TypeConverter to use for resolving TypedStringValues
 	 */
 	public BeanDefinitionValueResolver(AbstractAutowireCapableBeanFactory beanFactory, String beanName,
-			BeanDefinition beanDefinition, TypeConverter typeConverter) {
+									   BeanDefinition beanDefinition, TypeConverter typeConverter) {
 
 		this.beanFactory = beanFactory;
 		this.beanName = beanName;
@@ -93,12 +94,13 @@ public class BeanDefinitionValueResolver {
 	/**
 	 * Create a BeanDefinitionValueResolver for the given BeanFactory and BeanDefinition
 	 * using a default {@link TypeConverter}.
-	 * @param beanFactory the BeanFactory to resolve against
-	 * @param beanName the name of the bean that we work on
+	 *
+	 * @param beanFactory    the BeanFactory to resolve against
+	 * @param beanName       the name of the bean that we work on
 	 * @param beanDefinition the BeanDefinition of the bean that we work on
 	 */
 	public BeanDefinitionValueResolver(AbstractAutowireCapableBeanFactory beanFactory, String beanName,
-			BeanDefinition beanDefinition) {
+									   BeanDefinition beanDefinition) {
 
 		this.beanFactory = beanFactory;
 		this.beanName = beanName;
@@ -110,6 +112,7 @@ public class BeanDefinitionValueResolver {
 
 
 	/**
+	 * 解析属性值，对注入类型进行转换
 	 * Given a PropertyValue, return a value, resolving any references to other
 	 * beans in the factory if necessary. The value could be:
 	 * <li>A BeanDefinition, which leads to the creation of a corresponding
@@ -123,18 +126,25 @@ public class BeanDefinitionValueResolver {
 	 * <li>A ManagedMap. In this case the value may be a RuntimeBeanReference
 	 * or Collection that will need to be resolved.
 	 * <li>An ordinary object or {@code null}, in which case it's left alone.
+	 *
 	 * @param argName the name of the argument that the value is defined for
-	 * @param value the value object to resolve
+	 * @param value   the value object to resolve
 	 * @return the resolved object
 	 */
 	@Nullable
 	public Object resolveValueIfNecessary(Object argName, @Nullable Object value) {
 		// We must check each value to see whether it requires a runtime reference
 		// to another bean to be resolved.
+		// 对引用类型的属性进行解析，RuntimeBeanReference 是在对 BeanDefinition 进行解析时生成的数据对象
 		if (value instanceof RuntimeBeanReference ref) {
+			/**
+			 * ！！！！！！！！！！！！！！！！
+			 * 解析引用类型的属性值
+			 * ！！！！！！！！！！！！！！！！
+			 */
 			return resolveReference(argName, ref);
-		}
-		else if (value instanceof RuntimeBeanNameReference ref) {
+			// 对属性值是引用容器中另一个 bean 名称的解析
+		} else if (value instanceof RuntimeBeanNameReference ref) {
 			String refName = ref.getBeanName();
 			refName = String.valueOf(doEvaluate(refName));
 			if (!this.beanFactory.containsBean(refName)) {
@@ -142,17 +152,15 @@ public class BeanDefinitionValueResolver {
 						"Invalid bean name '" + refName + "' in bean reference for " + argName);
 			}
 			return refName;
-		}
-		else if (value instanceof BeanDefinitionHolder bdHolder) {
+			// 对 BeanDefinitionHolder 类型属性的解析，主要是 bean 中的内部类
+		} else if (value instanceof BeanDefinitionHolder bdHolder) {
 			// Resolve BeanDefinitionHolder: contains BeanDefinition with name and aliases.
 			return resolveInnerBean(bdHolder.getBeanName(), bdHolder.getBeanDefinition(),
 					(name, mbd) -> resolveInnerBeanValue(argName, name, mbd));
-		}
-		else if (value instanceof BeanDefinition bd) {
+		} else if (value instanceof BeanDefinition bd) {
 			return resolveInnerBean(null, bd,
 					(name, mbd) -> resolveInnerBeanValue(argName, name, mbd));
-		}
-		else if (value instanceof DependencyDescriptor dependencyDescriptor) {
+		} else if (value instanceof DependencyDescriptor dependencyDescriptor) {
 			Set<String> autowiredBeanNames = new LinkedHashSet<>(4);
 			Object result = this.beanFactory.resolveDependency(
 					dependencyDescriptor, this.beanName, autowiredBeanNames, this.typeConverter);
@@ -162,44 +170,50 @@ public class BeanDefinitionValueResolver {
 				}
 			}
 			return result;
-		}
-		else if (value instanceof ManagedArray managedArray) {
+			// 对集合数组类型的属性解析
+
+		} else if (value instanceof ManagedArray managedArray) {
 			// May need to resolve contained runtime references.
+			// 获取数组的类型
 			Class<?> elementType = managedArray.resolvedElementType;
 			if (elementType == null) {
+				// 获取数组元素的类型
 				String elementTypeName = managedArray.getElementTypeName();
 				if (StringUtils.hasText(elementTypeName)) {
 					try {
+						// 使用反射机制创建指定类型的对象
 						elementType = ClassUtils.forName(elementTypeName, this.beanFactory.getBeanClassLoader());
 						managedArray.resolvedElementType = elementType;
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						// Improve the message by showing the context.
 						throw new BeanCreationException(
 								this.beanDefinition.getResourceDescription(), this.beanName,
 								"Error resolving array type for " + argName, ex);
 					}
-				}
-				else {
+				} else {
+					// 没有获取到数组的类型，也没有获取到数组元素的类型
+					// 则直接设置数组的类型为 Object
 					elementType = Object.class;
 				}
 			}
+			// 创建指定类型的数组
 			return resolveManagedArray(argName, (List<?>) value, elementType);
-		}
-		else if (value instanceof ManagedList<?> managedList) {
+			// 解析 list 类型的属性值
+		} else if (value instanceof ManagedList<?> managedList) {
 			// May need to resolve contained runtime references.
 			return resolveManagedList(argName, managedList);
-		}
-		else if (value instanceof ManagedSet<?> managedSet) {
+			// 解析 set 类型的属性值
+		} else if (value instanceof ManagedSet<?> managedSet) {
 			// May need to resolve contained runtime references.
 			return resolveManagedSet(argName, managedSet);
-		}
-		else if (value instanceof ManagedMap<?, ?> managedMap) {
+			// 解析 map 类型的属性值
+		} else if (value instanceof ManagedMap<?, ?> managedMap) {
 			// May need to resolve contained runtime references.
 			return resolveManagedMap(argName, managedMap);
-		}
-		else if (value instanceof ManagedProperties original) {
+			// 解析 Properties 类型的属性值，Properties 其实就是 key 和 value 均为字符串的 map
+		} else if (value instanceof ManagedProperties original) {
 			// Properties original = managedProperties;
+			// 创建一个拷贝，用于作为解析后的返回值
 			Properties copy = new Properties();
 			original.forEach((propKey, propValue) -> {
 				if (propKey instanceof TypedStringValue typedStringValue) {
@@ -216,30 +230,29 @@ public class BeanDefinitionValueResolver {
 				copy.put(propKey, propValue);
 			});
 			return copy;
-		}
-		else if (value instanceof TypedStringValue typedStringValue) {
+			// 解析字符串类型的属性值
+		} else if (value instanceof TypedStringValue typedStringValue) {
 			// Convert value to target type here.
 			Object valueObject = evaluate(typedStringValue);
 			try {
+				// 获取属性的目标类型
 				Class<?> resolvedTargetType = resolveTargetType(typedStringValue);
 				if (resolvedTargetType != null) {
+					// 对目标类型的属性进行解析，递归调用
 					return this.typeConverter.convertIfNecessary(valueObject, resolvedTargetType);
-				}
-				else {
+				} else {
+					// 没有获取到属性的目标对象，则按 Object 类型返回
 					return valueObject;
 				}
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// Improve the message by showing the context.
 				throw new BeanCreationException(
 						this.beanDefinition.getResourceDescription(), this.beanName,
 						"Error converting typed String value for " + argName, ex);
 			}
-		}
-		else if (value instanceof NullBean) {
+		} else if (value instanceof NullBean) {
 			return null;
-		}
-		else {
+		} else {
 			return evaluate(value);
 		}
 	}
@@ -247,15 +260,16 @@ public class BeanDefinitionValueResolver {
 	/**
 	 * Resolve an inner bean definition and invoke the specified {@code resolver}
 	 * on its merged bean definition.
+	 *
 	 * @param innerBeanName the inner bean name (or {@code null} to assign one)
-	 * @param innerBd the inner raw bean definition
-	 * @param resolver the function to invoke to resolve
-	 * @param <T> the type of the resolution
+	 * @param innerBd       the inner raw bean definition
+	 * @param resolver      the function to invoke to resolve
+	 * @param <T>           the type of the resolution
 	 * @return a resolved inner bean, as a result of applying the {@code resolver}
 	 * @since 6.0
 	 */
 	public <T> T resolveInnerBean(@Nullable String innerBeanName, BeanDefinition innerBd,
-			BiFunction<String, RootBeanDefinition, T> resolver) {
+								  BiFunction<String, RootBeanDefinition, T> resolver) {
 
 		String nameToUse = (innerBeanName != null ? innerBeanName : "(inner bean)" +
 				BeanFactoryUtils.GENERATED_BEAN_NAME_SEPARATOR + ObjectUtils.getIdentityHexString(innerBd));
@@ -265,6 +279,7 @@ public class BeanDefinitionValueResolver {
 
 	/**
 	 * Evaluate the given value as an expression, if necessary.
+	 *
 	 * @param value the candidate value (may be an expression)
 	 * @return the resolved value
 	 */
@@ -279,6 +294,7 @@ public class BeanDefinitionValueResolver {
 
 	/**
 	 * Evaluate the given value as an expression, if necessary.
+	 *
 	 * @param value the original value (may be an expression)
 	 * @return the resolved value if necessary, or the original value
 	 */
@@ -286,8 +302,7 @@ public class BeanDefinitionValueResolver {
 	protected Object evaluate(@Nullable Object value) {
 		if (value instanceof String str) {
 			return doEvaluate(str);
-		}
-		else if (value instanceof String[] values) {
+		} else if (value instanceof String[] values) {
 			boolean actuallyResolved = false;
 			Object[] resolvedValues = new Object[values.length];
 			for (int i = 0; i < values.length; i++) {
@@ -299,14 +314,14 @@ public class BeanDefinitionValueResolver {
 				resolvedValues[i] = resolvedValue;
 			}
 			return (actuallyResolved ? resolvedValues : values);
-		}
-		else {
+		} else {
 			return value;
 		}
 	}
 
 	/**
 	 * Evaluate the given String value as an expression, if necessary.
+	 *
 	 * @param value the original value (may be an expression)
 	 * @return the resolved value if necessary, or the original String value
 	 */
@@ -317,6 +332,7 @@ public class BeanDefinitionValueResolver {
 
 	/**
 	 * Resolve the target type in the given TypedStringValue.
+	 *
 	 * @param value the TypedStringValue to resolve
 	 * @return the resolved target type (or {@code null} if none specified)
 	 * @throws ClassNotFoundException if the specified type cannot be resolved
@@ -331,6 +347,7 @@ public class BeanDefinitionValueResolver {
 	}
 
 	/**
+	 * 解析引用类型的属性值
 	 * Resolve a reference to another bean in the factory.
 	 */
 	@Nullable
@@ -348,19 +365,16 @@ public class BeanDefinitionValueResolver {
 				}
 				if (beanType != null) {
 					bean = parent.getBean(beanType);
-				}
-				else {
+				} else {
 					bean = parent.getBean(String.valueOf(doEvaluate(ref.getBeanName())));
 				}
-			}
-			else {
+			} else {
 				String resolvedName;
 				if (beanType != null) {
 					NamedBeanHolder<?> namedBean = this.beanFactory.resolveNamedBean(beanType);
 					bean = namedBean.getBeanInstance();
 					resolvedName = namedBean.getBeanName();
-				}
-				else {
+				} else {
 					resolvedName = String.valueOf(doEvaluate(ref.getBeanName()));
 					bean = this.beanFactory.getBean(resolvedName);
 				}
@@ -370,8 +384,7 @@ public class BeanDefinitionValueResolver {
 				bean = null;
 			}
 			return bean;
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			throw new BeanCreationException(
 					this.beanDefinition.getResourceDescription(), this.beanName,
 					"Cannot resolve reference to bean '" + ref.getBeanName() + "' while setting " + argName, ex);
@@ -380,9 +393,10 @@ public class BeanDefinitionValueResolver {
 
 	/**
 	 * Resolve an inner bean definition.
-	 * @param argName the name of the argument that the inner bean is defined for
+	 *
+	 * @param argName       the name of the argument that the inner bean is defined for
 	 * @param innerBeanName the name of the inner bean
-	 * @param mbd the merged bean definition for the inner bean
+	 * @param mbd           the merged bean definition for the inner bean
 	 * @return the resolved inner bean instance
 	 */
 	@Nullable
@@ -413,19 +427,19 @@ public class BeanDefinitionValueResolver {
 				innerBean = null;
 			}
 			return innerBean;
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			throw new BeanCreationException(
 					this.beanDefinition.getResourceDescription(), this.beanName,
 					"Cannot create inner bean '" + innerBeanName + "' " +
-					(mbd.getBeanClassName() != null ? "of type [" + mbd.getBeanClassName() + "] " : "") +
-					"while setting " + argName, ex);
+							(mbd.getBeanClassName() != null ? "of type [" + mbd.getBeanClassName() + "] " : "") +
+							"while setting " + argName, ex);
 		}
 	}
 
 	/**
 	 * Checks the given bean name whether it is unique. If not already unique,
 	 * a counter is added, increasing the counter until the name is unique.
+	 *
 	 * @param innerBeanName the original name for the inner bean
 	 * @return the adapted name for the inner bean
 	 */

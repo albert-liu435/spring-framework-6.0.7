@@ -335,7 +335,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	}
 
 	/**
-	 * 解析 bean 元素
+	 * 将 .xml 文件中的元素解析成 BeanDefinition对象，并注册到 IoC容器 中
 	 * Process the given bean element, parsing the bean definition
 	 * and registering it with the registry.
 	 */

@@ -149,7 +149,7 @@ public abstract class BeanDefinitionReaderUtils {
 		return id;
 	}
 
-	/**
+	/**将解析到的 BeanDefinition对象 注册到 IoC容器
 	 * Register the given bean definition with the given bean factory.
 	 * @param definitionHolder the bean definition including name and aliases
 	 * @param registry the bean factory to register with
@@ -160,10 +160,17 @@ public abstract class BeanDefinitionReaderUtils {
 			throws BeanDefinitionStoreException {
 
 		// Register bean definition under primary name.
+		// 获取解析的 <bean>元素 的名称 beanName
 		String beanName = definitionHolder.getBeanName();
+		/**
+		 * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+		 * 开始向 IoC容器 注册 BeanDefinition对象
+		 * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+		 */
 		registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
 
 		// Register aliases for bean name, if any.
+		// 如果解析的 <bean>元素 有别名alias，向容器中注册别名
 		String[] aliases = definitionHolder.getAliases();
 		if (aliases != null) {
 			for (String alias : aliases) {
