@@ -24,6 +24,7 @@ import org.springframework.aop.Pointcut;
 import org.springframework.lang.Nullable;
 
 /**
+ * 它通过持有 Pointcut 和 Advice 属性来将两者有效地结合在一起
  * Convenient Pointcut-driven Advisor implementation.
  *
  * <p>This is the most commonly used Advisor implementation. It can be used
@@ -52,6 +53,7 @@ public class DefaultPointcutAdvisor extends AbstractGenericPointcutAdvisor imple
 	/**
 	 * Create a DefaultPointcutAdvisor that matches all methods.
 	 * <p>{@code Pointcut.TRUE} will be used as Pointcut.
+	 *
 	 * @param advice the Advice to use
 	 */
 	public DefaultPointcutAdvisor(Advice advice) {
@@ -59,9 +61,11 @@ public class DefaultPointcutAdvisor extends AbstractGenericPointcutAdvisor imple
 	}
 
 	/**
+	 * 自己定义了 Pointcut属性，而 Advice属性 则使用父类中的定义
 	 * Create a DefaultPointcutAdvisor, specifying Pointcut and Advice.
+	 *
 	 * @param pointcut the Pointcut targeting the Advice
-	 * @param advice the Advice to run when Pointcut matches
+	 * @param advice   the Advice to run when Pointcut matches
 	 */
 	public DefaultPointcutAdvisor(Pointcut pointcut, Advice advice) {
 		this.pointcut = pointcut;
@@ -72,6 +76,7 @@ public class DefaultPointcutAdvisor extends AbstractGenericPointcutAdvisor imple
 	/**
 	 * Specify the pointcut targeting the advice.
 	 * <p>Default is {@code Pointcut.TRUE}.
+	 *
 	 * @see #setAdvice
 	 */
 	public void setPointcut(@Nullable Pointcut pointcut) {

@@ -80,7 +80,7 @@ final class PostProcessorRegistrationDelegate {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		Set<String> processedBeans = new HashSet<>();
-
+		// 由于我们的beanFactory是DefaultListableBeanFactory实例是BeanDefinitionRegistry的子类所以可以进来
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
@@ -99,9 +99,21 @@ final class PostProcessorRegistrationDelegate {
 			// uninitialized to let the bean factory post-processors apply to them!
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
+
+			// BeanDefinitionRegistryPostProcessor是BFPP的子类但是比BFPP提前执行
+			// 顺序实现PriorityOrdered接口先被执行，然后是Ordered接口，最后是什么都没实现的BeanDefinitionRegistryPostProcessor
+
+			/**
+			 *都有beanFactory.getBean方法，证明BeanDefinitionRegistryPostProcessor这个bean现在已经被创建了
+			 */
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+
+			// BFPP的执行顺序与上一样
+			/**
+			 *都有beanFactory.getBean方法，证明BFPP这个bean现在已经被创建了
+			 */
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -220,23 +232,27 @@ final class PostProcessorRegistrationDelegate {
 		// list of all declined PRs involving changes to PostProcessorRegistrationDelegate
 		// to ensure that your proposal does not result in a breaking change:
 		// https://github.com/spring-projects/spring-framework/issues?q=PostProcessorRegistrationDelegate+is%3Aclosed+label%3A%22status%3A+declined%22
-
+// 找到实现BeanPostProcessor接口的子类bean名称
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
 		// Register BeanPostProcessorChecker that logs an info message when
 		// a bean is created during BeanPostProcessor instantiation, i.e. when
 		// a bean is not eligible for getting processed by all BeanPostProcessors.
+		// 加一是因为下一行又加了一个BPP(BeanPostProcessor)
 		int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
 		beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
 
 		// Separate between BeanPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
+		// 排序省略，没啥好讲的，你只需要知道没有实现排序接口的BPP放在了nonOrderedPostProcessorNames这里
 		List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
 		List<BeanPostProcessor> internalPostProcessors = new ArrayList<>();
 		List<String> orderedPostProcessorNames = new ArrayList<>();
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
 		for (String ppName : postProcessorNames) {
 			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+				// 当它getBean的时候我们的BPP就开始创建
+
 				BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 				priorityOrderedPostProcessors.add(pp);
 				if (pp instanceof MergedBeanDefinitionPostProcessor) {

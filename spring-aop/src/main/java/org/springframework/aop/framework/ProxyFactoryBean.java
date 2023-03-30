@@ -123,10 +123,14 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	@Nullable
 	private transient BeanFactory beanFactory;
 
-	/** Whether the advisor chain has already been initialized. */
+	/**
+	 * Whether the advisor chain has already been initialized.
+	 */
 	private boolean advisorChainInitialized = false;
 
-	/** If this is a singleton, the cached singleton proxy instance. */
+	/**
+	 * If this is a singleton, the cached singleton proxy instance.
+	 */
 	@Nullable
 	private Object singletonInstance;
 
@@ -136,6 +140,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * is given, a CGLIB for the actual class will be created.
 	 * <p>This is essentially equivalent to the "setInterfaces" method,
 	 * but mirrors TransactionProxyFactoryBean's "setProxyInterfaces".
+	 *
 	 * @see #setInterfaces
 	 * @see AbstractSingletonProxyFactoryBean#setProxyInterfaces
 	 */
@@ -155,6 +160,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * <p><b>NOTE: Specifying a target bean as final name in the "interceptorNames"
 	 * list is deprecated and will be removed in a future Spring version.</b>
 	 * Use the {@link #setTargetName "targetName"} property instead.
+	 *
 	 * @see org.aopalliance.intercept.MethodInterceptor
 	 * @see org.springframework.aop.Advisor
 	 * @see org.aopalliance.aop.Advice
@@ -169,6 +175,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * the target name at the end of the "interceptorNames" array.
 	 * <p>You can also specify a target object or a TargetSource object
 	 * directly, via the "target"/"targetSource" property, respectively.
+	 *
 	 * @see #setInterceptorNames(String[])
 	 * @see #setTarget(Object)
 	 * @see #setTargetSource(org.springframework.aop.TargetSource)
@@ -181,6 +188,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * Set whether to autodetect proxy interfaces if none specified.
 	 * <p>Default is "true". Turn this flag off to create a CGLIB
 	 * proxy for the full target class if no interfaces specified.
+	 *
 	 * @see #setProxyTargetClass
 	 */
 	public void setAutodetectInterfaces(boolean autodetectInterfaces) {
@@ -202,6 +210,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	/**
 	 * Specify the AdvisorAdapterRegistry to use.
 	 * Default is the global AdvisorAdapterRegistry.
+	 *
 	 * @see org.springframework.aop.framework.adapter.GlobalAdvisorAdapterRegistry
 	 */
 	public void setAdvisorAdapterRegistry(AdvisorAdapterRegistry advisorAdapterRegistry) {
@@ -239,20 +248,23 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 
 
 	/**
+	 * 返回一个代理对象，当用户从 FactoryBean 中获取 bean 时调用，创建此工厂要返回的 AOP 代理的实例，该实例将作为一个单例被缓存
 	 * Return a proxy. Invoked when clients obtain beans from this factory bean.
 	 * Create an instance of the AOP proxy to be returned by this factory.
 	 * The instance will be cached for a singleton, and create on each call to
 	 * {@code getObject()} for a proxy.
+	 *
 	 * @return a fresh AOP proxy reflecting the current state of this factory
 	 */
 	@Override
 	@Nullable
 	public Object getObject() throws BeansException {
+		// 初始化通知器链
 		initializeAdvisorChain();
+		// 这里对 Singleton 和 prototype 的类型进行区分，生成对应的 proxy
 		if (isSingleton()) {
 			return getSingletonInstance();
-		}
-		else {
+		} else {
 			if (this.targetName == null) {
 				logger.info("Using non-singleton proxies with singleton targets is often undesirable. " +
 						"Enable prototype proxies by setting the 'targetName' property.");
@@ -265,6 +277,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * Return the type of the proxy. Will check the singleton instance if
 	 * already created, else fall back to the proxy interface (in case of just
 	 * a single one), the target bean type, or the TargetSource's target class.
+	 *
 	 * @see org.springframework.aop.TargetSource#getTargetClass
 	 */
 	@Override
@@ -286,8 +299,10 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 
 
 	/**
+	 * 返回此类代理对象的单例实例，如果尚未创建该实例，则单例地创建它
 	 * Return the singleton instance of this class's proxy object,
 	 * lazily creating it if it hasn't been created already.
+	 *
 	 * @return the shared singleton proxy
 	 */
 	private synchronized Object getSingletonInstance() {
@@ -295,14 +310,17 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 			this.targetSource = freshTargetSource();
 			if (this.autodetectInterfaces && getProxiedInterfaces().length == 0 && !isProxyTargetClass()) {
 				// Rely on AOP infrastructure to tell us what interfaces to proxy.
+				// 根据 AOP 框架来判断需要代理的接口
 				Class<?> targetClass = getTargetClass();
 				if (targetClass == null) {
 					throw new FactoryBeanNotInitializedException("Cannot determine target class for proxy");
 				}
+				// 设置代理对象的接口
 				setInterfaces(ClassUtils.getAllInterfacesForClass(targetClass, this.proxyClassLoader));
 			}
 			// Initialize the shared singleton instance.
 			super.setFrozen(this.freezeProxy);
+			// 这里会通过 AopProxy 来得到代理对象
 			this.singletonInstance = getProxy(createAopProxy());
 		}
 		return this.singletonInstance;
@@ -311,6 +329,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	/**
 	 * Create a new prototype instance of this class's created proxy object,
 	 * backed by an independent AdvisedSupport configuration.
+	 *
 	 * @return a totally independent proxy, whose advice we may manipulate in isolation
 	 */
 	private synchronized Object newPrototypeInstance() {
@@ -336,10 +355,12 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	}
 
 	/**
+	 * 通过 createAopProxy()方法 返回的 aopProxy 获取代理对象
 	 * Return the proxy object to expose.
 	 * <p>The default implementation uses a {@code getProxy} call with
 	 * the factory's bean class loader. Can be overridden to specify a
 	 * custom class loader.
+	 *
 	 * @param aopProxy the prepared AopProxy instance to get the proxy from
 	 * @return the proxy object to expose
 	 * @see AopProxy#getProxy(ClassLoader)
@@ -375,6 +396,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * Look at bean factory metadata to work out whether this bean name,
 	 * which concludes the interceptorNames list, is an Advisor or Advice,
 	 * or may be a target.
+	 *
 	 * @param beanName bean name to check
 	 * @return {@code true} if it's an Advisor or Advice
 	 */
@@ -393,12 +415,14 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	}
 
 	/**
+	 * 初始化 Advisor 链，可以发现，其中有通过对 IoC 容器的 getBean() 方法的调用来获取配置好的 advisor 通知器
 	 * Create the advisor (interceptor) chain. Advisors that are sourced
 	 * from a BeanFactory will be refreshed each time a new prototype instance
 	 * is added. Interceptors added programmatically through the factory API
 	 * are unaffected by such changes.
 	 */
 	private synchronized void initializeAdvisorChain() throws AopConfigException, BeansException {
+		// 如果通知器链已经完成初始化，则直接返回
 		if (!this.advisorChainInitialized && !ObjectUtils.isEmpty(this.interceptorNames)) {
 			if (this.beanFactory == null) {
 				throw new IllegalStateException("No BeanFactory available anymore (probably due to serialization) " +
@@ -411,6 +435,10 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 				throw new AopConfigException("Target required after globals");
 			}
 
+			// 这里添加了 Advisor 链的调用，下面的 interceptorNames 是在配置文件中
+			// 通过 interceptorNames 进行配置的。由于每一个 Advisor 都是被配置为 bean 的，
+			// 所以通过遍历 interceptorNames 得到的 name，其实就是 bean 的 id，通过这个 name（id）
+			// 我们就可以从 IoC 容器中获取对应的实例化 bean
 			// Materialize interceptor chain from bean names.
 			for (String name : this.interceptorNames) {
 				if (name.endsWith(GLOBAL_SUFFIX)) {
@@ -419,19 +447,20 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 								"Can only use global advisors or interceptors with a ListableBeanFactory");
 					}
 					addGlobalAdvisors(lbf, name.substring(0, name.length() - GLOBAL_SUFFIX.length()));
-				}
-
-				else {
+				} else {
 					// If we get here, we need to add a named interceptor.
 					// We must check if it's a singleton or prototype.
+					// 对当前的 factoryBean 进行类型判断，是属于单例 bean 还是原型 bean
 					Object advice;
 					if (this.singleton || this.beanFactory.isSingleton(name)) {
 						// Add the real Advisor/Advice to the chain.
+						// 通过 beanFactory 的 getBean() 方法获取 advisor，
+						// 这个 name 是从 interceptorNames 中获取的
 						advice = this.beanFactory.getBean(name);
-					}
-					else {
+					} else {
 						// It's a prototype Advice or Advisor: replace with a prototype.
 						// Avoid unnecessary creation of prototype bean just for advisor chain initialization.
+						// 如果是原型 bean
 						advice = new PrototypePlaceholderAdvisor(name);
 					}
 					addAdvisorOnChainCreation(advice);
@@ -464,8 +493,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 				Object bean = this.beanFactory.getBean(ppa.getBeanName());
 				Advisor refreshedAdvisor = namedBeanToAdvisor(bean);
 				freshAdvisors.add(refreshedAdvisor);
-			}
-			else {
+			} else {
 				// Add the shared instance.
 				freshAdvisors.add(advisor);
 			}
@@ -505,6 +533,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	 * <p>Add the given advice, advisor or object to the interceptor list.
 	 * Because of these three possibilities, we can't type the signature
 	 * more strongly.
+	 *
 	 * @param next advice, advisor or target object
 	 */
 	private void addAdvisorOnChainCreation(Object next) {
@@ -523,8 +552,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 		if (this.targetName == null) {
 			// Not refreshing target: bean name not specified in 'interceptorNames'
 			return this.targetSource;
-		}
-		else {
+		} else {
 			if (this.beanFactory == null) {
 				throw new IllegalStateException("No BeanFactory available anymore (probably due to serialization) " +
 						"- cannot resolve target with name '" + this.targetName + "'");
@@ -544,8 +572,7 @@ public class ProxyFactoryBean extends ProxyCreatorSupport
 	private Advisor namedBeanToAdvisor(Object next) {
 		try {
 			return this.advisorAdapterRegistry.wrap(next);
-		}
-		catch (UnknownAdviceTypeException ex) {
+		} catch (UnknownAdviceTypeException ex) {
 			// We expected this to be an Advisor or Advice,
 			// but it wasn't. This is a configuration error.
 			throw new AopConfigException("Unknown advisor type " + next.getClass() +

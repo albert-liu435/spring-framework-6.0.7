@@ -593,13 +593,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * 容器初始化的过程：BeanDefinition 的 Resource 定位、BeanDefinition 的载入、BeanDefinition 的注册。
-	 * BeanDefinition 的载入和 bean 的依赖注入是两个独立的过程，依赖注入一般发生在应用第一次通过
-	 * getBean() 方法从容器获取 bean 时。
+	 * 容器初始化的过程：
+	 * 1、根据指定规则扫描指定目录，获取所有 用于配置bean的配置文件；
+	 * 2、根据 Spring定义的规则，解析配置文件中的各个元素，将其封装成 IoC容器 可以装载的 BeanDefinition对象；
+	 * 3、将封装好的 BeanDefinition 注册进 IoC容器。
 	 * <p>
-	 * 另外需要注意的是，IoC 容器有一个预实例化的配置（即，将 AbstractBeanDefinition 中的 lazyInit 属性
-	 * 设为 true），使用户可以对容器的初始化过程做一个微小的调控，lazyInit 设为 false 的 bean
-	 * 将在容器初始化时进行依赖注入，而不会等到 getBean() 方法调用时才进行
+	 * IoC容器的初始化 和 bean的依赖注入 是两个独立的过程，依赖注入一般发生在应用第一次通过 getBean()方法
+	 * 从容器获取 bean 时。
+	 * 另外需要注意的是，IoC容器 有一个预实例化的配置（即，将 <bean>元素 的 lazyInit属性 设为 false），
+	 * 使该 <bean>元素对应的 bean可以提前实例化，而不用等到调用 getBean()方法 时才开始实例化。
 	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
@@ -731,7 +733,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// For subclasses: do nothing by default.
 	}
 
-	/**告诉子类去刷新内部的 beanFactory
+	/**
+	 * 告诉子类去刷新内部的 beanFactory
 	 * Tell the subclass to refresh the internal bean factory.
 	 *
 	 * @return the fresh BeanFactory instance
@@ -959,14 +962,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 对配置了 lazy-init属性 为 false 的 bean 进行预实例化
 	 * Finish the initialization of this context's bean factory,
 	 * initializing all remaining singleton beans.
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
+		// 这是 Spring3 以后新加的代码，为容器指定一个转换服务 (ConversionService)
+		// 在对某些 bean 属性进行转换时使用
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
+					/**
+					 * ！！！！！！！！！！！！！！！！！！！！
+					 * 在这里 通过调用 getBean()方法，触发依赖注入
+					 * ！！！！！！！！！！！！！！！！！！！！
+					 */
 					beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
 		}
 
@@ -984,12 +995,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Stop using the temporary ClassLoader for type matching.
+		// 为了类型匹配，停止使用临时的类加载器
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
+		// 缓存容器中所有注册的 BeanDefinition 元数据，以防被修改
 		beanFactory.freezeConfiguration();
 		// 实例化非懒加载的单例Bean
 		// Instantiate all remaining (non-lazy-init) singletons.
+		// 对配置了 lazy-init属性 为 false 的 单例bean 进行预实例化处理
 		beanFactory.preInstantiateSingletons();
 	}
 

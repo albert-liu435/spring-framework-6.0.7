@@ -30,6 +30,7 @@ import org.aopalliance.aop.Advice;
 @SuppressWarnings("serial")
 public abstract class AbstractGenericPointcutAdvisor extends AbstractPointcutAdvisor {
 
+	////本类是一个抽象类，其持有 Advice 的引用，而对 Pointcut 的引用，则在具体的子类中持有
 	private Advice advice = EMPTY_ADVICE;
 
 

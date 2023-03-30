@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import org.springframework.lang.Nullable;
 
 /**
+ * 后置增强
  * After returning advice is invoked only on normal method return, not if an
  * exception is thrown. Such advice can see the return value, but cannot change it.
  *
@@ -31,15 +32,17 @@ import org.springframework.lang.Nullable;
 public interface AfterReturningAdvice extends AfterAdvice {
 
 	/**
+	 * 目标方法 method 执行后，AOP 会回调此方法，注意，它还传入了 method 的返回值
 	 * Callback after a given method successfully returned.
+	 *
 	 * @param returnValue the value returned by the method, if any
-	 * @param method the method being invoked
-	 * @param args the arguments to the method
-	 * @param target the target of the method invocation. May be {@code null}.
+	 * @param method      the method being invoked
+	 * @param args        the arguments to the method
+	 * @param target      the target of the method invocation. May be {@code null}.
 	 * @throws Throwable if this object wishes to abort the call.
-	 * Any exception thrown will be returned to the caller if it's
-	 * allowed by the method signature. Otherwise the exception
-	 * will be wrapped as a runtime exception.
+	 *                   Any exception thrown will be returned to the caller if it's
+	 *                   allowed by the method signature. Otherwise the exception
+	 *                   will be wrapped as a runtime exception.
 	 */
 	void afterReturning(@Nullable Object returnValue, Method method, Object[] args, @Nullable Object target) throws Throwable;
 
