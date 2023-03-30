@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.PatternMatchUtils;
 
 /**
+ * 注解Bean扫描器
  * https://blog.csdn.net/sermonlizhi/article/details/120611484
  * A bean definition scanner that detects bean candidates on the classpath,
  * registering corresponding bean definitions with a given registry ({@code BeanFactory}
@@ -262,15 +263,17 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @return number of beans registered
 	 */
 	public int scan(String... basePackages) {
+		//获取当前注册bean的数量
 		int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
 
 		doScan(basePackages);
 
 		// Register annotation config processors, if necessary.
 		if (this.includeAnnotationConfig) {
+			//注册配置处理器
 			AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 		}
-
+		//返回此次注册的数量
 		return (this.registry.getBeanDefinitionCount() - beanCountAtScanStart);
 	}
 
@@ -287,17 +290,22 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
+		//遍历需要扫描的包路径
 		for (String basePackage : basePackages) {
 			//调用findCandidateComponents方法，生成BeanDefinition
 			//扫描生成BeanDefinition
+			//获取所有符合条件的BeanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {
 				//填充Scope属性值,如果注解Scope有值,用该值填充
+				//绑定BeanDefinition与Scope
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
 				//生成beanName
+				//查看是否配置类是否指定bean的名称，如没指定则使用类名首字母小写
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
 				//设置默认值以及是否可以作为依赖注入
+				//下面两个if是处理lazy、Autowire、DependencyOn、initMethod、enforceInitMethod、destroyMethod、enforceDestroyMethod、Primary、Role、Description这些逻辑的
 				if (candidate instanceof AbstractBeanDefinition abstractBeanDefinition) {
 					postProcessBeanDefinition(abstractBeanDefinition, beanName);
 				}
@@ -306,8 +314,10 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 					AnnotationConfigUtils.processCommonDefinitionAnnotations(annotatedBeanDefinition);
 				}
 				// 检查Spring容器中是否已经存在该beanName
+				//检查bean是否存在
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
+					//检查scope是否创建，如未创建则进行创建
 					definitionHolder =
 							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					beanDefinitions.add(definitionHolder);

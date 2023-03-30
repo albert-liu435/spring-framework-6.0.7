@@ -316,6 +316,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
+		//判断是否使用Filter指定忽略包不扫描
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			// 指定的类
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
@@ -427,6 +428,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			// 获取basePackage下所有的文件资源
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+			//根据路径获取资源对象
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
