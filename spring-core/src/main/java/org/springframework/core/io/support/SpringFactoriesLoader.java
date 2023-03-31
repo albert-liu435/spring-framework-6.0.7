@@ -56,6 +56,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * 框架内部使用的通用工厂加载机制。
+ * 该类的主要作用从“META-INF/spring.factories”文件加载并实例化给定类型的工厂，这些文件可能存在于类路径中的多个JAR文件中，spring.factories文件必须采用属性格式。其中键是接口或抽象类的完全限定名，值是以逗号分隔的实现类名列表
+ * <p>
+ * <p>
  * General purpose factory loading mechanism for internal use within the framework.
  *
  * <p>{@code SpringFactoriesLoader} {@linkplain #loadFactories loads} and instantiates
@@ -93,6 +96,7 @@ import org.springframework.util.StringUtils;
 public class SpringFactoriesLoader {
 
 	/**
+	 * 工厂文件的路径
 	 * The location to look for factories.
 	 * <p>Can be present in multiple JAR files.
 	 */
@@ -218,6 +222,12 @@ public class SpringFactoriesLoader {
 		return result;
 	}
 
+	/**
+	 * 加载，比如interface org.springframework.boot.BootstrapRegistryInitializer,则加载META-INF/spring.factories里面的values,如果不存在，则返回空list
+	 *
+	 * @param factoryType
+	 * @return
+	 */
 	private List<String> loadFactoryNames(Class<?> factoryType) {
 		return this.factories.getOrDefault(factoryType.getName(), Collections.emptyList());
 	}
@@ -240,6 +250,8 @@ public class SpringFactoriesLoader {
 
 
 	/**
+	 * 该方法的主要功能(使用给定的类加载器从“META-INF/spring.Factorys”加载并实例化给定类型的工厂实现。返回的工厂通过AnnotationAwareOrderComparator进行排序。如果需要自定义实例化策略，
+	 * 请使用loadFactoryNames获取所有注册的工厂名称。从Spring Framework 5.3开始，如果为给定的工厂类型发现重复的实现类名，则只会实例化重复实现类型的一个实例。)
 	 * Load and instantiate the factory implementations of the given type from
 	 * {@value #FACTORIES_RESOURCE_LOCATION}, using the given class loader.
 	 * <p>The returned factories are sorted through {@link AnnotationAwareOrderComparator}.
@@ -323,6 +335,7 @@ public class SpringFactoriesLoader {
 	}
 
 	/**
+	 * 创建SpringFactoriesLoader实例
 	 * Create a {@link SpringFactoriesLoader} instance that will load and
 	 * instantiate the factory implementations from the given location,
 	 * using the given class loader.
@@ -336,6 +349,7 @@ public class SpringFactoriesLoader {
 	 */
 	public static SpringFactoriesLoader forResourceLocation(String resourceLocation, @Nullable ClassLoader classLoader) {
 		Assert.hasText(resourceLocation, "'resourceLocation' must not be empty");
+		//首先判断使用哪个classloader,如果方法参数中的classLoader参数为空就加载SpringFactoriesLoader.class所在的ClassLoloader
 		ClassLoader resourceClassLoader = (classLoader != null ? classLoader :
 				SpringFactoriesLoader.class.getClassLoader());
 		Map<String, SpringFactoriesLoader> loaders = cache.computeIfAbsent(
@@ -344,11 +358,19 @@ public class SpringFactoriesLoader {
 				new SpringFactoriesLoader(classLoader, loadFactoriesResource(resourceClassLoader, resourceLocation)));
 	}
 
+	/**
+	 * 加载资源信息
+	 *
+	 * @param classLoader
+	 * @param resourceLocation
+	 * @return
+	 */
 	protected static Map<String, List<String>> loadFactoriesResource(ClassLoader classLoader, String resourceLocation) {
 		Map<String, List<String>> result = new LinkedHashMap<>();
 		try {
 			Enumeration<URL> urls = classLoader.getResources(resourceLocation);
 			while (urls.hasMoreElements()) {
+				//加载META-INF/spring.factories
 				UrlResource resource = new UrlResource(urls.nextElement());
 				Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 				properties.forEach((name, value) -> {
@@ -364,6 +386,13 @@ public class SpringFactoriesLoader {
 		return Collections.unmodifiableMap(result);
 	}
 
+	/**
+	 * 进行去重
+	 *
+	 * @param factoryType
+	 * @param implementations
+	 * @return
+	 */
 	private static List<String> toDistinctUnmodifiableList(String factoryType, List<String> implementations) {
 		return implementations.stream().distinct().toList();
 	}
