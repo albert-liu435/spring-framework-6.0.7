@@ -20,6 +20,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
 
 /**
+ * 用于封装PropertyAccessor的配置方法的接口，还扩展了PropertyEditorRegistry接口，该接口定义了PropertyEditor管理的方法。
  * Interface that encapsulates configuration methods for a PropertyAccessor.
  * Also extends the PropertyEditorRegistry interface, which defines methods
  * for PropertyEditor management.
@@ -28,8 +29,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 2.0
  * @see BeanWrapper
+ * @since 2.0
  */
 public interface ConfigurablePropertyAccessor extends PropertyAccessor, PropertyEditorRegistry, TypeConverter {
 
