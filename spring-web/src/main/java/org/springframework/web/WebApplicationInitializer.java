@@ -70,10 +70,10 @@ import jakarta.servlet.ServletException;
  *    }
  *
  * }</pre>
- *
+ * <p>
  * As an alternative to the above, you can also extend from {@link
  * org.springframework.web.servlet.support.AbstractDispatcherServletInitializer}.
- *
+ * <p>
  * As you can see, thanks to the Servlet container's {@link ServletContext#addServlet}
  * method we're actually registering an <em>instance</em> of the {@code DispatcherServlet},
  * and this means that the {@code DispatcherServlet} can now be treated like any other
@@ -132,10 +132,10 @@ import jakarta.servlet.ServletException;
  *    }
  *
  * }</pre>
- *
+ * <p>
  * As an alternative to the above, you can also extend from {@link
  * org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer}.
- *
+ * <p>
  * Remember that {@code WebApplicationInitializer} implementations are <em>detected
  * automatically</em> -- so you are free to package them within your application as you
  * see fit.
@@ -150,21 +150,23 @@ import jakarta.servlet.ServletException;
  * centralize all container initialization within a single {@code WebApplicationInitializer}.
  *
  * @author Chris Beams
- * @since 3.1
  * @see SpringServletContainerInitializer
  * @see org.springframework.web.context.AbstractContextLoaderInitializer
  * @see org.springframework.web.servlet.support.AbstractDispatcherServletInitializer
  * @see org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer
+ * @since 3.1
  */
 public interface WebApplicationInitializer {
 
 	/**
+	 * 通过覆盖接口提供的onStartup方法我们可以往Servlet容器里面添加我们需要的servlet、listener等，并且在Servlet容器启动的过程中就会加载这个接口的实现类，从而起到和web.xml相同的中作用，从而可以替代以前在web.xml中所做的配置。
 	 * Configure the given {@link ServletContext} with any servlets, filters, listeners
 	 * context-params and attributes necessary for initializing this web application. See
 	 * examples {@linkplain WebApplicationInitializer above}.
+	 *
 	 * @param servletContext the {@code ServletContext} to initialize
 	 * @throws ServletException if any call against the given {@code ServletContext}
-	 * throws a {@code ServletException}
+	 *                          throws a {@code ServletException}
 	 */
 	void onStartup(ServletContext servletContext) throws ServletException;
 

@@ -44,6 +44,7 @@ import java.util.function.Consumer;
 public interface ApplicationListener<E extends ApplicationEvent> extends EventListener {
 
 	/**
+	 * 处理应用事件
 	 * Handle an application event.
 	 *
 	 * @param event the event to respond to
