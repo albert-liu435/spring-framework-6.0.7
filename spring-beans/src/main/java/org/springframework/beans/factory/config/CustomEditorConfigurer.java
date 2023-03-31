@@ -29,7 +29,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 /**
- * CustomEditorConfigurer 自定义属性编辑器
+ * CustomEditorConfigurer 自定义属性编辑器配置类
  * {@link BeanFactoryPostProcessor} implementation that allows for convenient
  * registration of custom {@link PropertyEditor property editors}.
  *

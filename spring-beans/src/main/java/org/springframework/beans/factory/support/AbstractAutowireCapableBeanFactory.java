@@ -1909,12 +1909,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected void invokeInitMethods(String beanName, Object bean, @Nullable RootBeanDefinition mbd)
 			throws Throwable {
-
+		//判断该bean是否实现了实现了InitializingBean接口，如果实现了InitializingBean接口，则只掉调用bean的afterPropertiesSet方法
 		boolean isInitializingBean = (bean instanceof InitializingBean);
+
 		if (isInitializingBean && (mbd == null || !mbd.hasAnyExternallyManagedInitMethod("afterPropertiesSet"))) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Invoking afterPropertiesSet() on bean with name '" + beanName + "'");
 			}
+			//直接调用afterPropertiesSet
 			((InitializingBean) bean).afterPropertiesSet();
 		}
 
@@ -1922,9 +1924,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			String[] initMethodNames = mbd.getInitMethodNames();
 			if (initMethodNames != null) {
 				for (String initMethodName : initMethodNames) {
+					//判断是否指定了init-method方法，如果指定了init-method方法，则再调用制定的init-method
 					if (StringUtils.hasLength(initMethodName) &&
 							!(isInitializingBean && "afterPropertiesSet".equals(initMethodName)) &&
 							!mbd.hasAnyExternallyManagedInitMethod(initMethodName)) {
+						//进一步查看该方法的源码，可以发现init-method方法中指定的方法是通过反射实现
 						invokeCustomInitMethod(beanName, bean, mbd, initMethodName);
 					}
 				}
@@ -1933,6 +1937,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
+	 * 执行自定义方法
 	 * Invoke the specified custom init method on the given bean.
 	 * Called by invokeInitMethods.
 	 * <p>Can be overridden in subclasses for custom resolution of init
