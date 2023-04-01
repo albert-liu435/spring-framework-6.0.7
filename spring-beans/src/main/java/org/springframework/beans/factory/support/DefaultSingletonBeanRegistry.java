@@ -202,6 +202,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 这个方法因为涉及循环依赖的检测，以及涉及很多变量的记录存取，所以让很多读者摸不着头脑。这个方法首先尝试从 singletonObjects 里面获取实例，如果获取不到再从 earlySingletonObjects 里里面获取，如果还获取不到，再尝试从 singletonFactories 里面获取 beanName 对应的 ObjectFactory，然后调用这个 ObjectFactory 的 getobject来创建bean，并放到 earlySingletonObjects 里面去，
+	 * 并且从 earlySingletonObjects 里面 remove 掉这个 ObjectFactory，而对于后续的所有内存操作都只为了循环依赖检测时候使用，也就是在 allowEarlyReference 为 true 的情况下才会使用。
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
@@ -227,9 +229,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 						singletonObject = this.earlySingletonObjects.get(beanName);
 						if (singletonObject == null) {
 							//singletonFactories，用于保存 bean 创建工厂，以便后面有机会创建代理对象
+							// 当某些方法需要提前初始化的时候则会调用 addSingletonFactory 方法
+							// 将对应的 ObjectFactory 初始化策略存储在 singletonFactories
 							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 							if (singletonFactory != null) {
+								// 调用预先设定的 getObject 方法
+								// 初始化 bean
 								singletonObject = singletonFactory.getObject();
+								// 记录在缓存中，earlySingletonObjects 与 singletonFactories 互斥
 								this.earlySingletonObjects.put(beanName, singletonObject);
 								this.singletonFactories.remove(beanName);
 							}

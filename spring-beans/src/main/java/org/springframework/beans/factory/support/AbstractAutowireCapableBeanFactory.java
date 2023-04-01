@@ -442,6 +442,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		return result;
 	}
 
+	/**
+	 * 在讲解从缓存中获取单例 bean 的时候就提到过， Spring 中的规则是在 bean的初始化后尽可能保证将注册的后处理器的 postProcessAfterInitialization 方法应用到该bean 中，
+	 * 因为如果返回的 bean 不为空，那么便不会再次经历普通 bean的创建过程，所以只能在这里应用后处理器的 postProcessAfterInitialization 方法。
+	 *
+	 * @param existingBean the existing bean instance
+	 * @param beanName     the name of the bean, to be passed to it if necessary
+	 *                     (only passed to {@link BeanPostProcessor BeanPostProcessors};
+	 *                     can follow the {@link #ORIGINAL_INSTANCE_SUFFIX} convention in order to
+	 *                     enforce the given instance to be returned, i.e. no proxies etc)
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
 			throws BeansException {
@@ -1157,6 +1169,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
+	 * bean 的实例化前调用，也就是将 Absract Beandefinition转换为 Bean Wrapper前的处理。给子类一个修改 Beandefinition的机会，也就是说当程序经过这个方法后，bean可能已经不是我们认为的bean了，
+	 * 而是或许成为了一个经过处理的代理bean，可能是通过 cglib生成的，也可能是通过其它技术生成的。这在第第7章中会详细介绍，我们只需要知道，在bean的实例化前会调用后处理器的方法进行处理
+	 * <p>
 	 * Apply InstantiationAwareBeanPostProcessors to the specified bean definition
 	 * (by class and name), invoking their {@code postProcessBeforeInstantiation} methods.
 	 * <p>Any returned object will be used as the bean instead of actually instantiating

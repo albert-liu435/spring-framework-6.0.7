@@ -26,6 +26,12 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.lang.Nullable;
 
 /**
+ * 在 DefaultConversionService 组件中已经注册了 Spring 默认的觉转换器，可以分为以下几类：
+ * <p>
+ * Converter 一对一转换，把 S 类型转化成 T 类型，最常用的转换器
+ * ConverterFactory 一对 N 转换
+ * GenericConverter N 对 N 转换
+ * <p>
  * A specialization of {@link GenericConversionService} configured by default
  * with converters appropriate for most environments.
  *

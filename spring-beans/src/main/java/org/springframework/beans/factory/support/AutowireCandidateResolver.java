@@ -22,6 +22,15 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.lang.Nullable;
 
 /**
+ * since 2.5   伴随着@Autowired体系出现
+ * AutowireCandidateResolver：用于确定特定 BeanDefinition 是否有资格作为特定依赖项的自动装配候选者的策略接口。
+ * <p>
+ * AutowireCandidateResolver：@Qualifier @Value @Autowire @Lazy
+ * <p>
+ * AutowireCandidateResolver 用来判断一个给定的 bean 是否可以注入，最主要的方法是 isAutowireCandidate。简单来说 isAutowireCandidate 就根据 @Qualifier 添加过滤规则来判断 bean 是否合法。
+ *
+ * <p>
+ * <p>
  * Strategy interface for determining whether a specific bean definition
  * qualifies as an autowire candidate for a specific dependency.
  *
@@ -32,11 +41,15 @@ import org.springframework.lang.Nullable;
 public interface AutowireCandidateResolver {
 
 	/**
+	 * 判断给定的 bdHolder 是否可以注入 descriptor，BeanDefinition#autowireCandidate 默认为 true
+	 * DependencyDescriptor 是对字段、方法、参数的封装，便于统一处理，这里一般是对属性写方法参数的封装
+	 * <p>
 	 * Determine whether the given bean definition qualifies as an
 	 * autowire candidate for the given dependency.
 	 * <p>The default implementation checks
 	 * {@link org.springframework.beans.factory.config.BeanDefinition#isAutowireCandidate()}.
-	 * @param bdHolder the bean definition including bean name and aliases
+	 *
+	 * @param bdHolder   the bean definition including bean name and aliases
 	 * @param descriptor the descriptor for the target method parameter or field
 	 * @return whether the bean definition qualifies as autowire candidate
 	 * @see org.springframework.beans.factory.config.BeanDefinition#isAutowireCandidate()
@@ -46,38 +59,43 @@ public interface AutowireCandidateResolver {
 	}
 
 	/**
+	 * 判断是否必须注入，如果是字段类型是 Optional 或有 @Null 注解时为 false
 	 * Determine whether the given descriptor is effectively required.
 	 * <p>The default implementation checks {@link DependencyDescriptor#isRequired()}.
+	 *
 	 * @param descriptor the descriptor for the target method parameter or field
 	 * @return whether the descriptor is marked as required or possibly indicating
 	 * non-required status some other way (e.g. through a parameter annotation)
-	 * @since 5.0
 	 * @see DependencyDescriptor#isRequired()
+	 * @since 5.0
 	 */
 	default boolean isRequired(DependencyDescriptor descriptor) {
 		return descriptor.isRequired();
 	}
 
 	/**
+	 * 判断是否有 @Qualifier(Spring 或 JDK) 或自定义的注解
 	 * Determine whether the given descriptor declares a qualifier beyond the type
 	 * (typically - but not necessarily - a specific kind of annotation).
 	 * <p>The default implementation returns {@code false}.
+	 *
 	 * @param descriptor the descriptor for the target method parameter or field
 	 * @return whether the descriptor declares a qualifier, narrowing the candidate
 	 * status beyond the type match
-	 * @since 5.1
 	 * @see org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver#hasQualifier
+	 * @since 5.1
 	 */
 	default boolean hasQualifier(DependencyDescriptor descriptor) {
 		return false;
 	}
 
 	/**
-	 * Determine whether a default value is suggested for the given dependency.
-	 * <p>The default implementation simply returns {@code null}.
 	 * @param descriptor the descriptor for the target method parameter or field
 	 * @return the value suggested (typically an expression String),
 	 * or {@code null} if none found
+	 * @Value 时直接返回
+	 * Determine whether a default value is suggested for the given dependency.
+	 * <p>The default implementation simply returns {@code null}.
 	 * @since 3.0
 	 */
 	@Nullable
@@ -89,8 +107,9 @@ public interface AutowireCandidateResolver {
 	 * Build a proxy for lazy resolution of the actual dependency target,
 	 * if demanded by the injection point.
 	 * <p>The default implementation simply returns {@code null}.
+	 *
 	 * @param descriptor the descriptor for the target method parameter or field
-	 * @param beanName the name of the bean that contains the injection point
+	 * @param beanName   the name of the bean that contains the injection point
 	 * @return the lazy resolution proxy for the actual dependency target,
 	 * or {@code null} if straight resolution is to be performed
 	 * @since 4.0
@@ -104,8 +123,9 @@ public interface AutowireCandidateResolver {
 	 * Determine the proxy class for lazy resolution of the dependency target,
 	 * if demanded by the injection point.
 	 * <p>The default implementation simply returns {@code null}.
+	 *
 	 * @param descriptor the descriptor for the target method parameter or field
-	 * @param beanName the name of the bean that contains the injection point
+	 * @param beanName   the name of the bean that contains the injection point
 	 * @return the lazy resolution proxy class for the dependency target, if any
 	 * @since 6.0
 	 */
@@ -124,9 +144,10 @@ public interface AutowireCandidateResolver {
 	 * or with standard {@link Cloneable} support (as implemented by Spring's
 	 * own configurable {@code AutowireCandidateResolver} variants), or simply
 	 * return {@code this} (as in {@link SimpleAutowireCandidateResolver}).
-	 * @since 5.2.7
+	 *
 	 * @see GenericTypeAwareAutowireCandidateResolver#cloneIfNecessary()
 	 * @see DefaultListableBeanFactory#copyConfigurationFrom
+	 * @since 5.2.7
 	 */
 	default AutowireCandidateResolver cloneIfNecessary() {
 		return BeanUtils.instantiateClass(getClass());

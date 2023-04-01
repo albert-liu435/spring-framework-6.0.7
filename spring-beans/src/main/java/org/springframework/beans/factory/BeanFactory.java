@@ -21,6 +21,27 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 
 /**
+ * 用于访问Spring bean容器的根接口
+ * BeanFactory 是Spring IOC 容器的鼻祖，是 IOC 容器的基础接口，所有的容器都是从它这里继承实现而来，可见其地位。BeanFactory 提供了最基本的 IOC 容器的功能，即所有的容器至少需要实现的标准。
+ *
+ * BeanFactory 支持的 bean 生命周期的顺序。有以下接口：
+ * BeanNameAware#setBeanName
+ * BeanClassLoaderAware#setBeanClassLoader
+ * BeanFactoryAware#setBeanFactory
+ * ResourceLoaderAware#setResourceLoader
+ * ApplicationEventPublisherAware#setApplicationEventPublisher
+ * MessageSourceAware#setMessageSource
+ * ApplicationContextAware#setApplicationContext
+ * ServletContextAware#setServletContext
+ * BeanPostProcessors#postProcessBeforeInitialization
+ * InitializingBean#afterPropertiesSet
+ * a custom init-method definition
+ * BeanPostProcessors#postProcessAfterInitialization
+ * DisposableBean#destroy
+ * a custom destroy-method definition
+ * BeanFactory 作为最顶层的一个接口类，它定义了 IOC 容器的基本功能规范，BeanFactory 有三个直接子类接口：ListableBeanFactory、HierarchicalBeanFactory 和 AutowireCapableBeanFactory，还有一个实现类 SimpleJndiBeanFactory。所以接下来依次分析三个子接口
+ *
+ *
  * The root interface for accessing a Spring bean container.
  *
  * <p>This is the basic client view of a bean container;

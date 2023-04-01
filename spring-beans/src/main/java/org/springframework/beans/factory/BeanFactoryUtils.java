@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * 工具类，用来操作BeanFactory
  * Convenience methods operating on bean factories, in particular
  * on the {@link ListableBeanFactory} interface.
  *
