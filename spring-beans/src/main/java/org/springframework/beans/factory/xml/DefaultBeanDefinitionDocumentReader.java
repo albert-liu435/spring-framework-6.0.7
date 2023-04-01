@@ -360,6 +360,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 			// Send registration event.
 			// 在完成向 Spring IOC 容器注册 BeanDefinition对象 之后，发送注册事件
+			//4. 通知相关的监听器，这个 bean 已经加载完成了
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}
