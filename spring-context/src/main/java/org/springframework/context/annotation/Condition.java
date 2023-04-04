@@ -33,19 +33,21 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * the {@link ConfigurationCondition} interface.
  *
  * @author Phillip Webb
- * @since 4.0
  * @see ConfigurationCondition
  * @see Conditional
  * @see ConditionContext
+ * @since 4.0
  */
 @FunctionalInterface
 public interface Condition {
 
 	/**
+	 * matches方法的第一个参数为ConditionContext，可通过该接口提供的方法来获得Spring应用的上下文信息。第二个参数为AnnotatedTypeMetadata，该接口提供了访问特定类或方法的注解功能，可以用来检查带有@Bean注解的方法上是否还有其他注解
 	 * Determine if the condition matches.
-	 * @param context the condition context
+	 *
+	 * @param context  the condition context
 	 * @param metadata the metadata of the {@link org.springframework.core.type.AnnotationMetadata class}
-	 * or {@link org.springframework.core.type.MethodMetadata method} being checked
+	 *                 or {@link org.springframework.core.type.MethodMetadata method} being checked
 	 * @return {@code true} if the condition matches and the component can be registered,
 	 * or {@code false} to veto the annotated component's registration
 	 */

@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.core.io.support.PropertySourceFactory;
 
-/**
+/**PropertySource是<context:property-placeholder location="classpath:jdbc.properties"/>标签的注解版。
  * Annotation providing a convenient and declarative mechanism for adding a
  * {@link org.springframework.core.env.PropertySource PropertySource} to Spring's
  * {@link org.springframework.core.env.Environment Environment}. To be used in

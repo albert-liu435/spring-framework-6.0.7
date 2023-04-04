@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.core.annotation.AliasFor;
 
-/**
+/**ImportResource @Import是<import resource>标签的注解版。
  * Indicates one or more resources containing bean definitions to import.
  *
  * <p>Like {@link Import @Import}, this annotation provides functionality similar to

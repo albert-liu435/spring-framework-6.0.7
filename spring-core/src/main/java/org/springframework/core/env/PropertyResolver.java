@@ -31,12 +31,14 @@ import org.springframework.lang.Nullable;
 public interface PropertyResolver {
 
 	/**
+	 * 判断给定键的值是否为 null
 	 * Return whether the given property key is available for resolution,
 	 * i.e. if the value for the given key is not {@code null}.
 	 */
 	boolean containsProperty(String key);
 
 	/**
+	 * 返回给定键的值，如果不存在就返回 null，可获取配置文件中的数据
 	 * Return the property value associated with the given key,
 	 * or {@code null} if the key cannot be resolved.
 	 *

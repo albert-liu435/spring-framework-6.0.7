@@ -28,6 +28,15 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 /**
+ * Configuration注解可以加在类上，让这个类的功能等同于一个bean xml配置文件，可以在这个类中管理创建Bean。
+ * 该注解只能使用在类，接口、枚举、其他注解上
+ * 该注解的生命周期是运行时JVM
+ * Component元注解，相当于拥有了@Component注解的能力，可以被ComponentScan扫描到，变成spring中的Bean。
+ * <p>
+ * 标注的类不能是final类型的（final类无法动态代理生成子类）；
+ *
+ * <p>
+ * <p>
  * Indicates that a class declares one or more {@link Bean @Bean} methods and
  * may be processed by the Spring container to generate bean definitions and
  * service requests for those beans at runtime, for example:
@@ -405,7 +414,6 @@ import org.springframework.stereotype.Component;
  * @author Rod Johnson
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.0
  * @see Bean
  * @see Profile
  * @see Import
@@ -417,6 +425,7 @@ import org.springframework.stereotype.Component;
  * @see ConfigurationClassPostProcessor
  * @see org.springframework.core.env.Environment
  * @see org.springframework.test.context.ContextConfiguration
+ * @since 3.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -425,6 +434,7 @@ import org.springframework.stereotype.Component;
 public @interface Configuration {
 
 	/**
+	 * value: 自定义当前组件或者说bean的名称，实际就是@Component的value属性。
 	 * Explicitly specify the name of the Spring bean definition associated with the
 	 * {@code @Configuration} class. If left unspecified (the common case), a bean
 	 * name will be automatically generated.
@@ -433,6 +443,7 @@ public @interface Configuration {
 	 * {@link AnnotationConfigApplicationContext}. If the {@code @Configuration} class
 	 * is registered as a traditional XML bean definition, the name/id of the bean
 	 * element will take precedence.
+	 *
 	 * @return the explicit component name, if any (or empty String otherwise)
 	 * @see AnnotationBeanNameGenerator
 	 */
@@ -440,6 +451,7 @@ public @interface Configuration {
 	String value() default "";
 
 	/**
+	 * proxyBeanMethods： 判断是否bean的方法应该被代理，默认是true
 	 * Specify whether {@code @Bean} methods should get proxied in order to enforce
 	 * bean lifecycle behavior, e.g. to return shared singleton bean instances even
 	 * in case of direct {@code @Bean} method calls in user code. This feature
@@ -456,6 +468,7 @@ public @interface Configuration {
 	 * methods individually like when declared on non-{@code @Configuration} classes,
 	 * a.k.a. "@Bean Lite Mode" (see {@link Bean @Bean's javadoc}). It is therefore
 	 * behaviorally equivalent to removing the {@code @Configuration} stereotype.
+	 *
 	 * @since 5.2
 	 */
 	boolean proxyBeanMethods() default true;
@@ -468,6 +481,7 @@ public @interface Configuration {
 	 * (as opposed to separate bean definitions with individual conditions etc).
 	 * Switch this flag to {@code false} in order to allow for method overloading
 	 * according to those semantics, accepting the risk for accidental overlaps.
+	 *
 	 * @since 6.0
 	 */
 	boolean enforceUniqueMethods() default true;

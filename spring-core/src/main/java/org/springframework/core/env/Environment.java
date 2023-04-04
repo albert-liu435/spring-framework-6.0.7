@@ -56,7 +56,6 @@ package org.springframework.core.env;
  * of property sources prior to application context {@code refresh()}.
  *
  * @author Chris Beams
- * @since 3.1
  * @see PropertyResolver
  * @see EnvironmentCapable
  * @see ConfigurableEnvironment
@@ -66,8 +65,38 @@ package org.springframework.core.env;
  * @see org.springframework.context.ConfigurableApplicationContext#getEnvironment
  * @see org.springframework.context.ConfigurableApplicationContext#setEnvironment
  * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
+ * @since 3.1
  */
 public interface Environment extends PropertyResolver {
+
+	/**
+	 * 这个方法用来取到 ConfigurableEnvironment.setActiveProfiles(String...) 设置的值，这个方法搭配 @Profile 注解使用
+	 * 如 ：
+	 * @Bean()
+	 * @Profile("dev")
+	 * public Student student() {
+	 *  System.out.println("createStudent");
+	 *    return new Student("王五", 18);
+	 * }
+	 *
+	 * @Test
+	 * public void testImport(){
+	 * AnnotationConfigApplicationContext annotationConfigApplicationContext = new AnnotationConfigApplicationContext();
+	 * ConfigurableEnvironment environment = annotationConfigApplicationContext.getEnvironment();
+	 * environment.setActiveProfiles("dev");
+	 * annotationConfigApplicationContext.register(MainConfig2.class);
+	 * annotationConfigApplicationContext.refresh();
+	 *  String[] beanDefinitionNames = annotationConfigApplicationContext.getBeanDefinitionNames();
+	 * for (String s : beanDefinitionNames) {
+	 *       System.out.println(s);
+	 *    }
+	 *  }
+	 *
+	 * @Profile("dev")
+	 * environment.setActiveProfiles(" dev ");
+	 * 当 setActiveProfiles 里的值在 @Profile 中存在，此时就会注册这个Bean
+	 * 而 getActiveProfiles 取到的也是 setActiveProfiles 中的值
+	 */
 
 	/**
 	 * Return the set of profiles explicitly made active for this environment. Profiles
@@ -78,6 +107,7 @@ public interface Environment extends PropertyResolver {
 	 * {@link ConfigurableEnvironment#setActiveProfiles(String...)}.
 	 * <p>If no profiles have explicitly been specified as active, then any
 	 * {@linkplain #getDefaultProfiles() default profiles} will automatically be activated.
+	 *
 	 * @see #getDefaultProfiles
 	 * @see ConfigurableEnvironment#setActiveProfiles
 	 * @see AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
@@ -85,8 +115,12 @@ public interface Environment extends PropertyResolver {
 	String[] getActiveProfiles();
 
 	/**
+	 * 未明确设置有效配置文件时，返回默认有效的配置文件集
+	 */
+	/**
 	 * Return the set of profiles to be active by default when no active profiles have
 	 * been set explicitly.
+	 *
 	 * @see #getActiveProfiles
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
@@ -94,14 +128,23 @@ public interface Environment extends PropertyResolver {
 	String[] getDefaultProfiles();
 
 	/**
+	 * 返回一个或多个给定的配置文件是否处于活动状态，或者在没有显式活动
+	 * 配置文件的情况下，返回一个或多个给定的配置文件是否包含在默认配置
+	 * 文件集中。 如果个人资料以“！”开头 逻辑取反，即如果给定的配置文件未
+	 * 激活，则该方法将返回true。 例如，如果配置文件“ p1”处于活动状态或“
+	 * p2”处于非活动状态，则env.acceptsProfiles（“ p1”，“！p2”）将返回true。
+	 * 不推荐使用
+	 */
+	/**
 	 * Return whether one or more of the given profiles is active or, in the case of no
 	 * explicit active profiles, whether one or more of the given profiles is included in
 	 * the set of default profiles. If a profile begins with '!' the logic is inverted,
 	 * i.e. the method will return {@code true} if the given profile is <em>not</em> active.
 	 * For example, {@code env.acceptsProfiles("p1", "!p2")} will return {@code true} if
 	 * profile 'p1' is active or 'p2' is not active.
+	 *
 	 * @throws IllegalArgumentException if called with zero arguments
-	 * or if any profile is {@code null}, empty, or whitespace only
+	 *                                  or if any profile is {@code null}, empty, or whitespace only
 	 * @see #getActiveProfiles
 	 * @see #getDefaultProfiles
 	 * @see #acceptsProfiles(Profiles)
@@ -110,6 +153,10 @@ public interface Environment extends PropertyResolver {
 	@Deprecated
 	boolean acceptsProfiles(String... profiles);
 
+	/**
+	 * Return whether the {@linkplain #getActiveProfiles() active profiles}
+	 * 返回活动概要文件是否 与给定Profiles谓词匹配。，不推荐使用
+	 */
 	/**
 	 * Return whether the {@linkplain #getActiveProfiles() active profiles}
 	 * match the given {@link Profiles} predicate.

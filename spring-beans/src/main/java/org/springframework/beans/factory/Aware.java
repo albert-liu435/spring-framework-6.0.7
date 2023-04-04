@@ -17,6 +17,7 @@
 package org.springframework.beans.factory;
 
 /**
+ * 顶级标记
  * A marker superinterface indicating that a bean is eligible to be notified by the
  * Spring container of a particular framework object through a callback-style method.
  * The actual method signature is determined by individual subinterfaces but should

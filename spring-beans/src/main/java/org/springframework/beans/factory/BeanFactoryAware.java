@@ -19,6 +19,7 @@ package org.springframework.beans.factory;
 import org.springframework.beans.BeansException;
 
 /**
+ * 实现 BeanFactoηAware 接口的 bean 可以直接访问 Spring 容器，被容器创建以后，它会拥有一个指向 Spring 容器的引用，可以利用该bean根据传入参数动态获取被spring工厂加载的bean
  * Interface to be implemented by beans that wish to be aware of their
  * owning {@link BeanFactory}.
  *
@@ -32,11 +33,11 @@ import org.springframework.beans.BeansException;
  *
  * @author Rod Johnson
  * @author Chris Beams
- * @since 11.03.2003
  * @see BeanNameAware
  * @see BeanClassLoaderAware
  * @see InitializingBean
  * @see org.springframework.context.ApplicationContextAware
+ * @since 11.03.2003
  */
 public interface BeanFactoryAware extends Aware {
 
@@ -45,8 +46,9 @@ public interface BeanFactoryAware extends Aware {
 	 * <p>Invoked after the population of normal bean properties
 	 * but before an initialization callback such as
 	 * {@link InitializingBean#afterPropertiesSet()} or a custom init-method.
+	 *
 	 * @param beanFactory owning BeanFactory (never {@code null}).
-	 * The bean can immediately call methods on the factory.
+	 *                    The bean can immediately call methods on the factory.
 	 * @throws BeansException in case of initialization errors
 	 * @see BeanInitializationException
 	 */

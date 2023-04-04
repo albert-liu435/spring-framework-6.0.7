@@ -130,8 +130,9 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * {@link #setBeanNameGenerator}. Note that the default for component scanning purposes
 	 * is a plain {@link AnnotationBeanNameGenerator#INSTANCE}, unless overridden through
 	 * {@link #setBeanNameGenerator} with a unified user-level bean name generator.
-	 * @since 5.2
+	 *
 	 * @see #setBeanNameGenerator
+	 * @since 5.2
 	 */
 	public static final AnnotationBeanNameGenerator IMPORT_BEAN_NAME_GENERATOR =
 			FullyQualifiedAnnotationBeanNameGenerator.INSTANCE;
@@ -225,9 +226,10 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * standalone bean definition in XML, e.g. not using the dedicated {@code AnnotationConfig*}
 	 * application contexts or the {@code <context:annotation-config>} element. Any bean name
 	 * generator specified against the application context will take precedence over any set here.
-	 * @since 3.1.1
+	 *
 	 * @see AnnotationConfigApplicationContext#setBeanNameGenerator(BeanNameGenerator)
 	 * @see AnnotationConfigUtils#CONFIGURATION_BEAN_NAME_GENERATOR
+	 * @since 3.1.1
 	 */
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		Assert.notNull(beanNameGenerator, "BeanNameGenerator must not be null");
@@ -350,8 +352,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
-			}
-			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
+			} else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
 			}
 		}
@@ -452,6 +453,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 * Post-processes a BeanFactory in search of Configuration class BeanDefinitions;
 	 * any candidates are then enhanced by a {@link ConfigurationClassEnhancer}.
 	 * Candidate status is determined by BeanDefinition attribute metadata.
+	 *
 	 * @see ConfigurationClassEnhancer
 	 */
 	public void enhanceConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
@@ -473,28 +475,28 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				// or component class without @Bean methods.
 				boolean liteConfigurationCandidateWithoutBeanMethods =
 						(ConfigurationClassUtils.CONFIGURATION_CLASS_LITE.equals(configClassAttr) &&
-							annotationMetadata != null && !ConfigurationClassUtils.hasBeanMethods(annotationMetadata));
+								annotationMetadata != null && !ConfigurationClassUtils.hasBeanMethods(annotationMetadata));
 				if (!liteConfigurationCandidateWithoutBeanMethods) {
 					try {
 						abd.resolveBeanClass(this.beanClassLoader);
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						throw new IllegalStateException(
 								"Cannot load configuration class: " + beanDef.getBeanClassName(), ex);
 					}
 				}
 			}
+			// 如果指定属性是full, 则进行下面处理，该属性在前面阶段设置
 			if (ConfigurationClassUtils.CONFIGURATION_CLASS_FULL.equals(configClassAttr)) {
 				if (!(beanDef instanceof AbstractBeanDefinition abd)) {
 					throw new BeanDefinitionStoreException("Cannot enhance @Configuration bean definition '" +
 							beanName + "' since it is not stored in an AbstractBeanDefinition subclass");
-				}
-				else if (logger.isInfoEnabled() && beanFactory.containsSingleton(beanName)) {
+				} else if (logger.isInfoEnabled() && beanFactory.containsSingleton(beanName)) {
 					logger.info("Cannot enhance @Configuration bean definition '" + beanName +
 							"' since its singleton instance has been created too early. The typical cause " +
 							"is a non-static @Bean method with a BeanDefinitionRegistryPostProcessor " +
 							"return type: Consider declaring such methods as 'static'.");
 				}
+				// 加入到增强集合中
 				configBeanDefs.put(beanName, abd);
 			}
 		}
@@ -503,14 +505,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			enhanceConfigClasses.end();
 			return;
 		}
-
+		// 新建增强器
 		ConfigurationClassEnhancer enhancer = new ConfigurationClassEnhancer();
+		// 遍历待增强的容器列表
 		for (Map.Entry<String, AbstractBeanDefinition> entry : configBeanDefs.entrySet()) {
 			AbstractBeanDefinition beanDef = entry.getValue();
 			// If a @Configuration class gets proxied, always proxy the target class
 			beanDef.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 			// Set enhanced subclass of the user-specified bean class
 			Class<?> configClass = beanDef.getBeanClass();
+			// 进行增强处理
 			Class<?> enhancedClass = enhancer.enhance(configClass, this.beanClassLoader);
 			if (configClass != enhancedClass) {
 				if (logger.isTraceEnabled()) {
@@ -577,7 +581,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 		@Override
 		public void applyTo(GenerationContext generationContext,
-				BeanFactoryInitializationCode beanFactoryInitializationCode) {
+							BeanFactoryInitializationCode beanFactoryInitializationCode) {
 
 			Map<String, String> mappings = buildImportAwareMappings();
 			if (!mappings.isEmpty()) {
@@ -690,8 +694,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			if (descriptor.name() == null && descriptor.propertySourceFactory() == null
 					&& descriptor.encoding() == null && !descriptor.ignoreResourceNotFound()) {
 				code.add("$L)", values);
-			}
-			else {
+			} else {
 				List<CodeBlock> arguments = new ArrayList<>();
 				arguments.add(CodeBlock.of("$T.of($L)", List.class, values));
 				arguments.add(CodeBlock.of("$L", descriptor.ignoreResourceNotFound()));
@@ -709,8 +712,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		private CodeBlock handleNull(@Nullable Object value, Supplier<CodeBlock> nonNull) {
 			if (value == null) {
 				return CodeBlock.of("null");
-			}
-			else {
+			} else {
 				return nonNull.get();
 			}
 		}
@@ -722,14 +724,14 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		private final Class<?> proxyClass;
 
 		public ConfigurationClassProxyBeanRegistrationCodeFragments(BeanRegistrationCodeFragments codeFragments,
-				Class<?> proxyClass) {
+																	Class<?> proxyClass) {
 			super(codeFragments);
 			this.proxyClass = proxyClass;
 		}
 
 		@Override
 		public CodeBlock generateSetBeanDefinitionPropertiesCode(GenerationContext generationContext,
-				BeanRegistrationCode beanRegistrationCode, RootBeanDefinition beanDefinition, Predicate<String> attributeFilter) {
+																 BeanRegistrationCode beanRegistrationCode, RootBeanDefinition beanDefinition, Predicate<String> attributeFilter) {
 			CodeBlock.Builder code = CodeBlock.builder();
 			code.add(super.generateSetBeanDefinitionPropertiesCode(generationContext,
 					beanRegistrationCode, beanDefinition, attributeFilter));
@@ -740,8 +742,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 		@Override
 		public CodeBlock generateInstanceSupplierCode(GenerationContext generationContext,
-				BeanRegistrationCode beanRegistrationCode, Executable constructorOrFactoryMethod,
-				boolean allowDirectSupplierShortcut) {
+													  BeanRegistrationCode beanRegistrationCode, Executable constructorOrFactoryMethod,
+													  boolean allowDirectSupplierShortcut) {
 			Executable executableToUse = proxyExecutable(generationContext.getRuntimeHints(), constructorOrFactoryMethod);
 			return super.generateInstanceSupplierCode(generationContext, beanRegistrationCode,
 					executableToUse, allowDirectSupplierShortcut);
@@ -752,8 +754,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				try {
 					runtimeHints.reflection().registerConstructor(userConstructor, ExecutableMode.INTROSPECT);
 					return this.proxyClass.getConstructor(userExecutable.getParameterTypes());
-				}
-				catch (NoSuchMethodException ex) {
+				} catch (NoSuchMethodException ex) {
 					throw new IllegalStateException("No matching constructor found on proxy " + this.proxyClass, ex);
 				}
 			}

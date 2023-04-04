@@ -23,39 +23,49 @@ package org.springframework.context.annotation;
  * @author Mark Fisher
  * @author Juergen Hoeller
  * @author Chris Beams
- * @since 2.5
  * @see ComponentScan
  * @see ComponentScan#includeFilters()
  * @see ComponentScan#excludeFilters()
  * @see org.springframework.core.type.filter.TypeFilter
+ * @since 2.5
  */
 public enum FilterType {
 
 	/**
+	 * 按照注解过滤
 	 * Filter candidates marked with a given annotation.
+	 *
 	 * @see org.springframework.core.type.filter.AnnotationTypeFilter
 	 */
 	ANNOTATION,
 
 	/**
+	 * 按照给定的类型
 	 * Filter candidates assignable to a given type.
+	 *
 	 * @see org.springframework.core.type.filter.AssignableTypeFilter
 	 */
 	ASSIGNABLE_TYPE,
 
 	/**
+	 * 使用ASPECTJ表达式
 	 * Filter candidates matching a given AspectJ type pattern expression.
+	 *
 	 * @see org.springframework.core.type.filter.AspectJTypeFilter
 	 */
 	ASPECTJ,
 
 	/**
+	 * 正则
 	 * Filter candidates matching a given regex pattern.
+	 *
 	 * @see org.springframework.core.type.filter.RegexPatternTypeFilter
 	 */
 	REGEX,
 
-	/** Filter candidates using a given custom
+	/**
+	 * 自定义规则
+	 * Filter candidates using a given custom
 	 * {@link org.springframework.core.type.filter.TypeFilter} implementation.
 	 */
 	CUSTOM
