@@ -22,7 +22,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 
 /**
- * 定义可访问命名属性的接口
+ * 定义可访问命名属性的接口,属性的读写
  * Common interface for classes that can access named properties
  * (such as bean properties of an object or fields in an object).
  *

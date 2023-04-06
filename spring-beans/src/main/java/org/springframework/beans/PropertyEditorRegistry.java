@@ -22,6 +22,9 @@ import org.springframework.lang.Nullable;
 
 /**
  * 封装用于注册JavaBeans的属于编辑器的方法，这是PropertyEditorRegistrar操作的核心接口
+ * <p>
+ * PropertyEditor 将 String 转换为其它类型，PropertyEditorRegistry 统一管理所有的 PropertyEditor 注册和查找。
+ * <p>
  * Encapsulates methods for registering JavaBeans {@link PropertyEditor PropertyEditors}.
  * This is the central interface that a {@link PropertyEditorRegistrar} operates on.
  *
@@ -38,7 +41,7 @@ import org.springframework.lang.Nullable;
 public interface PropertyEditorRegistry {
 
 	/**
-	 * 为给定类型的所有财产注册给定的自定义属性编辑器
+	 * 1. 根据类型注册 PropertyEditor
 	 * Register the given custom property editor for all properties of the given type.
 	 *
 	 * @param requiredType   the type of the property
@@ -47,7 +50,8 @@ public interface PropertyEditorRegistry {
 	void registerCustomEditor(Class<?> requiredType, PropertyEditor propertyEditor);
 
 	/**
-	 * 为给定类型的所有财产注册给定的自定义属性编辑器
+	 * 2. 根据类型(requiredType)和属性(propertyPath)注册 PropertyEditor
+	 * 查找时优先根据 propertyPath 查找对应的 PropertyEditor，propertyPath 可以为嵌套属性
 	 * Register the given custom property editor for the given type and
 	 * property, or for all properties of the given type.
 	 * <p>If the property path denotes an array or Collection property,
@@ -74,7 +78,7 @@ public interface PropertyEditorRegistry {
 	void registerCustomEditor(@Nullable Class<?> requiredType, @Nullable String propertyPath, PropertyEditor propertyEditor);
 
 	/**
-	 * 查找给定类型和属性的自定义属性编辑器
+	 * 3. 根据类型和属性查找 PropertyEditor
 	 * Find a custom property editor for the given type and property.
 	 *
 	 * @param requiredType the type of the property (can be {@code null} if a property

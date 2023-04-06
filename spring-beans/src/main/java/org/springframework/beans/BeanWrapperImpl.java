@@ -26,6 +26,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * 对 bean 进行封装。BeanWrapperImpl类是对BeanWrapper接口的默认实现，它包装了一个bean对象，缓存了bean的内省结果，并可以访问bean的属性、设置bean的属性值。BeanWrapperImpl类提供了许多默认属性编辑器，
+ * 支持多种不同类型的类型转换，可以将数组、集合类型的属性转换成指定特殊类型的数组或集合。用户也可以注册自定义的属性编辑器在BeanWrapperImpl中。
+ * <p>
+ * <p>
  * Default {@link BeanWrapper} implementation that should be sufficient
  * for all typical use cases. Caches introspection results for efficiency.
  *
@@ -58,6 +62,7 @@ import org.springframework.util.ReflectionUtils;
 public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements BeanWrapper {
 
 	/**
+	 * 该对象的缓存内省结果，以防止每次都遇到JavaBeans内省的开销。
 	 * Cached introspections results for this object, to prevent encountering
 	 * the cost of JavaBeans introspection every time.
 	 */
@@ -243,6 +248,9 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 	}
 
 
+	/**
+	 * BeanPropertyHandler 只是对 PropertyDescriptor 的简单封装
+	 */
 	private class BeanPropertyHandler extends PropertyHandler {
 
 		private final PropertyDescriptor pd;

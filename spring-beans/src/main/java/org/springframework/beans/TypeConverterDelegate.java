@@ -122,7 +122,7 @@ class TypeConverterDelegate {
 									@Nullable Class<T> requiredType, @Nullable TypeDescriptor typeDescriptor) throws IllegalArgumentException {
 
 		// Custom editor for this type?
-		//查找自定义属性编辑器
+		//查找自定义属性编辑器,     1. 用户自定义属性编辑器
 		PropertyEditor editor = this.propertyEditorRegistry.findCustomEditor(requiredType, propertyName);
 
 		ConversionFailedException conversionAttemptEx = null;
@@ -131,6 +131,7 @@ class TypeConverterDelegate {
 		//
 		ConversionService conversionService = this.propertyEditorRegistry.getConversionService();
 		if (editor == null && conversionService != null && newValue != null && typeDescriptor != null) {
+
 			TypeDescriptor sourceTypeDesc = TypeDescriptor.forObject(newValue);
 			if (conversionService.canConvert(sourceTypeDesc, typeDescriptor)) {
 				try {
@@ -157,8 +158,11 @@ class TypeConverterDelegate {
 				}
 			}
 			if (editor == null) {
+				// 2. Spring 默认属性编辑器
 				editor = findDefaultEditor(requiredType);
 			}
+			// 3. 执行类型转换
+
 			convertedValue = doConvertValue(oldValue, convertedValue, requiredType, editor);
 		}
 
@@ -391,6 +395,7 @@ class TypeConverterDelegate {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Converting String to [" + requiredType + "] using property editor [" + editor + "]");
 				}
+				// 调用 PropertyEditor 的 setAsText 进行类型转换
 				return doConvertTextValue(oldValue, newTextValue, editor);
 			} else if (String.class == requiredType) {
 				returnValue = convertedValue;

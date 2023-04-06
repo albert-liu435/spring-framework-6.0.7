@@ -78,7 +78,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
 /**
- * PropertyEditorRegistry接口的基础实现类，用于管理默认的编辑器和自定义编辑器
+ * PropertyEditorRegistry接口的基础实现类，用于管理默认的编辑器和自定义编辑器。用于PropertyEditor 注册、查找。
  * Base implementation of the {@link PropertyEditorRegistry} interface.
  * Provides management of default editors and custom editors.
  * Mainly serves as base class for {@link BeanWrapperImpl}.
@@ -138,6 +138,7 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
 	//---------------------------------------------------------------------
 
 	/**
+	 * 默认属性编辑器
 	 * Activate the default editors for this registry instance,
 	 * allowing for lazily registering default editors when needed.
 	 */

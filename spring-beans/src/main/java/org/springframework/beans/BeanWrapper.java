@@ -19,7 +19,8 @@ package org.springframework.beans;
 import java.beans.PropertyDescriptor;
 
 /**
- * Bean包装类
+ * BeanWrapper是对Bean的包装，其接口中所定义的功能很简单包括设置获取被包装的对象，获取被包装bean的属性描述器，由于BeanWrapper接口是PropertyAccessor的子接口，
+ * 因此其也可以设置以及访问被包装对象的属性值。BeanWrapper大部分情况下是在spring ioc内部进行使用，通过BeanWrapper,spring ioc容器可以用统一的方式来访问bean的属性。用户很少需要直接使用BeanWrapper进行编程。
  * The central interface of Spring's low-level JavaBeans infrastructure.
  *
  * <p>Typically not used directly but rather implicitly via a

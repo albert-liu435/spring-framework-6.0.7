@@ -26,12 +26,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 类型转换抽象类
  * Base implementation of the {@link TypeConverter} interface, using a package-private delegate.
  * Mainly serves as base class for {@link BeanWrapperImpl}.
  *
  * @author Juergen Hoeller
- * @since 3.2
  * @see SimpleTypeConverter
+ * @since 3.2
  */
 public abstract class TypeConverterSupport extends PropertyEditorRegistrySupport implements TypeConverter {
 
@@ -48,7 +49,7 @@ public abstract class TypeConverterSupport extends PropertyEditorRegistrySupport
 	@Override
 	@Nullable
 	public <T> T convertIfNecessary(@Nullable Object value, @Nullable Class<T> requiredType,
-			@Nullable MethodParameter methodParam) throws TypeMismatchException {
+									@Nullable MethodParameter methodParam) throws TypeMismatchException {
 
 		return convertIfNecessary(value, requiredType,
 				(methodParam != null ? new TypeDescriptor(methodParam) : TypeDescriptor.valueOf(requiredType)));
@@ -66,16 +67,14 @@ public abstract class TypeConverterSupport extends PropertyEditorRegistrySupport
 	@Nullable
 	@Override
 	public <T> T convertIfNecessary(@Nullable Object value, @Nullable Class<T> requiredType,
-			@Nullable TypeDescriptor typeDescriptor) throws TypeMismatchException {
+									@Nullable TypeDescriptor typeDescriptor) throws TypeMismatchException {
 
 		Assert.state(this.typeConverterDelegate != null, "No TypeConverterDelegate");
 		try {
 			return this.typeConverterDelegate.convertIfNecessary(null, null, value, requiredType, typeDescriptor);
-		}
-		catch (ConverterNotFoundException | IllegalStateException ex) {
+		} catch (ConverterNotFoundException | IllegalStateException ex) {
 			throw new ConversionNotSupportedException(value, requiredType, ex);
-		}
-		catch (ConversionException | IllegalArgumentException ex) {
+		} catch (ConversionException | IllegalArgumentException ex) {
 			throw new TypeMismatchException(value, requiredType, ex);
 		}
 	}
