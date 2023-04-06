@@ -124,7 +124,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	MutablePropertySources getPropertySources();
 
 	/**
-	 * 获取JVM系统参数
+	 * 获取JVM系统参数，即属性配置
 	 * Return the value of {@link System#getProperties()}.
 	 * <p>Note that most {@code Environment} implementations will include this system
 	 * properties map as a default {@link PropertySource} to be searched. Therefore, it is
@@ -134,7 +134,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	Map<String, Object> getSystemProperties();
 
 	/**
-	 * 获取系统环境变量
+	 * 获取操作系统环境变量
 	 * Return the value of {@link System#getenv()}.
 	 * <p>Note that most {@link Environment} implementations will include this system
 	 * environment map as a default {@link PropertySource} to be searched. Therefore, it

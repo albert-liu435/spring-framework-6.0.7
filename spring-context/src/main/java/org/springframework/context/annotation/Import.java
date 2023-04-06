@@ -23,6 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 该注解是用来快速给容器中导入一个Bean组件，在一些框架的底层被大量使用，例如：SpringBoot中。同样在Spring的底层源码中也大量使用，例如基于注解的声明式事务对应的注解
+ * EnableTransactionManagement中就是用到了该注解给容器中又导入了一个Selector组件，然后通过Select的importSelects方法给容器中注册用来处理声明式事务的事务增强器及方法拦截器等组件，
+ * 从而实现声明式事务的功能。声明式事务后续也会详细介绍其运行原理，此处知道声明式事务中用到Import注解即可。该注解是用来快速给容器中导入一个Bean组件，在一些框架的底层被大量使用，
+ * 例如：SpringBoot中。同样在Spring的底层源码中也大量使用，例如基于注解的声明式事务对应的注解@EnableTransactionManagement中就是用到了该注解给容器中又导入了一个Selector组件，
+ * 然后通过Select的importSelects方法给容器中注册用来处理声明式事务的事务增强器及方法拦截器等组件，从而实现声明式事务的功能。声明式事务后续也会详细介绍其运行原理，此处知道声明式事务中用到Import注解即可。
  * Indicates one or more <em>component classes</em> to import &mdash; typically
  * {@link Configuration @Configuration} classes.
  *
@@ -44,11 +49,11 @@ import java.lang.annotation.Target;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.0
  * @see Configuration
  * @see ImportSelector
  * @see ImportBeanDefinitionRegistrar
  * @see ImportResource
+ * @since 3.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -56,6 +61,7 @@ import java.lang.annotation.Target;
 public @interface Import {
 
 	/**
+	 * 待注入的组件对应的class类
 	 * {@link Configuration @Configuration}, {@link ImportSelector},
 	 * {@link ImportBeanDefinitionRegistrar}, or regular component classes to import.
 	 */

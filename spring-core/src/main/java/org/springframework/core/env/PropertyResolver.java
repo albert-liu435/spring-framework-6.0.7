@@ -19,7 +19,11 @@ package org.springframework.core.env;
 import org.springframework.lang.Nullable;
 
 /**
- * 用于根据任何基础源解析资源的接口
+ * 用于根据任何基础源解析资源的接口.属性解析器，用于解析相应 key 的 value
+ * <p>
+ * PropertyResolver 的默认实现是 PropertySourcesPropertyResolver，Environment 实际上也是委托 PropertySourcesPropertyResolver 完成 占位符的解析和类型转换。 类型转换又是委托 ConversionService 完成的。
+ * <p>
+ * <p>
  * Interface for resolving properties against any underlying source.
  *
  * @author Chris Beams
@@ -31,7 +35,7 @@ import org.springframework.lang.Nullable;
 public interface PropertyResolver {
 
 	/**
-	 * 判断给定键的值是否为 null
+	 * 是否包含某个属性
 	 * Return whether the given property key is available for resolution,
 	 * i.e. if the value for the given key is not {@code null}.
 	 */
@@ -51,6 +55,7 @@ public interface PropertyResolver {
 	String getProperty(String key);
 
 	/**
+	 * 2.1 获取指定 key，不存在可以指定默认值，也可以抛出异常
 	 * Return the property value associated with the given key, or
 	 * {@code defaultValue} if the key cannot be resolved.
 	 *
@@ -62,6 +67,7 @@ public interface PropertyResolver {
 	String getProperty(String key, String defaultValue);
 
 	/**
+	 * 2.2 类型转换，委托 ConversionService 完成
 	 * Return the property value associated with the given key,
 	 * or {@code null} if the key cannot be resolved.
 	 *
@@ -100,6 +106,7 @@ public interface PropertyResolver {
 	<T> T getRequiredProperty(String key, Class<T> targetType) throws IllegalStateException;
 
 	/**
+	 * 解析占位符 ${key}
 	 * Resolve ${...} placeholders in the given text, replacing them with corresponding
 	 * property values as resolved by {@link #getProperty}. Unresolvable placeholders with
 	 * no default value are ignored and passed through unchanged.

@@ -22,6 +22,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 可以访问对象的属性或将属性附加到对象上。
  * Interface defining a generic contract for attaching and accessing metadata
  * to/from arbitrary objects.
  *
@@ -30,6 +31,7 @@ import org.springframework.util.Assert;
  * @since 2.0
  */
 public interface AttributeAccessor {
+	// 对属性进行增删改查
 
 	/**
 	 * Set the attribute defined by {@code name} to the supplied {@code value}.
@@ -37,7 +39,8 @@ public interface AttributeAccessor {
 	 * <p>In general, users should take care to prevent overlaps with other
 	 * metadata attributes by using fully-qualified names, perhaps using
 	 * class or package names as prefix.
-	 * @param name the unique attribute key
+	 *
+	 * @param name  the unique attribute key
 	 * @param value the attribute value to be attached
 	 */
 	void setAttribute(String name, @Nullable Object value);
@@ -45,6 +48,7 @@ public interface AttributeAccessor {
 	/**
 	 * Get the value of the attribute identified by {@code name}.
 	 * <p>Return {@code null} if the attribute doesn't exist.
+	 *
 	 * @param name the unique attribute key
 	 * @return the current value of the attribute, if any
 	 */
@@ -60,14 +64,15 @@ public interface AttributeAccessor {
 	 * without applying the supplied compute function.
 	 * <p>The default implementation of this method is not thread safe but can
 	 * be overridden by concrete implementations of this interface.
-	 * @param <T> the type of the attribute value
-	 * @param name the unique attribute key
+	 *
+	 * @param <T>             the type of the attribute value
+	 * @param name            the unique attribute key
 	 * @param computeFunction a function that computes a new value for the attribute
-	 * name; the function must not return a {@code null} value
+	 *                        name; the function must not return a {@code null} value
 	 * @return the existing value or newly computed value for the named attribute
-	 * @since 5.3.3
 	 * @see #getAttribute(String)
 	 * @see #setAttribute(String, Object)
+	 * @since 5.3.3
 	 */
 	@SuppressWarnings("unchecked")
 	default <T> T computeAttribute(String name, Function<String, T> computeFunction) {
@@ -86,6 +91,7 @@ public interface AttributeAccessor {
 	/**
 	 * Remove the attribute identified by {@code name} and return its value.
 	 * <p>Return {@code null} if no attribute under {@code name} is found.
+	 *
 	 * @param name the unique attribute key
 	 * @return the last value of the attribute, if any
 	 */
@@ -95,6 +101,7 @@ public interface AttributeAccessor {
 	/**
 	 * Return {@code true} if the attribute identified by {@code name} exists.
 	 * <p>Otherwise return {@code false}.
+	 *
 	 * @param name the unique attribute key
 	 */
 	boolean hasAttribute(String name);

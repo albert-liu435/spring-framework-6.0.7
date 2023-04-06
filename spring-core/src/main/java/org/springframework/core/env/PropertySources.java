@@ -23,6 +23,10 @@ import org.springframework.lang.Nullable;
 
 /**
  * 持有并保存多个PropertySource
+ * <p>
+ * PropertySources，从名字可以看出其包含多个 PropertySource。默认提供了一个 MutablePropertySources 实现，可以调用 addFirst 添加到列表的开头，addLast 添加到末尾，
+ * 另外可以通过 addBefore(propertySourceName, propertySource) 或 addAfter(propertySourceName, propertySource) 添加到某个 propertySource 前面/后面；最后大家可以通过 iterator 迭代它，然后按照顺序获取属性。
+ * <p>
  * Holder containing one or more {@link PropertySource} objects.
  *
  * @author Chris Beams
@@ -42,6 +46,7 @@ public interface PropertySources extends Iterable<PropertySource<?>> {
 	}
 
 	/**
+	 * 是否包含某个name的PropertySource
 	 * Return whether a property source with the given name is contained.
 	 *
 	 * @param name the {@linkplain PropertySource#getName() name of the property source} to find
@@ -49,6 +54,7 @@ public interface PropertySources extends Iterable<PropertySource<?>> {
 	boolean contains(String name);
 
 	/**
+	 * 根据name找到PropertySource
 	 * Return the property source with the given name, {@code null} if not found.
 	 *
 	 * @param name the {@linkplain PropertySource#getName() name of the property source} to find

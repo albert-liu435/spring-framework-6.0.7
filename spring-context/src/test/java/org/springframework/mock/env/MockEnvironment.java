@@ -21,13 +21,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.testfixture.env.MockPropertySource;
 
 /**
+ * 模拟的环境，用于测试时使用
  * Simple {@link ConfigurableEnvironment} implementation exposing
  * {@link #setProperty} and {@link #withProperty} methods for testing purposes.
  *
  * @author Chris Beams
  * @author Sam Brannen
- * @since 3.2
  * @see org.springframework.core.testfixture.env.MockPropertySource
+ * @since 3.2
  */
 public class MockEnvironment extends AbstractEnvironment {
 
@@ -52,6 +53,7 @@ public class MockEnvironment extends AbstractEnvironment {
 	/**
 	 * Convenient synonym for {@link #setProperty} that returns the current instance.
 	 * Useful for method chaining and fluent-style use.
+	 *
 	 * @return this {@link MockEnvironment} instance
 	 * @see MockPropertySource#withProperty
 	 */

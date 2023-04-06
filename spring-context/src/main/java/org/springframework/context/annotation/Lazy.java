@@ -23,6 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 用来指定一个bean在创建的时候是否使用延迟创建的方式，可以标注在类，方法，构造函数，创建bean的方法入参位置或者成员变量上。所谓的延迟创建，即：当Spring容器启动时，
+ * 扫描到标注@Lazy注解的Bean时，并不会真正去创建和初始化，而是等到这个bean被使用的时候才去创建并完成bean的初始化。
  * Indicates whether a bean is to be lazily initialized.
  *
  * <p>May be used on any class directly or indirectly annotated with {@link
@@ -55,18 +57,23 @@ import java.lang.annotation.Target;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.0
  * @see Primary
  * @see Bean
  * @see Configuration
  * @see org.springframework.stereotype.Component
+ * @since 3.0
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.FIELD})
+@Target({ElementType.TYPE,// 标注在类上
+		ElementType.METHOD,// 标注在方法上
+		ElementType.CONSTRUCTOR,// 标注在构造函数上
+		ElementType.PARAMETER,// 标注在参数上
+		ElementType.FIELD})// 标注在成员变量上
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Lazy {
 
 	/**
+	 * 标记是否为懒加载，默认值为true。所以可以直接标注注解，不指定value属性
 	 * Whether lazy initialization should occur.
 	 */
 	boolean value() default true;

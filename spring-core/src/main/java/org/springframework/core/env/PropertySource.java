@@ -25,6 +25,10 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * 存储key/value的值
+ * PropertySource 非常类似于 Map，数据源可来自 Map、Properties、Resource 等。PropertySource 接口有两个特殊的子类：StubPropertySource 用于占位用，ComparisonPropertySource 用于集合排序，不允许获取属性值。
+ * <p>
+ * MapPropertySource 的属性来自于一个 Map，而 ResourcePropertySource 的属性来自于一个 properties 文件，另外还有如 PropertiesPropertySource，其属性来自 Properties，ServletContextPropertySource 的属性来自 ServletContext 上下文初始化参数等等
+ * <p>
  * Abstract base class representing a source of name/value property pairs. The underlying
  * {@linkplain #getSource() source object} may be of any type {@code T} that encapsulates
  * properties. Examples include {@link java.util.Properties} objects, {@link java.util.Map}
@@ -61,9 +65,9 @@ import org.springframework.util.ObjectUtils;
 public abstract class PropertySource<T> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	// 给数据源起个名称
 	protected final String name;
-
+	// 数据源，可能为 Map 或 Properties ...
 	protected final T source;
 
 
@@ -93,6 +97,7 @@ public abstract class PropertySource<T> {
 
 
 	/**
+	 * 属性源的名字
 	 * Return the name of this {@code PropertySource}.
 	 */
 	public String getName() {
@@ -100,6 +105,7 @@ public abstract class PropertySource<T> {
 	}
 
 	/**
+	 * 属性源（比如来自Map，那就是一个Map对象）
 	 * Return the underlying source object for this {@code PropertySource}.
 	 */
 	public T getSource() {
@@ -107,6 +113,7 @@ public abstract class PropertySource<T> {
 	}
 
 	/**
+	 * 是否包含某个属性
 	 * Return whether this {@code PropertySource} contains the given name.
 	 * <p>This implementation simply checks for a {@code null} return value
 	 * from {@link #getProperty(String)}. Subclasses may wish to implement
@@ -119,6 +126,7 @@ public abstract class PropertySource<T> {
 	}
 
 	/**
+	 * 得到属性名对应的属性值
 	 * Return the value associated with the given name,
 	 * or {@code null} if not found.
 	 *

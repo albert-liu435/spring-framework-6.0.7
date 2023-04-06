@@ -81,6 +81,7 @@ public interface PropertyValues extends Iterable<PropertyValue> {
 	PropertyValue getPropertyValue(String propertyName);
 
 	/**
+	 * old 和当前的对比，返回当前有而 old 没有的元素
 	 * Return the changes since the previous PropertyValues.
 	 * Subclasses should also override {@code equals}.
 	 *

@@ -27,6 +27,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 /**
+ * CompositePropertySource 提供了组合 PropertySource 的功能，查找顺序就是注册顺序。
  * Composite {@link PropertySource} implementation that iterates over a set of
  * {@link PropertySource} instances. Necessary in cases where multiple property sources
  * share the same name, e.g. when multiple values are supplied to {@code @PropertySource}.
@@ -47,6 +48,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Create a new {@code CompositePropertySource}.
+	 *
 	 * @param name the name of the property source
 	 */
 	public CompositePropertySource(String name) {
@@ -92,6 +94,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Add the given {@link PropertySource} to the end of the chain.
+	 *
 	 * @param propertySource the PropertySource to add
 	 */
 	public void addPropertySource(PropertySource<?> propertySource) {
@@ -100,6 +103,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Add the given {@link PropertySource} to the start of the chain.
+	 *
 	 * @param propertySource the PropertySource to add
 	 * @since 4.1
 	 */
@@ -112,6 +116,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Return all property sources that this composite source holds.
+	 *
 	 * @since 4.1.1
 	 */
 	public Collection<PropertySource<?>> getPropertySources() {

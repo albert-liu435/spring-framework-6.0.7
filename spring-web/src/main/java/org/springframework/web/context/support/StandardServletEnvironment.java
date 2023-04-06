@@ -30,7 +30,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 
-/**
+/**标准 Servlet 环境，其继承了 StandardEnvironment，Web 应用时使用，除了 StandardEnvironment 外，会自动注册 ServletConfig（DispatcherServlet）、ServletContext 及 JNDI 实例到环境；
  * {@link Environment} implementation to be used by {@code Servlet}-based web
  * applications. All web-related (servlet-based) {@code ApplicationContext} classes
  * initialize an instance by default.

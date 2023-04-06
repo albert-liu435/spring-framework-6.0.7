@@ -26,6 +26,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.annotation.AliasFor;
 
 /**
+ * 该注解标注在某一个配置类里面的某个创建Bean的方法上，用于指定该Bean为单实例还是多实例，不指定，默认值为单实例。
  * When used as a type-level annotation in conjunction with
  * {@link org.springframework.stereotype.Component @Component},
  * {@code @Scope} indicates the name of a scope to use for instances of
@@ -54,9 +55,9 @@ import org.springframework.core.annotation.AliasFor;
  * @author Mark Fisher
  * @author Chris Beams
  * @author Sam Brannen
- * @since 2.5
  * @see org.springframework.stereotype.Component
  * @see org.springframework.context.annotation.Bean
+ * @since 2.5
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -64,25 +65,37 @@ import org.springframework.core.annotation.AliasFor;
 public @interface Scope {
 
 	/**
+	 * bean的作用域，和scopeName互为别名
 	 * Alias for {@link #scopeName}.
+	 *
 	 * @see #scopeName
 	 */
-	@AliasFor("scopeName")
-	String value() default "";
+	@AliasFor("scopeName") String value() default "";
 
 	/**
+	 * bean的作用域，和value互为别名
+	 * Spring的Bean作用域有四种：
+	 * SCOPE_PROTOTYPE: 多实例，每次获取，都会生成一个新实例
+	 * SCOPE_SINGLETON: 单实例，多次获取到的都是一个实例
+	 * SCOPE_REQUEST: web中，每次请求会生成一个实例
+	 * SCOPE_SESSION: web中，同一个会话中多次获取到的是同一个实例.
+	 * <p>
 	 * Specifies the name of the scope to use for the annotated component/bean.
 	 * <p>Defaults to an empty string ({@code ""}) which implies
 	 * {@link ConfigurableBeanFactory#SCOPE_SINGLETON SCOPE_SINGLETON}.
-	 * @since 4.2
+	 *
 	 * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
 	 * @see ConfigurableBeanFactory#SCOPE_SINGLETON
 	 * @see org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST
 	 * @see org.springframework.web.context.WebApplicationContext#SCOPE_SESSION
 	 * @see #value
+	 * @since 4.2
 	 */
-	@AliasFor("value")
-	String scopeName() default "";
+	@AliasFor("value") String scopeName() default "";
+
+	// 用于指定Spring在某些作用域生成代理bean时，创建代理的方式，默认是不创建代理
+	// a.INTERFACES表示使用JDK生成代理，需要代理类去实现接口
+	// b.TARGET_CLASS表示使用CGLIB生成代理
 
 	/**
 	 * Specifies whether a component should be configured as a scoped proxy
@@ -91,6 +104,7 @@ public @interface Scope {
 	 * that no scoped proxy should be created unless a different default
 	 * has been configured at the component-scan instruction level.
 	 * <p>Analogous to {@code <aop:scoped-proxy/>} support in Spring XML.
+	 *
 	 * @see ScopedProxyMode
 	 */
 	ScopedProxyMode proxyMode() default ScopedProxyMode.DEFAULT;

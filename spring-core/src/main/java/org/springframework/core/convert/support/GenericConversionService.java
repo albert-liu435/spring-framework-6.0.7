@@ -70,6 +70,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 	 */
 	private static final GenericConverter NO_OP_CONVERTER = new NoOpConverter("NO_OP");
 
+
 	/**
 	 * Used as a cache entry when no converter is available.
 	 * This converter is never returned.
@@ -245,6 +246,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 	}
 
 	/**
+	 * 在转换器中查找给定的sourceType/targetType对。
 	 * Hook method to look up the converter for a given sourceType/targetType pair.
 	 * First queries this ConversionService's converter cache.
 	 * On a cache miss, then performs an exhaustive search for a matching converter.
@@ -452,6 +454,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 
 
 	/**
+	 * 用于缓存converter的key
 	 * Key for use with the converter cache.
 	 */
 	private static final class ConverterCacheKey implements Comparable<ConverterCacheKey> {
@@ -533,6 +536,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 		}
 
 		/**
+		 * 根据给定的source and target type.返回GenericConverter
 		 * Find a {@link GenericConverter} given a source and target type.
 		 * <p>This method will attempt to match all possible converters by working
 		 * through the class and interface hierarchy of the types.

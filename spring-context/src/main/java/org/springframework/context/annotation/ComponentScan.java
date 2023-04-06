@@ -30,6 +30,8 @@ import org.springframework.core.type.filter.TypeFilter;
 /**
  * ComponentScan是<context:component-scan base-package="com.coshaho.*" />标签的注解版。
  * <p>
+ * <p>
+ * <p>
  * Configures component scanning directives for use with @{@link Configuration} classes.
  * Provides support parallel with Spring XML's {@code <context:component-scan>} element.
  *

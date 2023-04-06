@@ -17,6 +17,10 @@
 package org.springframework.core.env;
 
 /**
+ * 环境，本身是一个 PropertyResolver，但是提供了 Profile 特性，即可以根据环境得到相应数据（即激活不同的 Profile，可以得到不同的属性数据，比如用于多环境场景的配置（正式机、测试机、开发机 DataSource 配置）
+ * Environment 是对 JDK 环境、Servlet 环境、Spring 环境的抽象；每个环境都有自己的配置数据，如 System.getProperties()、System.getenv() 等可以拿到 JDK 环境数据；ServletContext.getInitParameter()可以拿到 Servlet 环境配置数据等等；也就是说 Spring 抽象了一个 Environment 来表示环境配置。
+ * <p>
+ * <p>
  * Interface representing the environment in which the current application is running.
  * Models two key aspects of the application environment: <em>profiles</em> and
  * <em>properties</em>. Methods related to property access are exposed via the

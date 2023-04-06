@@ -18,6 +18,7 @@ package org.springframework.core.env;
 
 /**
  * 标准环境类
+ * 标准环境，普通 Java 应用时使用，会自动注册 System.getProperties() 和 System.getenv()到环境；
  * {@link Environment} implementation suitable for use in 'standard' (i.e. non-web)
  * applications.
  *
