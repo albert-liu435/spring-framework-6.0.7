@@ -32,6 +32,7 @@ import org.xml.sax.InputSource;
 public interface DocumentLoader {
 
 	/**
+	 * 加载document
 	 * Load a {@link Document document} from the supplied {@link InputSource source}.
 	 *
 	 * @param inputSource    the source of the document that is to be loaded

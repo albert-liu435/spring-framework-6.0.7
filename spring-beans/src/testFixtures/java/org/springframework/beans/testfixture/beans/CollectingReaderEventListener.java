@@ -41,7 +41,9 @@ public class CollectingReaderEventListener implements ReaderEventListener {
 
 	private final Map<String, List<AliasDefinition>> aliasMap = new LinkedHashMap<>(8);
 
+	//存储容器 imports
 	private final List<ImportDefinition> imports = new ArrayList<>();
+
 
 
 	@Override

@@ -132,12 +132,18 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// this behavior emulates a stack of delegates without actually necessitating one.
 		// 具体的解析过程由 BeanDefinitionParserDelegate 实现，
 		// BeanDefinitionParserDelegate中定义了用于解析 bean 的各种属性及方法
+		// 父 BeanDefinitionParserDelegate 一开始为null
 		BeanDefinitionParserDelegate parent = this.delegate;
+		// 创建 BeanDefinitionParserDelegate
 		this.delegate = createDelegate(getReaderContext(), root, parent);
-
+// 判断命名空间是否为默认的命名空间
+		// 默认命名空间: http://www.springframework.org/schema/beans
 		if (this.delegate.isDefaultNamespace(root)) {
+			// 获取 profile 属性
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
+			// 是否存在 profile
 			if (StringUtils.hasText(profileSpec)) {
+				// profile 切分后的数据
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
 						profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
 				// We cannot use Profiles.of(...) since profile expressions are not supported
@@ -238,16 +244,18 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			getReaderContext().error("Resource location must not be empty", ele);
 			return;
 		}
-		// 使用系统变量值解析 location 属性值
+		// 使用系统变量值解析 location 属性值，处理配置文件占位符
 		// Resolve system properties: e.g. "${user.dir}"
 		location = getReaderContext().getEnvironment().resolveRequiredPlaceholders(location);
-
+		// 资源集合
 		Set<Resource> actualResources = new LinkedHashSet<>(4);
 
 		// Discover whether the location is an absolute or relative URI
 		// 标识给定的 <Import> 元素的 location 是否是绝对路径
 		boolean absoluteLocation = false;
 		try {
+			// 1. 判断是否为 url
+			// 2. 通过转换成URI判断是否是绝对地址
 			absoluteLocation = ResourcePatternUtils.isUrl(location) || ResourceUtils.toURI(location).isAbsolute();
 		} catch (URISyntaxException ex) {
 			// cannot convert to an URI, considering the location relative
@@ -258,6 +266,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		if (absoluteLocation) {
 			try {
 				// 使用资源读取器加载给定路径的 bean
+				// 获取 import 的数量(bean定义的数量)
 				int importCount = getReaderContext().getReader().loadBeanDefinitions(location, actualResources);
 				if (logger.isTraceEnabled()) {
 					logger.trace("Imported " + importCount + " bean definitions from URL location [" + location + "]");
@@ -270,6 +279,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			// 给定的 <import> 元素的 location 是相对路径
 			// No URL -> considering resource location as relative to the current file.
 			try {
+				// import 的数量
 				int importCount;
 				// 将给定 <import> 元素的 location 封装为相对路径资源
 				Resource relativeResource = getReaderContext().getResource().createRelative(location);
@@ -277,6 +287,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				if (relativeResource.exists()) {
 					// 使用资源读取器加载 bean
 					importCount = getReaderContext().getReader().loadBeanDefinitions(relativeResource);
+					// 加入资源集合
 					actualResources.add(relativeResource);
 					// 封装的相对路径资源不存在
 				} else {

@@ -40,8 +40,8 @@ import org.springframework.util.Assert;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @author Mark Fisher
- * @since 2.5
  * @see AopNamespaceUtils
+ * @since 2.5
  */
 public abstract class AopConfigUtils {
 
@@ -64,11 +64,24 @@ public abstract class AopConfigUtils {
 	}
 
 
+	/**
+	 * 第一步：调用该方法给容器中注册一个bean组件
+	 *
+	 * @param registry
+	 * @return
+	 */
 	@Nullable
 	public static BeanDefinition registerAutoProxyCreatorIfNecessary(BeanDefinitionRegistry registry) {
 		return registerAutoProxyCreatorIfNecessary(registry, null);
 	}
 
+	/**
+	 * 第二步：再次调用该方法，传入bean组件的类型为：AnnotationAwareAspectJAutoProxyCreator的bean组件
+	 *
+	 * @param registry
+	 * @param source
+	 * @return
+	 */
 	@Nullable
 	public static BeanDefinition registerAutoProxyCreatorIfNecessary(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
@@ -114,12 +127,16 @@ public abstract class AopConfigUtils {
 		}
 	}
 
+	/**
+	 * 第二步：最后调用这个方法给容器中注册一个名称为org.springframework.aop.config.internalAutoProxyCreator，
+	 *   类型为AnnotationAwareAspectJAutoProxyCreator的组件
+	 */
 	@Nullable
 	private static BeanDefinition registerOrEscalateApcAsRequired(
 			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
-
+		// 判断容器中是否有名称为org.springframework.aop.config.internalAutoProxyCreator的Bean定义，第一次运行的时候没有.
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
@@ -131,11 +148,13 @@ public abstract class AopConfigUtils {
 			}
 			return null;
 		}
-
+		// 创建一个AnnotationAwareAspectJAutoProxyCreator类型的Bean定义
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
+		// 设置最高优先级.
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		// 设置bean定义的名称为：‘org.springframework.aop.config.internalAutoProxyCreator’
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;
 	}
