@@ -19,7 +19,7 @@ package org.springframework.beans.factory;
 import org.springframework.beans.BeansException;
 
 /**
- * 实现 BeanFactoηAware 接口的 bean 可以直接访问 Spring 容器，被容器创建以后，它会拥有一个指向 Spring 容器的引用，可以利用该bean根据传入参数动态获取被spring工厂加载的bean
+ * 可用于获取用于创建Bean的工厂；实现 BeanFactoηAware 接口的 bean 可以直接访问 Spring 容器，被容器创建以后，它会拥有一个指向 Spring 容器的引用，可以利用该bean根据传入参数动态获取被spring工厂加载的bean
  * Interface to be implemented by beans that wish to be aware of their
  * owning {@link BeanFactory}.
  *

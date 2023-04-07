@@ -20,6 +20,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
 
 /**
+ * 可用于获取当前Bean所在的Spring应用上下文对象，利用该对象可以获取到Spring容器中Bean的很多信息，例如：所有bean的名称，所有bean的定义，bean注册中心等等，
+ * 除此之外，还可以再获取到上下文之后，然后创建一个特定的Bean定义，并注册到Spring的BeanDefinitionRegistry中；
  * Interface to be implemented by any object that wishes to be notified
  * of the {@link ApplicationContext} that it runs in.
  *
@@ -66,9 +68,10 @@ public interface ApplicationContextAware extends Aware {
 	 * or a custom init-method. Invoked after {@link ResourceLoaderAware#setResourceLoader},
 	 * {@link ApplicationEventPublisherAware#setApplicationEventPublisher} and
 	 * {@link MessageSourceAware}, if applicable.
+	 *
 	 * @param applicationContext the ApplicationContext object to be used by this object
 	 * @throws ApplicationContextException in case of context initialization errors
-	 * @throws BeansException if thrown by application context methods
+	 * @throws BeansException              if thrown by application context methods
 	 * @see org.springframework.beans.factory.BeanInitializationException
 	 */
 	void setApplicationContext(ApplicationContext applicationContext) throws BeansException;

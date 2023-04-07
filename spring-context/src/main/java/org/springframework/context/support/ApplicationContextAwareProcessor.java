@@ -32,6 +32,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 后置处理器
  * {@link BeanPostProcessor} implementation that supplies the {@code ApplicationContext},
  * {@link org.springframework.core.env.Environment Environment}, or
  * {@link StringValueResolver} for the {@code ApplicationContext} to beans that
@@ -49,7 +50,6 @@ import org.springframework.util.StringValueResolver;
  * @author Costin Leau
  * @author Chris Beams
  * @author Sam Brannen
- * @since 10.10.2003
  * @see org.springframework.context.EnvironmentAware
  * @see org.springframework.context.EmbeddedValueResolverAware
  * @see org.springframework.context.ResourceLoaderAware
@@ -57,6 +57,7 @@ import org.springframework.util.StringValueResolver;
  * @see org.springframework.context.MessageSourceAware
  * @see org.springframework.context.ApplicationContextAware
  * @see org.springframework.context.support.AbstractApplicationContext#refresh()
+ * @since 10.10.2003
  */
 class ApplicationContextAwareProcessor implements BeanPostProcessor {
 
@@ -69,25 +70,41 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 	 * Create a new ApplicationContextAwareProcessor for the given context.
 	 */
 	public ApplicationContextAwareProcessor(ConfigurableApplicationContext applicationContext) {
+		// 创建Processort的时候，完成applicationContext的赋值
 		this.applicationContext = applicationContext;
+		// 创建默认的值解析器，用来解析classpath中配置的占位符变量的值
 		this.embeddedValueResolver = new EmbeddedValueResolver(applicationContext.getBeanFactory());
 	}
 
 
+	/**
+	 * 该方法在创建Bean的过程中，在Bean初始化方法执行完成之后会被调用
+	 *
+	 * @param bean     the new bean instance
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	@Nullable
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		// 获取bean工厂中的AccessControlContext，默认为null
 		if (!(bean instanceof EnvironmentAware || bean instanceof EmbeddedValueResolverAware ||
 				bean instanceof ResourceLoaderAware || bean instanceof ApplicationEventPublisherAware ||
 				bean instanceof MessageSourceAware || bean instanceof ApplicationContextAware ||
 				bean instanceof ApplicationStartupAware)) {
 			return bean;
 		}
-
+		// 调用Aware接口的方法
 		invokeAwareInterfaces(bean);
 		return bean;
 	}
 
+	/**
+	 * 调用Aware方法
+	 *
+	 * @param bean
+	 */
 	private void invokeAwareInterfaces(Object bean) {
 		if (bean instanceof Aware) {
 			if (bean instanceof EnvironmentAware environmentAware) {
@@ -108,7 +125,11 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			if (bean instanceof ApplicationStartupAware applicationStartupAware) {
 				applicationStartupAware.setApplicationStartup(this.applicationContext.getApplicationStartup());
 			}
+			// 判断到当前的Bean为ApplicationContextAware的实现类
 			if (bean instanceof ApplicationContextAware applicationContextAware) {
+				// 将Bean向上转型为ApplicationContextAware，并回调其
+				//  setApplicationContext方法，然后将ioc对象作为参数传入
+				//  在Pen子类中就可以接收到传入的ApplicationContext对象了
 				applicationContextAware.setApplicationContext(this.applicationContext);
 			}
 		}

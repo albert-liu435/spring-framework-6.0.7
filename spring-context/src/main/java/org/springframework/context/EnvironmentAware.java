@@ -20,12 +20,13 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.core.env.Environment;
 
 /**
+ * 可用于获取当前Bean运行的环境信息，例如：操作系统，环境变量，当前classpath中配置的所有property属性值及属性名称等
  * Interface to be implemented by any bean that wishes to be notified
  * of the {@link Environment} that it runs in.
  *
  * @author Chris Beams
- * @since 3.1
  * @see org.springframework.core.env.EnvironmentCapable
+ * @since 3.1
  */
 public interface EnvironmentAware extends Aware {
 

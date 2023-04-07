@@ -20,6 +20,7 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 用于获取一个String类型的值解析器，解析容器中占位符中的字符串值，例如：${name}，#{12+10}等。第一个${name}为普通的占位符，容器中必须存在这个name属性，第二个#{12+10}为SPEL表达式，可以实现一些计算逻辑，通过注入的值解析器都可以完成解析。
  * Interface to be implemented by any object that wishes to be notified of a
  * {@code StringValueResolver} for the resolution of embedded definition values.
  *
@@ -28,10 +29,10 @@ import org.springframework.util.StringValueResolver;
  *
  * @author Juergen Hoeller
  * @author Chris Beams
- * @since 3.0.3
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#resolveEmbeddedValue(String)
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#getBeanExpressionResolver()
  * @see org.springframework.beans.factory.config.EmbeddedValueResolver
+ * @since 3.0.3
  */
 public interface EmbeddedValueResolverAware extends Aware {
 
