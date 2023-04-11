@@ -355,7 +355,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// 的 beanName、aliases别名。对 <Bean> 元素的解析由 BeanDefinitionParserDelegate 实现
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
-			// 对 bdHolder 进行包装处理
+			// 对 bdHolder 进行包装处理，即Bean Definition装饰
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
@@ -370,7 +370,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
-			// 在完成向 Spring IOC 容器注册 BeanDefinition对象 之后，发送注册事件
+			// 在完成向 Spring IOC 容器注册 BeanDefinition对象 之后，发送注册事件。component注册事件触发
 			//4. 通知相关的监听器，这个 bean 已经加载完成了
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}

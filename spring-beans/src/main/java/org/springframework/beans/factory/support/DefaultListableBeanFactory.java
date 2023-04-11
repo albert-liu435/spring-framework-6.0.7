@@ -1053,13 +1053,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// 校验解析的 BeanDefiniton对象
 		if (beanDefinition instanceof AbstractBeanDefinition abd) {
 			try {
+				// bean定义验证
 				abd.validate();
 			} catch (BeanDefinitionValidationException ex) {
 				throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
 						"Validation of bean definition failed", ex);
 			}
 		}
-
+		// 从 map 中根据 beanName 获取 beanDefinition
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		// 检查是否有同名(beanName)的 BeanDefinition 存在于 IoC容器 中，如果已经存在，且不允许覆盖
 		// 已注册的 BeanDefinition，则抛出注册异常，allowBeanDefinitionOverriding 默认为 true
@@ -1088,6 +1089,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			// 设置 beanName 和 beanDefinition 关系
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 			// 若该 beanName 在 IoC容器 中尚未注册，将其注册到 IoC容器中，
 		} else {
@@ -1106,14 +1108,22 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					removeAlias(beanName);
 				}
 			}
+
+			// 检查 bean 是否已经开始创建
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
+					// 设置 beanName 和 beanDefinition 关系
 					this.beanDefinitionMap.put(beanName, beanDefinition);
+					// bean definition 的名称列表
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
+					// 加入内存数据
 					updatedDefinitions.addAll(this.beanDefinitionNames);
+					// 加入当前的 beanName
 					updatedDefinitions.add(beanName);
+					// 对象替换
 					this.beanDefinitionNames = updatedDefinitions;
+					// 移除当前的beanName
 					removeManualSingletonName(beanName);
 				}
 			} else {
@@ -1122,6 +1132,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				// Still in startup registration phase
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
+				// 移除当前的beanName
 				removeManualSingletonName(beanName);
 			}
 			this.frozenBeanDefinitionNames = null;

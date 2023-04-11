@@ -87,6 +87,7 @@ public class GenericConversionService implements ConfigurableConversionService {
 
 	@Override
 	public void addConverter(Converter<?, ?> converter) {
+		// 获取解析类型
 		ResolvableType[] typeInfo = getRequiredTypeInfo(converter.getClass(), Converter.class);
 		if (typeInfo == null && converter instanceof DecoratingProxy decoratingProxy) {
 			typeInfo = getRequiredTypeInfo(decoratingProxy.getDecoratedClass(), Converter.class);
@@ -95,18 +96,22 @@ public class GenericConversionService implements ConfigurableConversionService {
 			throw new IllegalArgumentException("Unable to determine source type <S> and target type <T> for your " +
 					"Converter [" + converter.getClass().getName() + "]; does the class parameterize those types?");
 		}
+		// 添加 converter
 		addConverter(new ConverterAdapter(converter, typeInfo[0], typeInfo[1]));
 	}
 
 	@Override
 	public <S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter) {
+		// 添加 convert 的适配器对象
 		addConverter(new ConverterAdapter(
 				converter, ResolvableType.forClass(sourceType), ResolvableType.forClass(targetType)));
 	}
 
 	@Override
 	public void addConverter(GenericConverter converter) {
+		// 加入 convert 接口
 		this.converters.add(converter);
+		// 缓存清除
 		invalidateCache();
 	}
 
@@ -353,10 +358,13 @@ public class GenericConversionService implements ConfigurableConversionService {
 	@SuppressWarnings("unchecked")
 	private final class ConverterAdapter implements ConditionalGenericConverter {
 
+		//转换接口提供者
 		private final Converter<Object, Object> converter;
 
+		//存储源数类型和目标类型的对象
 		private final ConvertiblePair typeInfo;
 
+		//转换目标的类型描述
 		private final ResolvableType targetType;
 
 		public ConverterAdapter(Converter<?, ?> converter, ResolvableType sourceType, ResolvableType targetType) {
@@ -510,18 +518,25 @@ public class GenericConversionService implements ConfigurableConversionService {
 	 */
 	private static class Converters {
 
+		//存储 GenericConverter 的容器，全局共享的转换服务，没有类型约束
 		private final Set<GenericConverter> globalConverters = new CopyOnWriteArraySet<>();
 
+		//key: 存储原始类型和目标类型
+		//value：存储多个 GenericConverter
 		private final Map<ConvertiblePair, ConvertersForPair> converters = new ConcurrentHashMap<>(256);
 
 		public void add(GenericConverter converter) {
+			// 获取转换对象 ConvertiblePair
 			Set<ConvertiblePair> convertibleTypes = converter.getConvertibleTypes();
+			// 判空
 			if (convertibleTypes == null) {
 				Assert.state(converter instanceof ConditionalConverter,
 						"Only conditional converters may return null convertible types");
 				this.globalConverters.add(converter);
 			} else {
+
 				for (ConvertiblePair convertiblePair : convertibleTypes) {
+					// 获取 ConvertersForPair对象
 					getMatchableConverters(convertiblePair).add(converter);
 				}
 			}

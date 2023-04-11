@@ -428,6 +428,7 @@ public class BeanDefinitionParserDelegate {
 		String beanName = id;
 		// 如果 <bean> 元素中没有配置 id 属性，则将 别名alias 中的第一个值赋值给 beanName
 		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
+			// 别名的第一个设置为beanName
 			beanName = aliases.remove(0);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No XML 'id' specified - using '" + beanName +
@@ -438,6 +439,7 @@ public class BeanDefinitionParserDelegate {
 		// 元素中是否包含子 <bean> 元素
 		if (containingBean == null) {
 			// 检查 <bean> 元素所配置的 id、name 或者 别名alias 是否重复
+			// 判断 beanName 是否被使用, bean 别名是否被使用
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 		// 将 <bean> 元素解析成 BeanDefinition对象
@@ -484,18 +486,24 @@ public class BeanDefinitionParserDelegate {
 	 * within the current level of beans element nesting.
 	 */
 	protected void checkNameUniqueness(String beanName, List<String> aliases, Element beanElement) {
+		// 当前寻找的name
 		String foundName = null;
-
+		// 是否有 beanName
+		// 使用过的name中是否存在
 		if (StringUtils.hasText(beanName) && this.usedNames.contains(beanName)) {
 			foundName = beanName;
 		}
 		if (foundName == null) {
+			// 寻找匹配的第一个
+
 			foundName = CollectionUtils.findFirstMatch(this.usedNames, aliases);
 		}
+		// 抛出异常
+
 		if (foundName != null) {
 			error("Bean name '" + foundName + "' is already used in this <beans> element", beanElement);
 		}
-
+		// 加入使用队列
 		this.usedNames.add(beanName);
 		this.usedNames.addAll(aliases);
 	}
@@ -510,8 +518,9 @@ public class BeanDefinitionParserDelegate {
 			Element ele, String beanName, @Nullable BeanDefinition containingBean) {
 
 		// 记录解析的 <bean>
+		// 设置阶段 bean定义解析阶段
 		this.parseState.push(new BeanEntry(beanName));
-// 这里只读取 <bean> 元素中配置的 class 名字，然后载入到 BeanDefinition 中去
+		// 这里只读取 <bean> 元素中配置的 class 名字，然后载入到 BeanDefinition 中去
 		// 只是记录配置的 class 名字，不做实例化，对象的实例化在 getBean() 时发生
 		String className = null;
 		if (ele.hasAttribute(CLASS_ATTRIBUTE)) {

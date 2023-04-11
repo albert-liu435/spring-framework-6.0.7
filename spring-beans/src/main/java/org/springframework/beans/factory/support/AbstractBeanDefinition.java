@@ -446,6 +446,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
+	 * Bean Class 属性是否是 Class  Bean Class 的两种情况，一种是 String ，另一种是 Class 在这里就是对这个信息的验证。
 	 * Return whether this definition specifies a bean class.
 	 *
 	 * @see #getBeanClass()
@@ -862,6 +863,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
+	 * 是否存在工厂函数，这里不是 Method 对象，在这仅仅只是一个工厂函数的方法名称
 	 * Return a factory method, if any.
 	 */
 	@Override
@@ -945,6 +947,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	}
 
 	/**
+	 * MethodOverrides 是否为空
 	 * Return if there are method overrides defined for this bean.
 	 *
 	 * @since 5.0.2
@@ -1190,12 +1193,15 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
 	public void validate() throws BeanDefinitionValidationException {
+		// 是否存在重写方法, factory_method_name 是否为空
 		if (hasMethodOverrides() && getFactoryMethodName() != null) {
 			throw new BeanDefinitionValidationException(
 					"Cannot combine factory method with container-generated method overrides: " +
 							"the factory method must create the concrete bean instance.");
 		}
+		//  bean class 是否等于 Class
 		if (hasBeanClass()) {
+			// 方法重写+验证
 			prepareMethodOverrides();
 		}
 	}
@@ -1208,8 +1214,11 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
 	public void prepareMethodOverrides() throws BeanDefinitionValidationException {
+		//方法重写标记和验证
 		// Check that lookup methods exist and determine their overloaded status.
 		if (hasMethodOverrides()) {
+			//判断是否存在重写的方法，这一点和第一步一样。
+			//如果需要重写则循环存储 MethodOverride 将 overloaded 标记设置为 false
 			getMethodOverrides().getOverrides().forEach(this::prepareMethodOverride);
 		}
 	}

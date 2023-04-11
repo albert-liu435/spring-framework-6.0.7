@@ -25,6 +25,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.lang.Nullable;
 
 /**
+ * 工厂方法，用于注册Converters
  * A factory for common {@link org.springframework.core.convert.ConversionService}
  * configurations.
  *
@@ -41,23 +42,21 @@ public final class ConversionServiceFactory {
 
 	/**
 	 * Register the given Converter objects with the given target ConverterRegistry.
+	 *
 	 * @param converters the converter objects: implementing {@link Converter},
-	 * {@link ConverterFactory}, or {@link GenericConverter}
-	 * @param registry the target registry
+	 *                   {@link ConverterFactory}, or {@link GenericConverter}
+	 * @param registry   the target registry
 	 */
 	public static void registerConverters(@Nullable Set<?> converters, ConverterRegistry registry) {
 		if (converters != null) {
 			for (Object candidate : converters) {
 				if (candidate instanceof GenericConverter genericConverter) {
 					registry.addConverter(genericConverter);
-				}
-				else if (candidate instanceof Converter<?, ?> converter) {
+				} else if (candidate instanceof Converter<?, ?> converter) {
 					registry.addConverter(converter);
-				}
-				else if (candidate instanceof ConverterFactory<?, ?> converterFactory) {
+				} else if (candidate instanceof ConverterFactory<?, ?> converterFactory) {
 					registry.addConverterFactory(converterFactory);
-				}
-				else {
+				} else {
 					throw new IllegalArgumentException("Each converter object must implement one of the " +
 							"Converter, ConverterFactory, or GenericConverter interfaces");
 				}
