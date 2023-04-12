@@ -25,6 +25,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.StringUtils;
 
 /**
+ * 抽象类，用于解析<context:property-.../>标签
+ * <p>
  * Abstract parser for &lt;context:property-.../&gt; elements.
  *
  * @author Juergen Hoeller
@@ -41,6 +43,7 @@ abstract class AbstractPropertyLoadingBeanDefinitionParser extends AbstractSingl
 
 	@Override
 	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+		//获取文件路径，如classpath:beans/factory/config/placeholders/property.properties
 		String location = element.getAttribute("location");
 		if (StringUtils.hasLength(location)) {
 			location = parserContext.getReaderContext().getEnvironment().resolvePlaceholders(location);

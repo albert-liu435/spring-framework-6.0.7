@@ -25,6 +25,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * 格式化日志消息的工具类
  * Utility methods for formatting and logging messages.
  *
  * <p>Mainly for internal use within the framework with Apache Commons Logging,
@@ -46,7 +47,8 @@ public abstract class LogFormatUtils {
 	 * Convenience variant of {@link #formatValue(Object, int, boolean)} that
 	 * limits the length of a log message to 100 characters and also replaces
 	 * newline and control characters if {@code limitLength} is set to "true".
-	 * @param value the value to format
+	 *
+	 * @param value       the value to format
 	 * @param limitLength whether to truncate the value at a length of 100
 	 * @return the formatted value
 	 */
@@ -58,10 +60,11 @@ public abstract class LogFormatUtils {
 	 * Format the given value via {@code toString()}, quoting it if it is a
 	 * {@link CharSequence}, truncating at the specified {@code maxLength}, and
 	 * compacting it into a single line when {@code replaceNewLines} is set.
-	 * @param value the value to be formatted
-	 * @param maxLength the max length, after which to truncate, or -1 for unlimited
+	 *
+	 * @param value                               the value to be formatted
+	 * @param maxLength                           the max length, after which to truncate, or -1 for unlimited
 	 * @param replaceNewlinesAndControlCharacters whether to replace newline and
-	 * control characters with placeholders
+	 *                                            control characters with placeholders
 	 * @return the formatted value
 	 */
 	public static String formatValue(
@@ -73,8 +76,7 @@ public abstract class LogFormatUtils {
 		String result;
 		try {
 			result = ObjectUtils.nullSafeToString(value);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			result = ObjectUtils.nullSafeToString(ex);
 		}
 		if (maxLength != -1) {
@@ -104,9 +106,10 @@ public abstract class LogFormatUtils {
 	 *   }
 	 * }
 	 * </pre>
-	 * @param logger the logger to use to log the message
+	 *
+	 * @param logger         the logger to use to log the message
 	 * @param messageFactory function that accepts a boolean set to the value
-	 * of {@link Log#isTraceEnabled()}
+	 *                       of {@link Log#isTraceEnabled()}
 	 */
 	public static void traceDebug(Log logger, Function<Boolean, String> messageFactory) {
 		if (logger.isDebugEnabled()) {
@@ -114,8 +117,7 @@ public abstract class LogFormatUtils {
 			String logMessage = messageFactory.apply(traceEnabled);
 			if (traceEnabled) {
 				logger.trace(logMessage);
-			}
-			else {
+			} else {
 				logger.debug(logMessage);
 			}
 		}

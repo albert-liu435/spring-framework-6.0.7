@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 
 /**
+ * 它支持bean和消息的编程注册，而不是从外部配置源读取bean定义。主要用于测试
  * {@link org.springframework.context.ApplicationContext} implementation
  * which supports programmatic registration of beans and messages,
  * rather than reading bean definitions from external configuration sources.
@@ -45,6 +46,7 @@ public class StaticApplicationContext extends GenericApplicationContext {
 
 	/**
 	 * Create a new StaticApplicationContext.
+	 *
 	 * @see #registerSingleton
 	 * @see #registerPrototype
 	 * @see #registerBeanDefinition
@@ -56,6 +58,7 @@ public class StaticApplicationContext extends GenericApplicationContext {
 
 	/**
 	 * Create a new StaticApplicationContext with the given parent.
+	 *
 	 * @see #registerSingleton
 	 * @see #registerPrototype
 	 * @see #registerBeanDefinition
@@ -80,6 +83,7 @@ public class StaticApplicationContext extends GenericApplicationContext {
 	/**
 	 * Return the internal StaticMessageSource used by this context.
 	 * Can be used to register messages on it.
+	 *
 	 * @see #addMessage
 	 */
 	public final StaticMessageSource getStaticMessageSource() {
@@ -89,6 +93,7 @@ public class StaticApplicationContext extends GenericApplicationContext {
 	/**
 	 * Register a singleton bean with the underlying bean factory.
 	 * <p>For more advanced needs, register with the underlying BeanFactory directly.
+	 *
 	 * @see #getDefaultListableBeanFactory
 	 */
 	public void registerSingleton(String name, Class<?> clazz) throws BeansException {
@@ -100,6 +105,7 @@ public class StaticApplicationContext extends GenericApplicationContext {
 	/**
 	 * Register a singleton bean with the underlying bean factory.
 	 * <p>For more advanced needs, register with the underlying BeanFactory directly.
+	 *
 	 * @see #getDefaultListableBeanFactory
 	 */
 	public void registerSingleton(String name, Class<?> clazz, MutablePropertyValues pvs) throws BeansException {
@@ -112,6 +118,7 @@ public class StaticApplicationContext extends GenericApplicationContext {
 	/**
 	 * Register a prototype bean with the underlying bean factory.
 	 * <p>For more advanced needs, register with the underlying BeanFactory directly.
+	 *
 	 * @see #getDefaultListableBeanFactory
 	 */
 	public void registerPrototype(String name, Class<?> clazz) throws BeansException {
@@ -124,6 +131,7 @@ public class StaticApplicationContext extends GenericApplicationContext {
 	/**
 	 * Register a prototype bean with the underlying bean factory.
 	 * <p>For more advanced needs, register with the underlying BeanFactory directly.
+	 *
 	 * @see #getDefaultListableBeanFactory
 	 */
 	public void registerPrototype(String name, Class<?> clazz, MutablePropertyValues pvs) throws BeansException {
@@ -136,8 +144,9 @@ public class StaticApplicationContext extends GenericApplicationContext {
 
 	/**
 	 * Associate the given message with the given code.
-	 * @param code lookup code
-	 * @param locale the locale message should be found within
+	 *
+	 * @param code           lookup code
+	 * @param locale         the locale message should be found within
 	 * @param defaultMessage message associated with this lookup code
 	 * @see #getStaticMessageSource
 	 */

@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * 常用于框架内部使用
  * Factory for common {@link Log} delegates with Spring's logging conventions.
  *
  * <p>Mainly for internal use within the framework with Apache Commons Logging,
@@ -32,8 +33,8 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
- * @since 5.1
  * @see org.apache.commons.logging.LogFactory
+ * @since 5.1
  */
 public final class LogDelegateFactory {
 
@@ -49,7 +50,8 @@ public final class LogDelegateFactory {
 	 * don't happen to share a suitable parent package (e.g. logging for the web
 	 * and lower-level http and codec packages). For such cases the primary
 	 * (class-based) logger can be wrapped with a shared fallback logger.
-	 * @param primaryLogger primary logger to try first
+	 *
+	 * @param primaryLogger   primary logger to try first
 	 * @param secondaryLogger secondary logger
 	 * @param tertiaryLoggers optional vararg of further fallback loggers
 	 * @return the resulting composite logger for the related categories
@@ -67,6 +69,7 @@ public final class LogDelegateFactory {
 	 * precluding it from being enabled together with other log categories from
 	 * the same package. This is useful for specialized output that is either
 	 * too verbose or otherwise optional or unnecessary to see all the time.
+	 *
 	 * @param clazz the class for which to create a logger
 	 * @return a Log with the category {@code "_" + fully-qualified class name}
 	 */
@@ -79,6 +82,7 @@ public final class LogDelegateFactory {
 	 * precluding it from being enabled together with other log categories from
 	 * the same package. This is useful for specialized output that is either
 	 * too verbose or otherwise optional or unnecessary to see all the time.
+	 *
 	 * @param category the log category to use
 	 * @return a Log with the category {@code "_" + category}
 	 * @since 5.3.5

@@ -24,12 +24,13 @@ import org.apache.commons.logging.impl.NoOpLog;
 
 
 /**
+ * 组合日志模式
  * Implementation of {@link Log} that wraps a list of loggers and delegates
  * to the first one for which logging is enabled at the given level.
  *
  * @author Rossen Stoyanchev
- * @since 5.1
  * @see LogDelegateFactory#getCompositeLog
+ * @since 5.1
  */
 final class CompositeLog implements Log {
 
@@ -41,6 +42,7 @@ final class CompositeLog implements Log {
 
 	/**
 	 * Package-private constructor with list of loggers.
+	 *
 	 * @param loggers the loggers to use
 	 */
 	CompositeLog(List<Log> loggers) {

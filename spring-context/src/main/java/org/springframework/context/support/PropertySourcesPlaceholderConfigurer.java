@@ -129,8 +129,10 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	 */
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		//属性容器为空
 		if (this.propertySources == null) {
 			this.propertySources = new MutablePropertySources();
+			//环境属性存在的情况下
 			if (this.environment != null) {
 				PropertyResolver propertyResolver = this.environment;
 				// If the ignoreUnresolvablePlaceholders flag is set to true, we have to create a
@@ -145,6 +147,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 					propertyResolver = resolver;
 				}
 				PropertyResolver propertyResolverToUse = propertyResolver;
+				// 往属性容器中添加 environment
 				this.propertySources.addLast(
 					new PropertySource<>(ENVIRONMENT_PROPERTIES_PROPERTY_SOURCE_NAME, this.environment) {
 						@Override
@@ -156,6 +159,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 				);
 			}
 			try {
+				// 加载外部的属性文件
 				PropertySource<?> localPropertySource =
 						new PropertiesPropertySource(LOCAL_PROPERTIES_PROPERTY_SOURCE_NAME, mergeProperties());
 				if (this.localOverride) {
@@ -169,7 +173,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 				throw new BeanInitializationException("Could not load properties", ex);
 			}
 		}
-
+		// 处理占位符
 		processProperties(beanFactory, new PropertySourcesPropertyResolver(this.propertySources));
 		this.appliedPropertySources = this.propertySources;
 	}
@@ -181,10 +185,14 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess,
 			final ConfigurablePropertyResolver propertyResolver) throws BeansException {
 
+		// 设置前置占位符
 		propertyResolver.setPlaceholderPrefix(this.placeholderPrefix);
+		// 设置后置占位符
 		propertyResolver.setPlaceholderSuffix(this.placeholderSuffix);
+		// 设置字符分隔符
 		propertyResolver.setValueSeparator(this.valueSeparator);
 
+		// 字符串解析器
 		StringValueResolver valueResolver = strVal -> {
 			String resolved = (this.ignoreUnresolvablePlaceholders ?
 					propertyResolver.resolvePlaceholders(strVal) :
@@ -195,6 +203,7 @@ public class PropertySourcesPlaceholderConfigurer extends PlaceholderConfigurerS
 			return (resolved.equals(this.nullValue) ? null : resolved);
 		};
 
+		// 真正的解析方法
 		doProcessProperties(beanFactoryToProcess, valueResolver);
 	}
 

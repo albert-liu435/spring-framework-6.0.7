@@ -22,6 +22,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 一种简单的日志消息类型，用于Commons Logging，允许对给定的｛@link Supplier｝实例进行方便的延迟解析
  * A simple log message type for use with Commons Logging, allowing for convenient
  * lazy resolution of a given {@link Supplier} instance (typically bound to a lambda
  * expression) or a printf-style format string ({@link String#format}) in its
@@ -29,7 +30,6 @@ import org.springframework.util.Assert;
  *
  * @author Juergen Hoeller
  * @author Sebastien Deleuze
- * @since 5.2
  * @see #of(Supplier)
  * @see #format(String, Object)
  * @see #format(String, Object...)
@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  * @see org.apache.commons.logging.Log#info(Object)
  * @see org.apache.commons.logging.Log#debug(Object)
  * @see org.apache.commons.logging.Log#trace(Object)
+ * @since 5.2
  */
 public abstract class LogMessage implements CharSequence {
 
@@ -78,6 +79,7 @@ public abstract class LogMessage implements CharSequence {
 
 	/**
 	 * Build a lazily resolving message from the given supplier.
+	 *
 	 * @param supplier the supplier (typically bound to a lambda expression)
 	 * @see #toString()
 	 */
@@ -87,8 +89,9 @@ public abstract class LogMessage implements CharSequence {
 
 	/**
 	 * Build a lazily formatted message from the given format string and argument.
+	 *
 	 * @param format the format string (following {@link String#format} rules)
-	 * @param arg1 the argument (can be {@code null})
+	 * @param arg1   the argument (can be {@code null})
 	 * @see String#format(String, Object...)
 	 */
 	public static LogMessage format(String format, @Nullable Object arg1) {
@@ -97,9 +100,10 @@ public abstract class LogMessage implements CharSequence {
 
 	/**
 	 * Build a lazily formatted message from the given format string and arguments.
+	 *
 	 * @param format the format string (following {@link String#format} rules)
-	 * @param arg1 the first argument (can be {@code null})
-	 * @param arg2 the second argument (can be {@code null})
+	 * @param arg1   the first argument (can be {@code null})
+	 * @param arg2   the second argument (can be {@code null})
 	 * @see String#format(String, Object...)
 	 */
 	public static LogMessage format(String format, @Nullable Object arg1, @Nullable Object arg2) {
@@ -108,10 +112,11 @@ public abstract class LogMessage implements CharSequence {
 
 	/**
 	 * Build a lazily formatted message from the given format string and arguments.
+	 *
 	 * @param format the format string (following {@link String#format} rules)
-	 * @param arg1 the first argument (can be {@code null})
-	 * @param arg2 the second argument (can be {@code null})
-	 * @param arg3 the third argument (can be {@code null})
+	 * @param arg1   the first argument (can be {@code null})
+	 * @param arg2   the second argument (can be {@code null})
+	 * @param arg3   the third argument (can be {@code null})
 	 * @see String#format(String, Object...)
 	 */
 	public static LogMessage format(String format, @Nullable Object arg1, @Nullable Object arg2, @Nullable Object arg3) {
@@ -120,15 +125,16 @@ public abstract class LogMessage implements CharSequence {
 
 	/**
 	 * Build a lazily formatted message from the given format string and arguments.
+	 *
 	 * @param format the format string (following {@link String#format} rules)
-	 * @param arg1 the first argument (can be {@code null})
-	 * @param arg2 the second argument (can be {@code null})
-	 * @param arg3 the third argument (can be {@code null})
-	 * @param arg4 the fourth argument (can be {@code null})
+	 * @param arg1   the first argument (can be {@code null})
+	 * @param arg2   the second argument (can be {@code null})
+	 * @param arg3   the third argument (can be {@code null})
+	 * @param arg4   the fourth argument (can be {@code null})
 	 * @see String#format(String, Object...)
 	 */
 	public static LogMessage format(String format, @Nullable Object arg1, @Nullable Object arg2, @Nullable Object arg3,
-			@Nullable Object arg4) {
+									@Nullable Object arg4) {
 		return new FormatMessage4(format, arg1, arg2, arg3, arg4);
 	}
 
@@ -137,9 +143,10 @@ public abstract class LogMessage implements CharSequence {
 	 * <p>This varargs {@code format()} variant may be costly. You should therefore
 	 * use the individual argument variants whenever possible;
 	 * {@link #format(String, Object)}, {@link #format(String, Object, Object)}, etc.
+	 *
 	 * @param format the format string (following {@link String#format} rules)
-	 * @param args the varargs array (can be {@code null} and can contain {@code null}
-	 * elements)
+	 * @param args   the varargs array (can be {@code null} and can contain {@code null}
+	 *               elements)
 	 * @see String#format(String, Object...)
 	 */
 	public static LogMessage format(String format, @Nullable Object... args) {
@@ -252,7 +259,7 @@ public abstract class LogMessage implements CharSequence {
 		private final Object arg4;
 
 		FormatMessage4(String format, @Nullable Object arg1, @Nullable Object arg2, @Nullable Object arg3,
-				@Nullable Object arg4) {
+					   @Nullable Object arg4) {
 			super(format);
 			this.arg1 = arg1;
 			this.arg2 = arg2;

@@ -50,6 +50,7 @@ public final class ConversionServiceFactory {
 	public static void registerConverters(@Nullable Set<?> converters, ConverterRegistry registry) {
 		if (converters != null) {
 			for (Object candidate : converters) {
+
 				if (candidate instanceof GenericConverter genericConverter) {
 					registry.addConverter(genericConverter);
 				} else if (candidate instanceof Converter<?, ?> converter) {

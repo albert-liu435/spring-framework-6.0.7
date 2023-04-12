@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import org.springframework.lang.Nullable;
 
 /**
- * PropertySources的接口默认实现类
+ * PropertySources的接口默认实现类。允许操作包含的属性源并提供构造函数
  * The default implementation of the {@link PropertySources} interface.
  * Allows manipulation of contained property sources and provides a constructor
  * for copying an existing {@code PropertySources} instance.
