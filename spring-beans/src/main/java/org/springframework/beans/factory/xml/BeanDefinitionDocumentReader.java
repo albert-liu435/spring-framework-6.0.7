@@ -22,6 +22,7 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 
 /**
  * SPI机制用于解析XML文档
+ * BeanDefinitionDocumentReader 的作用就是进行 BeanDefinition 的注册
  * SPI for parsing an XML document that contains Spring bean definitions.
  * Used by {@link XmlBeanDefinitionReader} for actually parsing a DOM document.
  *
@@ -39,6 +40,7 @@ public interface BeanDefinitionDocumentReader {
 
 	/**
 	 * 根据 Spring 对 Bean 的定义规则进行解析
+	 * 注册bean的定义
 	 * Read bean definitions from the given DOM document and
 	 * register them with the registry in the given reader context.
 	 *

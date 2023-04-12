@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * 持有Resource资源的类
  * Holder that combines a {@link Resource} descriptor with a specific encoding
  * or {@code Charset} to be used for reading from the resource.
  *
@@ -38,10 +39,10 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @author Arjen Poutsma
- * @since 1.2.6
  * @see Resource#getInputStream()
  * @see java.io.Reader
  * @see java.nio.charset.Charset
+ * @since 1.2.6
  */
 public class EncodedResource implements InputStreamSource {
 
@@ -57,6 +58,7 @@ public class EncodedResource implements InputStreamSource {
 	/**
 	 * Create a new {@code EncodedResource} for the given {@code Resource},
 	 * not specifying an explicit encoding or {@code Charset}.
+	 *
 	 * @param resource the {@code Resource} to hold (never {@code null})
 	 */
 	public EncodedResource(Resource resource) {
@@ -66,6 +68,7 @@ public class EncodedResource implements InputStreamSource {
 	/**
 	 * Create a new {@code EncodedResource} for the given {@code Resource},
 	 * using the specified {@code encoding}.
+	 *
 	 * @param resource the {@code Resource} to hold (never {@code null})
 	 * @param encoding the encoding to use for reading from the resource
 	 */
@@ -76,8 +79,9 @@ public class EncodedResource implements InputStreamSource {
 	/**
 	 * Create a new {@code EncodedResource} for the given {@code Resource},
 	 * using the specified {@code Charset}.
+	 *
 	 * @param resource the {@code Resource} to hold (never {@code null})
-	 * @param charset the {@code Charset} to use for reading from the resource
+	 * @param charset  the {@code Charset} to use for reading from the resource
 	 */
 	public EncodedResource(Resource resource, @Nullable Charset charset) {
 		this(resource, null, charset);
@@ -121,6 +125,7 @@ public class EncodedResource implements InputStreamSource {
 	 * Determine whether a {@link Reader} is required as opposed to an {@link InputStream},
 	 * i.e. whether an {@linkplain #getEncoding() encoding} or a {@link #getCharset() Charset}
 	 * has been specified.
+	 *
 	 * @see #getReader()
 	 * @see #getInputStream()
 	 */
@@ -132,6 +137,7 @@ public class EncodedResource implements InputStreamSource {
 	 * Open a {@code java.io.Reader} for the specified resource, using the specified
 	 * {@link #getCharset() Charset} or {@linkplain #getEncoding() encoding}
 	 * (if any).
+	 *
 	 * @throws IOException if opening the Reader failed
 	 * @see #requiresReader()
 	 * @see #getInputStream()
@@ -139,11 +145,9 @@ public class EncodedResource implements InputStreamSource {
 	public Reader getReader() throws IOException {
 		if (this.charset != null) {
 			return new InputStreamReader(this.resource.getInputStream(), this.charset);
-		}
-		else if (this.encoding != null) {
+		} else if (this.encoding != null) {
 			return new InputStreamReader(this.resource.getInputStream(), this.encoding);
-		}
-		else {
+		} else {
 			return new InputStreamReader(this.resource.getInputStream());
 		}
 	}
@@ -151,6 +155,7 @@ public class EncodedResource implements InputStreamSource {
 	/**
 	 * Open an {@code InputStream} for the specified resource, ignoring any specified
 	 * {@link #getCharset() Charset} or {@linkplain #getEncoding() encoding}.
+	 *
 	 * @throws IOException if opening the InputStream failed
 	 * @see #requiresReader()
 	 * @see #getReader()
@@ -163,19 +168,18 @@ public class EncodedResource implements InputStreamSource {
 	/**
 	 * Returns the contents of the specified resource as a string, using the specified
 	 * {@link #getCharset() Charset} or {@linkplain #getEncoding() encoding} (if any).
+	 *
 	 * @throws IOException if opening the resource failed
-	 * @since 6.0.5
 	 * @see Resource#getContentAsString(Charset)
+	 * @since 6.0.5
 	 */
 	public String getContentAsString() throws IOException {
 		Charset charset;
 		if (this.charset != null) {
 			charset = this.charset;
-		}
-		else if (this.encoding != null) {
+		} else if (this.encoding != null) {
 			charset = Charset.forName(this.encoding);
-		}
-		else {
+		} else {
 			charset = Charset.defaultCharset();
 		}
 		return this.resource.getContentAsString(charset);

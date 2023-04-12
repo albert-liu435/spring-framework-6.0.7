@@ -41,6 +41,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * BeanDefinitionDocumentReader的默认实现类
+ * BeanDefinitionDocumentReader 的作用就是进行 BeanDefinition 的注册
+ * <p>
  * Default implementation of the {@link BeanDefinitionDocumentReader} interface that
  * reads bean definitions according to the "spring-beans" DTD and XSD format
  * (Spring's default XML bean definition format).
@@ -119,6 +121,15 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 
 	/**
+	 * 设置父BeanDefinitionParserDelegate 对象， 值得注意的是这个设置父对象一般情况下是不存在的即 this.delegate = null
+	 * 创建 BeanDefinitionParserDelegate 对象 ， BeanDefinitionParserDelegate 对象是作为解析的重要方法.
+	 * 对于 profile 属性的处理
+	 * XML 解析的前置处理
+	 * XML 的解析处理
+	 * XML 解析的后置处理
+	 * 设置成员变量
+	 * <p>
+	 * <p>
 	 * 解析的具体实现，依次注册 BeanDefinition，使用给定的根元素
 	 * Register each bean definition within the given root {@code <beans/>} element.
 	 */
@@ -136,7 +147,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		BeanDefinitionParserDelegate parent = this.delegate;
 		// 创建 BeanDefinitionParserDelegate
 		this.delegate = createDelegate(getReaderContext(), root, parent);
-// 判断命名空间是否为默认的命名空间
+		// 判断命名空间是否为默认的命名空间
 		// 默认命名空间: http://www.springframework.org/schema/beans
 		if (this.delegate.isDefaultNamespace(root)) {
 			// 获取 profile 属性
@@ -209,6 +220,13 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * 使用 Spring 的 bean解析规则 解析 Spring元素节点
+	 * Spring 原生标签的处理
+	 * <p>
+	 * Spring 的原生标签
+	 * alias 标签
+	 * bean 标签
+	 * beans 标签
+	 * import 标签
 	 *
 	 * @param ele
 	 * @param delegate

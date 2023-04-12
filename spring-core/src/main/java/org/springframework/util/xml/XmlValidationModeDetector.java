@@ -86,6 +86,8 @@ public class XmlValidationModeDetector {
 
 
 	/**
+	 * 获取xml文档的校验模式
+	 * Spring 中 XmlValidationModeDetector 对验证模式的确认是循环 xml 整个文件的每一行判断是否有 DOCTYPE 字符串， 包含就是 DTD 验证模式， 不包含就是 XSD 模式
 	 * Detect the validation mode for the XML document in the supplied {@link InputStream}.
 	 * <p>Note that the supplied {@link InputStream} is closed by this method before returning.
 	 *
