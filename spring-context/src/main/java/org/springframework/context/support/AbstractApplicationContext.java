@@ -217,6 +217,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	private final AtomicBoolean closed = new AtomicBoolean();
 
 	/**
+	 * 同步监听器
 	 * Synchronization monitor for the "refresh" and "destroy".
 	 */
 	private final Object startupShutdownMonitor = new Object();
@@ -1106,6 +1107,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 关闭应用上下文，并销毁所有的Bean
 	 * Close this application context, destroying all beans in its bean factory.
 	 * <p>Delegates to {@code doClose()} for the actual closing procedure.
 	 * Also removes a JVM shutdown hook, if registered, as it's not needed anymore.
@@ -1148,6 +1150,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 
 			try {
+				//发布事件
 				// Publish shutdown event.
 				publishEvent(new ContextClosedEvent(this));
 			} catch (Throwable ex) {

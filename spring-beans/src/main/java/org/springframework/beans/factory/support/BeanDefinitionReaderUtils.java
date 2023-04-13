@@ -60,6 +60,7 @@ public abstract class BeanDefinitionReaderUtils {
 
 		GenericBeanDefinition bd = new GenericBeanDefinition();
 		// parentName 可能为空
+		// 设置 父bean
 		bd.setParentName(parentName);
 		if (className != null) {
 			// 如果 className 不为空，则使用以传入的 classLoader 加载类对象，否则只记录 className

@@ -486,6 +486,7 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 判断beanName是否唯一
 	 * Validate that the specified bean name and aliases have not been used already
 	 * within the current level of beans element nesting.
 	 */
@@ -592,6 +593,7 @@ public class BeanDefinitionParserDelegate {
 			// 在嵌入 beanDifinition 情况下且没有单独指定 scope 属性则使用父类默认的属性
 		} else if (containingBean != null) {
 			// Take default from containing bean in case of an inner bean definition.
+			// 设置 bean definition 中的 scope
 			bd.setScope(containingBean.getScope());
 		}
 		// 解析 abstract 属性
@@ -679,15 +681,24 @@ public class BeanDefinitionParserDelegate {
 	 * Parse the meta elements underneath the given element, if any.
 	 */
 	public void parseMetaElements(Element ele, BeanMetadataAttributeAccessor attributeAccessor) {
+		// 获取下级标签
 		NodeList nl = ele.getChildNodes();
+		// 循环子标签
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 设置数据
+			// 是否是 meta 标签
 			if (isCandidateElement(node) && nodeNameEquals(node, META_ELEMENT)) {
+				// 获取 key 属性
 				Element metaElement = (Element) node;
 				String key = metaElement.getAttribute(KEY_ATTRIBUTE);
+				// 获取 value 属性
 				String value = metaElement.getAttribute(VALUE_ATTRIBUTE);
+				// 元数据对象设置
 				BeanMetadataAttribute attribute = new BeanMetadataAttribute(key, value);
+				// 设置 source
 				attribute.setSource(extractSource(metaElement));
+				// 信息添加
 				attributeAccessor.addMetadataAttribute(attribute);
 			}
 		}

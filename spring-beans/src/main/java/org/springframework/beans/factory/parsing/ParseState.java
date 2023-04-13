@@ -21,6 +21,7 @@ import java.util.ArrayDeque;
 import org.springframework.lang.Nullable;
 
 /**
+ * 队列的封装
  * Simple {@link ArrayDeque}-based structure for tracking the logical position during
  * a parsing process. {@link Entry entries} are added to the ArrayDeque at each point
  * during the parse phase in a reader-specific manner.

@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 /**
+ * 别名管理器
  * Simple implementation of the {@link AliasRegistry} interface.
  *
  * <p>Serves as base class for
@@ -59,18 +60,23 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
 		synchronized (this.aliasMap) {
+			// 别名和真名是否相同
 			if (alias.equals(name)) {
 				this.aliasMap.remove(alias);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Alias definition '" + alias + "' ignored since it points to same name");
 				}
 			} else {
+				// 通过别名获取真名
 				String registeredName = this.aliasMap.get(alias);
+				// 真名不为空
 				if (registeredName != null) {
+					// 真名等于参数的真名
 					if (registeredName.equals(name)) {
 						// An existing alias - no need to re-register
 						return;
 					}
+					// 是否覆盖别名
 					if (!allowAliasOverriding()) {
 						throw new IllegalStateException("Cannot define alias '" + alias + "' for name '" +
 								name + "': It is already registered for name '" + registeredName + "'.");
@@ -80,7 +86,9 @@ public class SimpleAliasRegistry implements AliasRegistry {
 								registeredName + "' with new target name '" + name + "'");
 					}
 				}
+				// 别名是否循环使用
 				checkForAliasCircle(name, alias);
+				// 设置 别名对应真名
 				this.aliasMap.put(alias, name);
 				if (logger.isTraceEnabled()) {
 					logger.trace("Alias definition '" + alias + "' registered for name '" + name + "'");
@@ -105,7 +113,10 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * @since 4.2.1
 	 */
 	public boolean hasAlias(String name, String alias) {
+		// 从别名map中获取已注册的真名
 		String registeredName = this.aliasMap.get(alias);
+		// 注册的真名和 参数真名是否相同,
+		//   // 递归判断是否存在别名
 		return ObjectUtils.nullSafeEquals(registeredName, name) ||
 				(registeredName != null && hasAlias(name, registeredName));
 	}
