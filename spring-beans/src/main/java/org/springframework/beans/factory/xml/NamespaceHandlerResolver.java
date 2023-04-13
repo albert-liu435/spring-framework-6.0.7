@@ -19,20 +19,23 @@ package org.springframework.beans.factory.xml;
 import org.springframework.lang.Nullable;
 
 /**
+ * 命名空间的解析接口
  * Used by the {@link org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader} to
  * locate a {@link NamespaceHandler} implementation for a particular namespace URI.
  *
  * @author Rob Harrop
- * @since 2.0
  * @see NamespaceHandler
  * @see org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader
+ * @since 2.0
  */
 @FunctionalInterface
 public interface NamespaceHandlerResolver {
 
 	/**
+	 * 解析命名空间的 url 获得 命名空间处理器
 	 * Resolve the namespace URI and return the located {@link NamespaceHandler}
 	 * implementation.
+	 *
 	 * @param namespaceUri the relevant namespace URI
 	 * @return the located {@link NamespaceHandler} (may be {@code null})
 	 */

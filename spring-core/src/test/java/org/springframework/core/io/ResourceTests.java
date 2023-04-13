@@ -68,6 +68,7 @@ class ResourceTests {
 	@ParameterizedTest(name = "{index}: {0}")
 	@MethodSource("resource")
 	void resourceIsValid(Resource resource) throws Exception {
+		String filename = resource.getFilename();
 		assertThat(resource.getFilename()).isEqualTo("Resource.class");
 		assertThat(resource.getURL().getFile()).endsWith("Resource.class");
 		assertThat(resource.exists()).isTrue();

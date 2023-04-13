@@ -47,6 +47,7 @@ import org.springframework.util.ResourceUtils;
  */
 public abstract class PropertiesLoaderUtils {
 
+	//是否为xml文件
 	private static final String XML_FILE_EXTENSION = ".xml";
 
 
@@ -159,6 +160,7 @@ public abstract class PropertiesLoaderUtils {
 	}
 
 	/**
+	 * 加载资源文件
 	 * Load all properties from the specified class path resource
 	 * (in ISO-8859-1 encoding), using the given class loader.
 	 * <p>Merges properties if more than one resource of the same name

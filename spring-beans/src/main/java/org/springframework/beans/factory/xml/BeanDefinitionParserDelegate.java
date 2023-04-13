@@ -86,6 +86,7 @@ import org.springframework.util.xml.DomUtils;
  */
 public class BeanDefinitionParserDelegate {
 
+	//默认的命名空间URI
 	public static final String BEANS_NAMESPACE_URI = "http://www.springframework.org/schema/beans";
 
 	public static final String MULTI_VALUE_ATTRIBUTE_DELIMITERS = ",; ";
@@ -1427,6 +1428,7 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	/**
+	 * 解析自定义标签
 	 * Parse a custom element (outside the default namespace).
 	 *
 	 * @param ele the element to parse
@@ -1446,10 +1448,12 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinition parseCustomElement(Element ele, @Nullable BeanDefinition containingBd) {
+		// 获取命名空间的URL,namespaceUri 和前文编写的 spring.handlers 的文件内容有一个直接的关系. 在 spring.handlers 中我们填写的内容是 命名空间对应命名空间处理器.
 		String namespaceUri = getNamespaceURI(ele);
 		if (namespaceUri == null) {
 			return null;
 		}
+		// 命名空间处理器
 		NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 		if (handler == null) {
 			error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", ele);
@@ -1552,6 +1556,7 @@ public class BeanDefinitionParserDelegate {
 
 
 	/**
+	 * 获取namespace URI
 	 * Get the namespace URI for the supplied node.
 	 * <p>The default implementation uses {@link Node#getNamespaceURI}.
 	 * Subclasses may override the default implementation to provide a
