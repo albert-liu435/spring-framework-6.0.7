@@ -775,14 +775,20 @@ public class BeanDefinitionParserDelegate {
 	 * Parse lookup-override sub-elements of the given bean element.
 	 */
 	public void parseLookupOverrideSubElements(Element beanEle, MethodOverrides overrides) {
+		// 获取子标签
 		NodeList nl = beanEle.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
+			// 是否有 lookup-method 标签
 			if (isCandidateElement(node) && nodeNameEquals(node, LOOKUP_METHOD_ELEMENT)) {
 				Element ele = (Element) node;
+				// 获取 name 属性
 				String methodName = ele.getAttribute(NAME_ATTRIBUTE);
+				// 获取 bean 属性
 				String beanRef = ele.getAttribute(BEAN_ELEMENT);
+				// 创建 覆盖依赖
 				LookupOverride override = new LookupOverride(methodName, beanRef);
+				// 设置 source
 				override.setSource(extractSource(ele));
 				overrides.addOverride(override);
 			}
