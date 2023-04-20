@@ -21,6 +21,8 @@ import org.springframework.context.annotation.AnnotationConfigBeanDefinitionPars
 import org.springframework.context.annotation.ComponentScanBeanDefinitionParser;
 
 /**
+ * 该类是用来解析 context 的自定义标签,spring-context\src\main\resources\META-INF\spring.handlers 中的信息
+ * <p>
  * {@link org.springframework.beans.factory.xml.NamespaceHandler}
  * for the '{@code context}' namespace.
  *

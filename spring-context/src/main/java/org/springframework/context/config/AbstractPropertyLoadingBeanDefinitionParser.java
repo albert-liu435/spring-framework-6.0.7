@@ -46,7 +46,9 @@ abstract class AbstractPropertyLoadingBeanDefinitionParser extends AbstractSingl
 		//获取文件路径，如classpath:beans/factory/config/placeholders/property.properties
 		String location = element.getAttribute("location");
 		if (StringUtils.hasLength(location)) {
+			//实际的位置
 			location = parserContext.getReaderContext().getEnvironment().resolvePlaceholders(location);
+			//转换为数组
 			String[] locations = StringUtils.commaDelimitedListToStringArray(location);
 			builder.addPropertyValue("locations", locations);
 		}

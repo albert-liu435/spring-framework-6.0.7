@@ -316,7 +316,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		String beanName = transformedBeanName(name);
 		Object beanInstance;
 
-		//获取到真正的beanName之后，不论是单例Bean还是原型Bean，都会调用getSingleton(beanName)去单例池中查找是否有单例Bean。如果从单例池中取出对象了，接下来的getObjectForBeanInstance()主要根据原始name判断当前Bean是否是FactoryBean，以及获取FactoryBean对象。如果单例池中不存在，则需要创建Bean实例
+		//获取到真正的beanName之后，不论是单例Bean还是原型Bean，都会调用getSingleton(beanName)去单例池中查找是否有单例Bean。如果从单例池中取出对象了，接下来的getObjectForBeanInstance()主要根据原始name判断
+		// 当前Bean是否是FactoryBean，以及获取FactoryBean对象。如果单例池中不存在，则需要创建Bean实例
 		//————————————————
 		//版权声明：本文为CSDN博主「sermonlizhi」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 		//原文链接：https://blog.csdn.net/sermonlizhi/article/details/120748246
@@ -324,6 +325,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 		// 根据 beanName 查看缓存中是否有已实例化的 单例bean，对于 单例bean，整个 IoC容器 只创建一次
 		Object sharedInstance = getSingleton(beanName);
+		// 单例对象是否存在 参数是否为空
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
@@ -1940,6 +1942,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
 		//如果指定的 name 是工厂相关(以&为前缀)
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
+			//类型判断
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
 			}
@@ -1950,6 +1953,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			if (mbd != null) {
 				mbd.isFactoryBean = true;
 			}
+			//返回实例
 			return beanInstance;
 		}
 

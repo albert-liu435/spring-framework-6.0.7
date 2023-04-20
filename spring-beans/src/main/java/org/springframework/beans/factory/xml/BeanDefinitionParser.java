@@ -22,6 +22,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.lang.Nullable;
 
 /**
+ * 用来处理自定义顶级标签
  * Interface used by the {@link DefaultBeanDefinitionDocumentReader} to handle custom,
  * top-level (directly under {@code <beans/>}) tags.
  *
@@ -32,13 +33,13 @@ import org.springframework.lang.Nullable;
  * {@link NamespaceHandler} for the namespace in which the custom tag resides.
  *
  * @author Rob Harrop
- * @since 2.0
  * @see NamespaceHandler
  * @see AbstractBeanDefinitionParser
+ * @since 2.0
  */
 public interface BeanDefinitionParser {
 
-	/**
+	/**解析元素
 	 * Parse the specified {@link Element} and register the resulting
 	 * {@link BeanDefinition BeanDefinition(s)} with the
 	 * {@link org.springframework.beans.factory.xml.ParserContext#getRegistry() BeanDefinitionRegistry}
@@ -47,9 +48,10 @@ public interface BeanDefinitionParser {
 	 * from the parse if they will ever be used in a nested fashion (for example as
 	 * an inner tag in a {@code <property/>} tag). Implementations may return
 	 * {@code null} if they will <strong>not</strong> be used in a nested fashion.
-	 * @param element the element that is to be parsed into one or more {@link BeanDefinition BeanDefinitions}
+	 *
+	 * @param element       the element that is to be parsed into one or more {@link BeanDefinition BeanDefinitions}
 	 * @param parserContext the object encapsulating the current state of the parsing process;
-	 * provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
+	 *                      provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
 	 * @return the primary {@link BeanDefinition}
 	 */
 	@Nullable
