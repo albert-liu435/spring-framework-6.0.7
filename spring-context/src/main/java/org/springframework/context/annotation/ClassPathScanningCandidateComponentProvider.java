@@ -383,23 +383,30 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	private Set<BeanDefinition> addCandidateComponentsFromIndex(CandidateComponentsIndex index, String basePackage) {
+		// 候选 BeanDefinition
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
 		try {
+			// 类型列表
 			Set<String> types = new HashSet<>();
+			// 导入的类型过滤器
 			for (TypeFilter filter : this.includeFilters) {
 				String stereotype = extractStereotype(filter);
 				if (stereotype == null) {
 					throw new IllegalArgumentException("Failed to extract stereotype from " + filter);
 				}
+				// 从组件索引中获取通过的类型放入容器
 				types.addAll(index.getCandidateTypes(basePackage, stereotype));
 			}
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
+			// 类型处理
 			for (String type : types) {
 				MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(type);
+				// 是否是候选组件
 				if (isCandidateComponent(metadataReader)) {
 					ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
 					sbd.setSource(metadataReader.getResource());
+					// 是否是候选组件
 					if (isCandidateComponent(sbd)) {
 						if (debugEnabled) {
 							logger.debug("Using candidate component class from index: " + type);
@@ -423,15 +430,20 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
+		// 候选组件列表 BeanDefinition 列表
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
 		try {
 			// 获取basePackage下所有的文件资源
+			// classpath*: + replace(basePackage,'.','/') + / + **/*.class
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
 			//根据路径获取资源对象
+			// 转换成资源对象
+			// 这里会转换成 FileSystemResource
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
+			// 资源处理
 			for (Resource resource : resources) {
 				String filename = resource.getFilename();
 				if (filename != null && filename.contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
@@ -457,9 +469,10 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 						//经过了过滤器和条件鉴定器之后，生成BeanDefinition，这个时候BeanDefinition的beanClass属性是beanClassName，而不是Class对象，因为此时只是扫描，还没进行加载
 						//
 						//还需要判断这个BeanDefinition是否可以实例化成一个对象
-
+						// bean定义扫描
 
 						ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
+						// 设置资源对象
 						sbd.setSource(resource);
 						if (isCandidateComponent(sbd)) {
 							if (debugEnabled) {

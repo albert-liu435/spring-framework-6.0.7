@@ -54,6 +54,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 
 	private final Set<ProtocolResolver> protocolResolvers = new LinkedHashSet<>(4);
 
+	//资源缓存
 	private final Map<Class<?>, Map<Resource, ?>> resourceCaches = new ConcurrentHashMap<>(4);
 
 
@@ -183,7 +184,8 @@ public class DefaultResourceLoader implements ResourceLoader {
 		}
 	}
 
-	/**实例化一个 FileSystemResource 并返回，以便后续对资源的 IO 操作本方法是在 DefaultResourceLoader 的 getResource() 方法中被调用的，
+	/**
+	 * 实例化一个 FileSystemResource 并返回，以便后续对资源的 IO 操作本方法是在 DefaultResourceLoader 的 getResource() 方法中被调用的，
 	 * Return a Resource handle for the resource at the given path.
 	 * <p>The default implementation supports class path locations. This should
 	 * be appropriate for standalone implementations but can be overridden,

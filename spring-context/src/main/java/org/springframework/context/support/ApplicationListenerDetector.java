@@ -69,16 +69,23 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 		return bean;
 	}
 
+	/**
+	 * 将事件处理器加入到容器中的具体代码
+	 *
+	 * @param bean     the new bean instance
+	 * @param beanName the name of the bean
+	 * @return
+	 */
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
+
 		if (bean instanceof ApplicationListener<?> applicationListener) {
 			// potentially not detected as a listener by getBeanNamesForType retrieval
 			Boolean flag = this.singletonNames.get(beanName);
 			if (Boolean.TRUE.equals(flag)) {
 				// singleton bean (top-level or inner): register on the fly
 				this.applicationContext.addApplicationListener(applicationListener);
-			}
-			else if (Boolean.FALSE.equals(flag)) {
+			} else if (Boolean.FALSE.equals(flag)) {
 				if (logger.isWarnEnabled() && !this.applicationContext.containsBean(beanName)) {
 					// inner bean with other scope - can't reliably process events
 					logger.warn("Inner bean '" + beanName + "' implements ApplicationListener interface " +
@@ -99,8 +106,7 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 				ApplicationEventMulticaster multicaster = this.applicationContext.getApplicationEventMulticaster();
 				multicaster.removeApplicationListener(applicationListener);
 				multicaster.removeApplicationListenerBean(beanName);
-			}
-			catch (IllegalStateException ex) {
+			} catch (IllegalStateException ex) {
 				// ApplicationEventMulticaster not initialized yet - no need to remove a listener
 			}
 		}
@@ -116,7 +122,7 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 	public boolean equals(@Nullable Object other) {
 		return (this == other ||
 				(other instanceof ApplicationListenerDetector applicationListenerDectector &&
-				this.applicationContext == applicationListenerDectector.applicationContext));
+						this.applicationContext == applicationListenerDectector.applicationContext));
 	}
 
 	@Override

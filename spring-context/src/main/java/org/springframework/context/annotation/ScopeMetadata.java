@@ -20,6 +20,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.util.Assert;
 
 /**
+ * scope元数据类
  * Describes scope characteristics for a Spring-managed bean including the scope
  * name and the scoped-proxy behavior.
  *
@@ -28,9 +29,9 @@ import org.springframework.util.Assert;
  *
  * @author Mark Fisher
  * @author Juergen Hoeller
- * @since 2.5
  * @see ScopeMetadataResolver
  * @see ScopedProxyMode
+ * @since 2.5
  */
 public class ScopeMetadata {
 

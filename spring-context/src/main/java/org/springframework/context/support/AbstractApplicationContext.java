@@ -136,6 +136,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		implements ConfigurableApplicationContext {
 
 	/**
+	 * MessageSource 的bean名称
 	 * Name of the MessageSource bean in the factory.
 	 * If none is supplied, message resolution is delegated to the parent.
 	 *
@@ -405,6 +406,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 推送事件: 上下文刷新事件
 	 * Publish the given event to all listeners.
 	 * <p>Note: Listeners get initialized after the MessageSource, to be able
 	 * to access it within listener implementations. Thus, MessageSource
@@ -860,13 +862,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * MessageSource Bean 的创建也就是在这里进行
 	 * Initialize the MessageSource.
 	 * Use parent's if none defined in this context.
 	 */
 	protected void initMessageSource() {
+		// 获取 beanFactory
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 判断容器中是否存在 messageSource 这个beanName
+		// 存在的情况
 		if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
+			// 获取 messageSource 对象
 			this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
+			// 设置 父 MessageSource
 			// Make MessageSource aware of parent MessageSource.
 			if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource hms &&
 					hms.getParentMessageSource() == null) {
@@ -877,11 +885,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			if (logger.isTraceEnabled()) {
 				logger.trace("Using MessageSource [" + this.messageSource + "]");
 			}
+			// 不存在的情况
 		} else {
+			//  MessageSource 实现类
 			// Use empty MessageSource to be able to accept getMessage calls.
 			DelegatingMessageSource dms = new DelegatingMessageSource();
+			// 设置父 MessageSource
 			dms.setParentMessageSource(getInternalParentMessageSource());
 			this.messageSource = dms;
+			// 注册 MessageSource
 			beanFactory.registerSingleton(MESSAGE_SOURCE_BEAN_NAME, this.messageSource);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No '" + MESSAGE_SOURCE_BEAN_NAME + "' bean, using [" + this.messageSource + "]");
@@ -916,6 +928,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 实例化生命周期处理接口
+	 * <p>
 	 * Initialize the LifecycleProcessor.
 	 * Uses DefaultLifecycleProcessor if none defined in the context.
 	 *
@@ -1037,15 +1051,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	@SuppressWarnings("deprecation")
 	protected void finishRefresh() {
+		// 清空资源缓存
 		// Clear context-level resource caches (such as ASM metadata from scanning).
 		clearResourceCaches();
 
+		// 实例化生命周期处理接口
 		// Initialize lifecycle processor for this context.
 		initLifecycleProcessor();
 
+		//生命周期处理接口进行刷新操作
 		// Propagate refresh to lifecycle processor first.
 		getLifecycleProcessor().onRefresh();
 
+		//推送事件: 上下文刷新事件
 		// Publish the final event.
 		publishEvent(new ContextRefreshedEvent(this));
 	}

@@ -23,6 +23,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
 
 /**
+ * 根据特定的条件，对bean进行依赖配置
  * Context information for use by {@link Condition} implementations.
  *
  * @author Phillip Webb
@@ -34,8 +35,9 @@ public interface ConditionContext {
 	/**
 	 * Return the {@link BeanDefinitionRegistry} that will hold the bean definition
 	 * should the condition match.
+	 *
 	 * @throws IllegalStateException if no registry is available (which is unusual:
-	 * only the case with a plain {@link ClassPathScanningCandidateComponentProvider})
+	 *                               only the case with a plain {@link ClassPathScanningCandidateComponentProvider})
 	 */
 	BeanDefinitionRegistry getRegistry();
 
@@ -60,6 +62,7 @@ public interface ConditionContext {
 	/**
 	 * Return the {@link ClassLoader} that should be used to load additional classes
 	 * (only {@code null} if even the system ClassLoader isn't accessible).
+	 *
 	 * @see org.springframework.util.ClassUtils#forName(String, ClassLoader)
 	 */
 	@Nullable

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
+ * 在Bean实例化之前进行匹配
  * A single {@code condition} that must be {@linkplain #matches matched} in order
  * for a component to be registered.
  *

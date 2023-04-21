@@ -25,6 +25,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.lang.Nullable;
 
 /**
+ * 空实现，都是调用父类的MessageSource
  * Empty {@link MessageSource} that delegates all calls to the parent MessageSource.
  * If no parent is available, it simply won't resolve any message.
  *
@@ -32,8 +33,8 @@ import org.springframework.lang.Nullable;
  * define its own MessageSource. Not intended for direct use in applications.
  *
  * @author Juergen Hoeller
- * @since 1.1.5
  * @see AbstractApplicationContext
+ * @since 1.1.5
  */
 public class DelegatingMessageSource extends MessageSourceSupport implements HierarchicalMessageSource {
 
@@ -58,11 +59,9 @@ public class DelegatingMessageSource extends MessageSourceSupport implements Hie
 	public String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale) {
 		if (this.parentMessageSource != null) {
 			return this.parentMessageSource.getMessage(code, args, defaultMessage, locale);
-		}
-		else if (defaultMessage != null) {
+		} else if (defaultMessage != null) {
 			return renderDefaultMessage(defaultMessage, args, locale);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -71,8 +70,7 @@ public class DelegatingMessageSource extends MessageSourceSupport implements Hie
 	public String getMessage(String code, @Nullable Object[] args, Locale locale) throws NoSuchMessageException {
 		if (this.parentMessageSource != null) {
 			return this.parentMessageSource.getMessage(code, args, locale);
-		}
-		else {
+		} else {
 			throw new NoSuchMessageException(code, locale);
 		}
 	}
@@ -81,8 +79,7 @@ public class DelegatingMessageSource extends MessageSourceSupport implements Hie
 	public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
 		if (this.parentMessageSource != null) {
 			return this.parentMessageSource.getMessage(resolvable, locale);
-		}
-		else {
+		} else {
 			if (resolvable.getDefaultMessage() != null) {
 				return renderDefaultMessage(resolvable.getDefaultMessage(), resolvable.getArguments(), locale);
 			}

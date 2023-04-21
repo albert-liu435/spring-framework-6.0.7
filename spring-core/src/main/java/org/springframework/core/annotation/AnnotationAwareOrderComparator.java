@@ -26,6 +26,7 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.lang.Nullable;
 
 /**
+ * 注解比较，用于处理Order和Priority注解的比较
  * {@code AnnotationAwareOrderComparator} is an extension of
  * {@link OrderComparator} that supports Spring's
  * {@link org.springframework.core.Ordered} interface as well as the
@@ -39,10 +40,10 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @author Oliver Gierke
  * @author Stephane Nicoll
- * @since 2.0.1
  * @see org.springframework.core.Ordered
  * @see org.springframework.core.annotation.Order
  * @see jakarta.annotation.Priority
+ * @since 2.0.1
  */
 public class AnnotationAwareOrderComparator extends OrderComparator {
 
@@ -68,6 +69,12 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 		return findOrderFromAnnotation(obj);
 	}
 
+	/**
+	 * 从注解上获取order顺序
+	 *
+	 * @param obj
+	 * @return
+	 */
 	@Nullable
 	private Integer findOrderFromAnnotation(Object obj) {
 		AnnotatedElement element = (obj instanceof AnnotatedElement ae ? ae : obj.getClass());
@@ -92,7 +99,7 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 			return OrderUtils.getPriority(clazz);
 		}
 		Integer priority = OrderUtils.getPriority(obj.getClass());
-		if (priority == null  && obj instanceof DecoratingProxy decoratingProxy) {
+		if (priority == null && obj instanceof DecoratingProxy decoratingProxy) {
 			return getPriority(decoratingProxy.getDecoratedClass());
 		}
 		return priority;
@@ -103,6 +110,7 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 	 * Sort the given list with a default {@link AnnotationAwareOrderComparator}.
 	 * <p>Optimized to skip sorting for lists with size 0 or 1,
 	 * in order to avoid unnecessary array extraction.
+	 *
 	 * @param list the List to sort
 	 * @see java.util.List#sort(java.util.Comparator)
 	 */
@@ -116,6 +124,7 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 	 * Sort the given array with a default AnnotationAwareOrderComparator.
 	 * <p>Optimized to skip sorting for lists with size 0 or 1,
 	 * in order to avoid unnecessary array extraction.
+	 *
 	 * @param array the array to sort
 	 * @see java.util.Arrays#sort(Object[], java.util.Comparator)
 	 */
@@ -130,14 +139,14 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 	 * if necessary. Simply skips sorting when given any other value.
 	 * <p>Optimized to skip sorting for lists with size 0 or 1,
 	 * in order to avoid unnecessary array extraction.
+	 *
 	 * @param value the array or List to sort
 	 * @see java.util.Arrays#sort(Object[], java.util.Comparator)
 	 */
 	public static void sortIfNecessary(Object value) {
 		if (value instanceof Object[] objects) {
 			sort(objects);
-		}
-		else if (value instanceof List<?> list) {
+		} else if (value instanceof List<?> list) {
 			sort(list);
 		}
 	}
