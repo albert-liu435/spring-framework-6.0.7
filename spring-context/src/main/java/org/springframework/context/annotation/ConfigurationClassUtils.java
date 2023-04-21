@@ -81,6 +81,12 @@ public abstract class ConfigurationClassUtils {
 
 
 	/**
+	 * 第一种：判断 Bean Definition 中 className 和 FactoryMethodName 是否存在，只要有一个不存在就不符合候选标准。
+	 * 第二种：判断 Bean Definition 是否属于 AbstractBeanDefinition 类型，并且存在 className，于此同时如果 className 是属于 BeanFactoryPostProcessor 、BeanPostProcessor、AopInfrastructureBean 和 EventListenerFactory 中的某一个那么这个 Bean Definiton 不符合候选标准。
+	 * 第三种：提取注解元数据失败的 Bean Definition 不符合候选标准。
+	 * 第四种：提取注解源数据中有关 Configuration 注解的数据后判断 proxyBeanMethods 属性是否为 false，如果为 true 该 Bean Definition 不符合候选标准。
+	 * 第五种：判断注解元信息中是否存在 Bean Component、ComponentScan、 Import 和 ImportResource ，如果不存在该 Bean Definition 不符合候选标准。
+	 * <p>
 	 * Check whether the given bean definition is a candidate for a configuration class
 	 * (or a nested component class declared within a configuration/component class,
 	 * to be auto-registered as well), and mark it accordingly.

@@ -36,11 +36,13 @@ public interface MetadataReader {
 	Resource getResource();
 
 	/**
+	 * ClassMetadata 类元数据
 	 * Read basic class metadata for the underlying class.
 	 */
 	ClassMetadata getClassMetadata();
 
 	/**
+	 * AnnotationMetadata 注解元数据
 	 * Read full annotation metadata for the underlying class,
 	 * including metadata for annotated methods.
 	 */

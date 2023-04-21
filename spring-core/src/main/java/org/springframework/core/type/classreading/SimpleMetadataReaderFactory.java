@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
  */
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 
+	//默认为 DefaultResourceLoader.该对象的主要作用是进行资源加载
 	private final ResourceLoader resourceLoader;
 
 
@@ -75,6 +76,15 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	}
 
 
+	/**
+	 * 第一项：将 className 进行转换，转化成内部类的类名(从代码上表现为文件找不到的异常处理)或者独立类的类名。
+	 * 第二项：通过资源加载器(ResourceLoader)将第一项中得到的数据转换成 Resource
+	 * 第三项：将 Resource 转换成 MetadataReader
+	 *
+	 * @param className the class name (to be resolved to a ".class" file)
+	 * @return
+	 * @throws IOException
+	 */
 	@Override
 	public MetadataReader getMetadataReader(String className) throws IOException {
 		try {

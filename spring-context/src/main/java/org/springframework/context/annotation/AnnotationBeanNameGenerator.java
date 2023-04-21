@@ -86,20 +86,34 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 */
 	@Override
 	public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
+		//第一种：Bean Definition 是 AnnotatedBeanDefinition 类型
+		//第二种：Bean Definition 不是 AnnotatedBeanDefinition 类型 或者 第一种处理情况得不到 Bean Name
+
 		if (definition instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
-			// 获取注解所指定的beanName
+			// 从注解中获取 beanName
+			// 获取注解的value属性值
 			String beanName = determineBeanNameFromAnnotation(annotatedBeanDefinition);
+
 			if (StringUtils.hasText(beanName)) {
+				// 如果存在直接返回
 				// Explicit bean name found.
 				return beanName;
 			}
 		}
 		// Fallback: generate a unique default bean name.
 		//如果注解没有指定，则调用buildDefaultBeanName()生成默认的beanName
+		// 默认beanName
+		// 类名,首字母小写
 		return buildDefaultBeanName(definition, registry);
 	}
 
 	/**
+	 * 第一步：提取 Bean Definition 中的注解元数据
+	 * 第二步：从注解元数据中提取所有的注解类名
+	 * 第三步：循环注解类名，从注解元数据中提取对应的注解属性
+	 * 第四步：注解属性中尝试获取 value 对应的值
+	 * 第五步：将 value 对应值判断是否是 String 类型，如果是那么就会被作为 Bean Name
+	 *
 	 * Derive a bean name from one of the annotations on the class.
 	 *
 	 * @param annotatedDef the annotation-aware bean definition
@@ -107,10 +121,13 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 */
 	@Nullable
 	protected String determineBeanNameFromAnnotation(AnnotatedBeanDefinition annotatedDef) {
+		// 获取注解信息
 		AnnotationMetadata amd = annotatedDef.getMetadata();
+		// 所有注解
 		Set<String> types = amd.getAnnotationTypes();
 		String beanName = null;
 		for (String type : types) {
+			// 注解属性map对象
 			AnnotationAttributes attributes = AnnotationConfigUtils.attributesFor(amd, type);
 			if (attributes != null) {
 				Set<String> metaTypes = this.metaAnnotationTypesCache.computeIfAbsent(type, key -> {
@@ -178,10 +195,12 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 * @return the default bean name (never {@code null})
 	 */
 	protected String buildDefaultBeanName(BeanDefinition definition) {
-		//扫描的时候如果没有指定className,将会抛出异常
+		//扫描的时候如果没有指定className,将会抛出异常   // 获取 class name、
 		String beanClassName = definition.getBeanClassName();
 		Assert.state(beanClassName != null, "No bean class name set");
+		// 获取短类名
 		String shortClassName = ClassUtils.getShortName(beanClassName);
+		// 首字母小写
 		return StringUtils.uncapitalizeAsProperty(shortClassName);
 	}
 

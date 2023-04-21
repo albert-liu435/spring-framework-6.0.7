@@ -44,6 +44,7 @@ final class SimpleMetadataReader implements MetadataReader {
 
 
 	SimpleMetadataReader(Resource resource, @Nullable ClassLoader classLoader) throws IOException {
+
 		SimpleAnnotationMetadataReadingVisitor visitor = new SimpleAnnotationMetadataReadingVisitor(classLoader);
 		getClassReader(resource).accept(visitor, PARSING_OPTIONS);
 		this.resource = resource;

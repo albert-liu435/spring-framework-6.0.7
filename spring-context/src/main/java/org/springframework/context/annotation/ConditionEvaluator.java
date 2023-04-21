@@ -75,19 +75,41 @@ class ConditionEvaluator {
 	}
 
 	/**
-	 * 决定是否应该跳过
+	 * 注解元数据不存在或者注解元数据中不存在 Conditional 注解，返回 false
+	 * <p>
+	 * 阶段信息的补充，如果阶段信息为空需要做如下操作
+	 * <p>
+	 * 如果注解元数据的类型是 AnnotationMetadata 并且注解元数据中存在 Bean、 Component 、ComponentScan 、Import 和 ImportResource 注解将设置阶段信息为 PARSE_CONFIGURATION，表示配置解析阶段，反之则将阶段信息设置为 REGISTER_BEAN，表示 Bean 注册阶段。
+	 * <p>
+	 * 这两个阶段我们可以从代码中很好的得到结果。
+	 * <p>
+	 * doRegister 中我们传递的是 null 但是我们的注解元数据解析符合条件会被设置为 PARSE_CONFIGURATION ，当进入到 loadBeanDefinitionsForBeanMethod 方法后我们是对单个 Bean 的注册，传递的是一个明确的变量 ConfigurationPhase.REGISTER_BEAN
+	 * <p>
+	 * 提取注解 Conditional 中 value 的属性并将其转换成实例对象，得到当前 Conditional 中所有的 Condition 后进行排序，排序与 Ordered 有关。
+	 * <p>
+	 * 执行排序后的 Condition 如果满足下面条件就会返回 true
+	 * <p>
+	 * 条件一：requiredPhase 不存在或者 requiredPhase 的数据等于参数 phase
+	 * <p>
+	 * 条件二：!condition.matches(this.context, metadata) 执行结果为 true
+	 * <p>
+	 * <p>
+	 * <p>
 	 * Determine if an item should be skipped based on {@code @Conditional} annotations.
 	 *
-	 * @param metadata the meta data
-	 * @param phase    the phase of the call
+	 * @param metadata the meta data 注解元数据，存储了注解的数据信息
+	 * @param phase    the phase of the call 配置解析阶段枚举存在两种状态：
+	 *                 第一种：PARSE_CONFIGURATION 配置解析阶段
+	 *                 第二种：REGISTER_BEAN Bean 注册阶段
 	 * @return if the item should be skipped
 	 */
 	public boolean shouldSkip(@Nullable AnnotatedTypeMetadata metadata, @Nullable ConfigurationPhase phase) {
-		//判断是否有Conditional，没有的话就直接返回false
+		// 注解元数据不存在或者注解元数据中不包含Conditional注解
 		if (metadata == null || !metadata.isAnnotated(Conditional.class.getName())) {
 			return false;
 		}
 
+		// 配置解析阶段处理
 		if (phase == null) {
 			if (metadata instanceof AnnotationMetadata annotationMetadata &&
 					ConfigurationClassUtils.isConfigurationCandidate(annotationMetadata)) {
@@ -96,21 +118,28 @@ class ConditionEvaluator {
 			return shouldSkip(metadata, ConfigurationPhase.REGISTER_BEAN);
 		}
 
+		// 需要处理的 Condition , 数据从注解 Conditional 中来
 		List<Condition> conditions = new ArrayList<>();
+		// 获取注解 Conditional 的属性值
 		for (String[] conditionClasses : getConditionClasses(metadata)) {
 			for (String conditionClass : conditionClasses) {
+				// 将注解中的数据转换成 Condition 接口
+				// 从 class 转换成实例
 				Condition condition = getCondition(conditionClass, this.context.getClassLoader());
+				// 插入注解列表
 				conditions.add(condition);
 			}
 		}
-
+		// 对 Condition 进行排序
 		AnnotationAwareOrderComparator.sort(conditions);
-
+		// 执行 Condition 得到验证结果
 		for (Condition condition : conditions) {
 			ConfigurationPhase requiredPhase = null;
+			// 如果类型是 ConfigurationCondition
 			if (condition instanceof ConfigurationCondition configurationCondition) {
 				requiredPhase = configurationCondition.getConfigurationPhase();
 			}
+			// matches 进行验证
 			if ((requiredPhase == null || requiredPhase == phase) && !condition.matches(this.context, metadata)) {
 				return true;
 			}

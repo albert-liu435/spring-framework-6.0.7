@@ -22,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 /**
+ * 资源解析器接口
  * Strategy interface for resolving a location pattern (for example,
  * an Ant-style path pattern) into {@link Resource} objects.
  *
@@ -49,11 +50,11 @@ import org.springframework.core.io.ResourceLoader;
  *
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 1.0.2
  * @see org.springframework.core.io.Resource
  * @see org.springframework.core.io.ResourceLoader
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.ResourceLoaderAware
+ * @since 1.0.2
  */
 public interface ResourcePatternResolver extends ResourceLoader {
 
@@ -65,6 +66,7 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * files you can use the location pattern {@code "classpath*:/beans.xml"}.
 	 * <p>As of Spring Framework 6.0, the semantics for the {@code "classpath*:"}
 	 * prefix have been expanded to include the module path as well as the class path.
+	 *
 	 * @see org.springframework.core.io.ResourceLoader#CLASSPATH_URL_PREFIX
 	 */
 	String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
@@ -74,6 +76,7 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * <p>Overlapping resource entries that point to the same physical
 	 * resource should be avoided, as far as possible. The result should
 	 * have set semantics.
+	 *
 	 * @param locationPattern the location pattern to resolve
 	 * @return the corresponding {@code Resource} objects
 	 * @throws IOException in case of I/O errors

@@ -74,6 +74,7 @@ public abstract class BeanDefinitionReaderUtils {
 	}
 
 	/**
+	 * 生成Bean名称
 	 * Generate a bean name for the given top-level bean definition,
 	 * unique within the given bean factory.
 	 *
@@ -108,11 +109,13 @@ public abstract class BeanDefinitionReaderUtils {
 	public static String generateBeanName(
 			BeanDefinition definition, BeanDefinitionRegistry registry, boolean isInnerBean)
 			throws BeanDefinitionStoreException {
-
+		// 获取 bean class 的名称
 		String generatedBeanName = definition.getBeanClassName();
 		if (generatedBeanName == null) {
+			// 父类名称是否存在
 			if (definition.getParentName() != null) {
 				generatedBeanName = definition.getParentName() + "$child";
+				// 工厂 beanName 是否为空
 			} else if (definition.getFactoryBeanName() != null) {
 				generatedBeanName = definition.getFactoryBeanName() + "$created";
 			}
@@ -123,10 +126,14 @@ public abstract class BeanDefinitionReaderUtils {
 		}
 
 		if (isInnerBean) {
+			// 组装名称
+			// 生成名称 + # + 16 进制的一个字符串
 			// Inner bean: generate identity hashcode suffix.
 			return generatedBeanName + GENERATED_BEAN_NAME_SEPARATOR + ObjectUtils.getIdentityHexString(definition);
 		}
 
+		// 唯一beanName设置
+		// // beanName + # + 序号
 		// Top-level bean: use plain class name with unique suffix if necessary.
 		return uniqueBeanName(generatedBeanName, registry);
 	}

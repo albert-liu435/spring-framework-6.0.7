@@ -49,9 +49,11 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultResourceLoader implements ResourceLoader {
 
+	//类加载器
 	@Nullable
 	private ClassLoader classLoader;
 
+	//协议解析器集合，ProtocolResolver 定义了从字符串到Resource的解析函数，ProtocolResolver 是一个接口。
 	private final Set<ProtocolResolver> protocolResolvers = new LinkedHashSet<>(4);
 
 	//资源缓存
@@ -150,18 +152,33 @@ public class DefaultResourceLoader implements ResourceLoader {
 		this.resourceCaches.clear();
 	}
 
-
+	/**
+	 * 第一种：依靠协议解析接口(ProtocolResolver)进行处理
+	 * <p>
+	 * 第二种：待解析的资源路径是以 / 开头的处理，创建 ClassPathContextResource 对象返回
+	 * <p>
+	 * 第三种：待解析的资源路径是以 classpath: 开头的处理，创建 ClassPathResource 对象返回
+	 * <p>
+	 * 第四种：尝试创建 URL 对象
+	 * <p>
+	 * 创建成功：如果 URL 对象是文件类型的就返回 FileUrlResource 对象，否则就返回 UrlResource 对象
+	 * <p>
+	 * 创建失败：返回 ClassPathContextResource 对象
+	 *
+	 * @param location the resource location
+	 * @return
+	 */
 	@Override
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
-
+		// 获取协议解析器列表 循环
 		for (ProtocolResolver protocolResolver : getProtocolResolvers()) {
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {
 				return resource;
 			}
 		}
-
+		// 路径地址是 / 开头
 		if (location.startsWith("/")) {
 			return getResourceByPath(location);
 			// 如果 location 是类路径的方式，返回 ClassPathResource 类型的文件资源对象

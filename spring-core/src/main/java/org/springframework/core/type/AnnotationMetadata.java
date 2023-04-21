@@ -26,6 +26,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 /**
+ * 注解元数据
  * Interface that defines abstract access to the annotations of a specific
  * class, in a form that does not require that class to be loaded yet.
  *
@@ -33,47 +34,60 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
  * @author Mark Fisher
  * @author Phillip Webb
  * @author Sam Brannen
- * @since 2.5
  * @see StandardAnnotationMetadata
  * @see org.springframework.core.type.classreading.MetadataReader#getAnnotationMetadata()
  * @see AnnotatedTypeMetadata
+ * @since 2.5
  */
 public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata {
 
 	/**
+	 * 获取注解名称,全类名
 	 * Get the fully qualified class names of all annotation types that
 	 * are <em>present</em> on the underlying class.
+	 *
 	 * @return the annotation type names
 	 */
 	default Set<String> getAnnotationTypes() {
 		return getAnnotations().stream()
+				// 判断是否直接使用注解
 				.filter(MergedAnnotation::isDirectlyPresent)
+				// 获取注解的名字
 				.map(annotation -> annotation.getType().getName())
+				// 转换成set
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	/**
+	 * 注解全类名
 	 * Get the fully qualified class names of all meta-annotation types that
 	 * are <em>present</em> on the given annotation type on the underlying class.
+	 *
 	 * @param annotationName the fully qualified class name of the meta-annotation
-	 * type to look for
+	 *                       type to look for
 	 * @return the meta-annotation type names, or an empty set if none found
 	 */
 	default Set<String> getMetaAnnotationTypes(String annotationName) {
+		// 获取注解合并后的结果
 		MergedAnnotation<?> annotation = getAnnotations().get(annotationName, MergedAnnotation::isDirectlyPresent);
+		// 判断注解是否使用
 		if (!annotation.isPresent()) {
+			// 不使用直接返回空
 			return Collections.emptySet();
 		}
+		// 注解使用 继承查找获得所有注解名称(类名)
 		return MergedAnnotations.from(annotation.getType(), SearchStrategy.INHERITED_ANNOTATIONS).stream()
 				.map(mergedAnnotation -> mergedAnnotation.getType().getName())
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	/**
+	 * 是否包含某个注解
 	 * Determine whether an annotation of the given type is <em>present</em> on
 	 * the underlying class.
+	 *
 	 * @param annotationName the fully qualified class name of the annotation
-	 * type to look for
+	 *                       type to look for
 	 * @return {@code true} if a matching annotation is present
 	 */
 	default boolean hasAnnotation(String annotationName) {
@@ -81,10 +95,12 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	}
 
 	/**
+	 * 是否被某个注解标记过
 	 * Determine whether the underlying class has an annotation that is itself
 	 * annotated with the meta-annotation of the given type.
+	 *
 	 * @param metaAnnotationName the fully qualified class name of the
-	 * meta-annotation type to look for
+	 *                           meta-annotation type to look for
 	 * @return {@code true} if a matching meta-annotation is present
 	 */
 	default boolean hasMetaAnnotation(String metaAnnotationName) {
@@ -93,22 +109,26 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	}
 
 	/**
+	 * 是否有注解,类里面有一个注解就返回true
 	 * Determine whether the underlying class has any methods that are
 	 * annotated (or meta-annotated) with the given annotation type.
+	 *
 	 * @param annotationName the fully qualified class name of the annotation
-	 * type to look for
+	 *                       type to look for
 	 */
 	default boolean hasAnnotatedMethods(String annotationName) {
 		return !getAnnotatedMethods(annotationName).isEmpty();
 	}
 
 	/**
+	 * 获取包含注解的方法
 	 * Retrieve the method metadata for all methods that are annotated
 	 * (or meta-annotated) with the given annotation type.
 	 * <p>For any returned method, {@link MethodMetadata#isAnnotated} will
 	 * return {@code true} for the given annotation type.
+	 *
 	 * @param annotationName the fully qualified class name of the annotation
-	 * type to look for
+	 *                       type to look for
 	 * @return a set of {@link MethodMetadata} for methods that have a matching
 	 * annotation. The return value will be an empty set if no methods match
 	 * the annotation type.
@@ -118,6 +138,7 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 	/**
 	 * Retrieve the method metadata for all user-declared methods on the
 	 * underlying class, preserving declaration order as far as possible.
+	 *
 	 * @return a set of {@link MethodMetadata}
 	 * @since 6.0
 	 */
@@ -125,8 +146,10 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 
 
 	/**
+	 * 通过反射创建一个注解的元信息
 	 * Factory method to create a new {@link AnnotationMetadata} instance
 	 * for the given class using standard reflection.
+	 *
 	 * @param type the class to introspect
 	 * @return a new {@link AnnotationMetadata} instance
 	 * @since 5.2
