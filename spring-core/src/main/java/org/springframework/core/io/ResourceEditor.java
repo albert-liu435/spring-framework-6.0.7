@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * Resource对象编辑器
  * {@link java.beans.PropertyEditor Editor} for {@link Resource}
  * descriptors, to automatically convert {@code String} locations
  * e.g. {@code file:C:/myfile.txt} or {@code classpath:myfile.txt} to
@@ -41,11 +42,11 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @author Dave Syer
  * @author Chris Beams
- * @since 28.12.2003
  * @see Resource
  * @see ResourceLoader
  * @see DefaultResourceLoader
  * @see PropertyResolver#resolvePlaceholders
+ * @since 28.12.2003
  */
 public class ResourceEditor extends PropertyEditorSupport {
 
@@ -68,7 +69,8 @@ public class ResourceEditor extends PropertyEditorSupport {
 	/**
 	 * Create a new instance of the {@link ResourceEditor} class
 	 * using the given {@link ResourceLoader} and {@link PropertyResolver}.
-	 * @param resourceLoader the {@code ResourceLoader} to use
+	 *
+	 * @param resourceLoader   the {@code ResourceLoader} to use
 	 * @param propertyResolver the {@code PropertyResolver} to use
 	 */
 	public ResourceEditor(ResourceLoader resourceLoader, @Nullable PropertyResolver propertyResolver) {
@@ -78,13 +80,14 @@ public class ResourceEditor extends PropertyEditorSupport {
 	/**
 	 * Create a new instance of the {@link ResourceEditor} class
 	 * using the given {@link ResourceLoader}.
-	 * @param resourceLoader the {@code ResourceLoader} to use
-	 * @param propertyResolver the {@code PropertyResolver} to use
+	 *
+	 * @param resourceLoader                 the {@code ResourceLoader} to use
+	 * @param propertyResolver               the {@code PropertyResolver} to use
 	 * @param ignoreUnresolvablePlaceholders whether to ignore unresolvable placeholders
-	 * if no corresponding property could be found in the given {@code propertyResolver}
+	 *                                       if no corresponding property could be found in the given {@code propertyResolver}
 	 */
 	public ResourceEditor(ResourceLoader resourceLoader, @Nullable PropertyResolver propertyResolver,
-			boolean ignoreUnresolvablePlaceholders) {
+						  boolean ignoreUnresolvablePlaceholders) {
 
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.resourceLoader = resourceLoader;
@@ -98,8 +101,7 @@ public class ResourceEditor extends PropertyEditorSupport {
 		if (StringUtils.hasText(text)) {
 			String locationToUse = resolvePath(text).trim();
 			setValue(this.resourceLoader.getResource(locationToUse));
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
@@ -107,6 +109,7 @@ public class ResourceEditor extends PropertyEditorSupport {
 	/**
 	 * Resolve the given path, replacing placeholders with corresponding
 	 * property values from the {@code environment} if necessary.
+	 *
 	 * @param path the original file path
 	 * @return the resolved file path
 	 * @see PropertyResolver#resolvePlaceholders
@@ -128,8 +131,7 @@ public class ResourceEditor extends PropertyEditorSupport {
 		try {
 			// Try to determine URL for resource.
 			return (value != null ? value.getURL().toExternalForm() : "");
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// Couldn't determine resource URL - return null to indicate
 			// that there is no appropriate text representation.
 			return null;

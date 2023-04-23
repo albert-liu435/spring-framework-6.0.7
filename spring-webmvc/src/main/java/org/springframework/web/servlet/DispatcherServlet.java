@@ -875,6 +875,8 @@ public class DispatcherServlet extends FrameworkServlet {
 				// Load default strategy implementations from properties file.
 				// This is currently strictly internal and not meant to be customized
 				// by application developers.
+				// 读取 DispatcherServlet.properties 文件
+				//在这段代码中会加载资源文件，资源文件名为DispatcherServlet.properties，真实路径为spring-webmvc/src/main/resources/org/springframework/web/servlet/DispatcherServlet.properties
 				ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, DispatcherServlet.class);
 				defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
 			}

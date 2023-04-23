@@ -48,6 +48,7 @@ import org.springframework.core.io.support.ResourceArrayPropertyEditor;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 /**
+ * 属性编辑器注册类
  * PropertyEditorRegistrar implementation that populates a given
  * {@link org.springframework.beans.PropertyEditorRegistry}
  * (typically a {@link org.springframework.beans.BeanWrapper} used for bean
@@ -69,8 +70,9 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 	/**
 	 * Create a new ResourceEditorRegistrar for the given {@link ResourceLoader}
 	 * and {@link PropertyResolver}.
-	 * @param resourceLoader the ResourceLoader (or ResourcePatternResolver)
-	 * to create editors for (usually an ApplicationContext)
+	 *
+	 * @param resourceLoader   the ResourceLoader (or ResourcePatternResolver)
+	 *                         to create editors for (usually an ApplicationContext)
 	 * @param propertyResolver the PropertyResolver (usually an Environment)
 	 * @see org.springframework.core.env.Environment
 	 * @see org.springframework.core.io.support.ResourcePatternResolver
@@ -88,6 +90,7 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 	 * URIEditor, ClassEditor, ClassArrayEditor.
 	 * <p>If this registrar has been configured with a {@link ResourcePatternResolver},
 	 * a ResourceArrayPropertyEditor will be registered as well.
+	 *
 	 * @see org.springframework.core.io.ResourceEditor
 	 * @see org.springframework.beans.propertyeditors.InputStreamEditor
 	 * @see org.springframework.beans.propertyeditors.InputSourceEditor
@@ -128,9 +131,10 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 	 */
 	private void doRegisterEditor(PropertyEditorRegistry registry, Class<?> requiredType, PropertyEditor editor) {
 		if (registry instanceof PropertyEditorRegistrySupport registrySupport) {
+			// 属性编辑器覆盖默认的编辑器
 			registrySupport.overrideDefaultEditor(requiredType, editor);
-		}
-		else {
+		} else {
+			// 注册自定义的属性编辑器
 			registry.registerCustomEditor(requiredType, editor);
 		}
 	}

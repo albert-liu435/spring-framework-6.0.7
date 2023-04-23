@@ -22,6 +22,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 
 /**
+ * 通过阅读HandlerMapping接口确定了这是一个获取的动作，在Java开发过程中获取一般分为两种形式，第一种是在获取时进行创建对象，第二种是从容器中获取，相比而言第二种从容器中获取数据的效率会高一些，
+ * 在SpringMVC中关于HandlerMpping对象的获取采用的是第二种方式，接下来将对HandlerMapping的注册进行分析。在SpringMVC启动阶段会创建SimpleUrlHandlerMapping对象，同时还有其他对象的创建
+ * <p>
+ * <p>
+ * HandlerMapping的作用是根据request找到相应的处理器Handler和Interceptors
  * Interface to be implemented by objects that define a mapping between
  * requests and handler objects.
  *
@@ -59,6 +64,7 @@ public interface HandlerMapping {
 	/**
 	 * Name of the {@link HttpServletRequest} attribute that contains the mapped
 	 * handler for the best matching pattern.
+	 *
 	 * @since 4.3.21
 	 */
 	String BEST_MATCHING_HANDLER_ATTRIBUTE = HandlerMapping.class.getName() + ".bestMatchingHandler";
@@ -68,6 +74,7 @@ public interface HandlerMapping {
 	 * used to look up the matching handler, which depending on the configured
 	 * {@link org.springframework.web.util.UrlPathHelper} could be the full path
 	 * or without the context path, decoded or not, etc.
+	 *
 	 * @since 5.2
 	 * @deprecated as of 5.3 in favor of
 	 * {@link org.springframework.web.util.UrlPathHelper#PATH_ATTRIBUTE} and
@@ -146,6 +153,7 @@ public interface HandlerMapping {
 	 * {@link org.springframework.web.util.ServletRequestPathUtils#getParsedRequestPath
 	 * access} in {@code HandlerMapping}s, {@code HandlerInterceptor}s, and
 	 * other components.
+	 *
 	 * @since 5.3
 	 */
 	default boolean usesPathPatterns() {
@@ -153,6 +161,7 @@ public interface HandlerMapping {
 	}
 
 	/**
+	 * 主要目的是通过HttpServletRequest对象找到HandlerExecutionChain 对象
 	 * Return a handler and any interceptors for this request. The choice may be made
 	 * on request URL, session state, or any factor the implementing class chooses.
 	 * <p>The returned HandlerExecutionChain contains a handler Object, rather than
@@ -162,6 +171,7 @@ public interface HandlerMapping {
 	 * <p>Returns {@code null} if no match was found. This is not an error.
 	 * The DispatcherServlet will query all registered HandlerMapping beans to find
 	 * a match, and only decide there is an error if none can find a handler.
+	 *
 	 * @param request current HTTP request
 	 * @return a HandlerExecutionChain instance containing handler object and
 	 * any interceptors, or {@code null} if no mapping found

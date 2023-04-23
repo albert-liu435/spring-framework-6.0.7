@@ -19,6 +19,7 @@ package org.springframework.web.util.pattern;
 import org.springframework.http.server.PathContainer;
 
 /**
+ * URI路径模式的解析器，生成｛@link PathPattern｝实例，然后这些实例可以与请求匹配
  * Parser for URI path patterns producing {@link PathPattern} instances that can
  * then be matched to requests.
  *
@@ -50,6 +51,7 @@ public class PathPatternParser {
 	 * a trailing slash.
 	 * <p>The default was changed in 6.0 from {@code true} to {@code false} in
 	 * order to support the deprecation of the property.
+	 *
 	 * @deprecated transparent support for trailing slashes is deprecated as of
 	 * 6.0 in favor of configuring explicit redirects through a proxy,
 	 * Servlet/web filter, or a controller.
@@ -61,6 +63,7 @@ public class PathPatternParser {
 
 	/**
 	 * Whether optional trailing slashing match is enabled.
+	 *
 	 * @deprecated as of 6.0 together with {@link #setMatchOptionalTrailingSeparator(boolean)}.
 	 */
 	@Deprecated(since = "6.0")
@@ -88,6 +91,7 @@ public class PathPatternParser {
 	 * options used to parse input paths.
 	 * <p>{@link org.springframework.http.server.PathContainer.Options#HTTP_PATH}
 	 * is used by default.
+	 *
 	 * @since 5.2
 	 */
 	public void setPathOptions(PathContainer.Options pathOptions) {
@@ -96,6 +100,7 @@ public class PathPatternParser {
 
 	/**
 	 * Return the {@link #setPathOptions configured} pattern parsing options.
+	 *
 	 * @since 5.2
 	 */
 	public PathContainer.Options getPathOptions() {
@@ -109,6 +114,7 @@ public class PathPatternParser {
 	 * stage. Produces a PathPattern object that can be used for fast matching
 	 * against paths. Each invocation of this method delegates to a new instance of
 	 * the {@link InternalPathPatternParser} because that class is not thread-safe.
+	 *
 	 * @param pathPattern the input path pattern, e.g. /project/{name}
 	 * @return a PathPattern for quickly matching paths against request paths
 	 * @throws PatternParseException in case of parse errors

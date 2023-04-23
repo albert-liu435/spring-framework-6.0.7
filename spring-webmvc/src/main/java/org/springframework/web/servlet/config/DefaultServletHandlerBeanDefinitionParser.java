@@ -33,6 +33,7 @@ import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
 import org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler;
 
 /**
+ * 处理<mvc:default-servlet-handler/>标签
  * {@link BeanDefinitionParser} that parses a {@code default-servlet-handler} element to
  * register a {@link DefaultServletHttpRequestHandler}.  Will also register a
  * {@link SimpleUrlHandlerMapping} for mapping resource requests, and a
@@ -47,6 +48,7 @@ class DefaultServletHandlerBeanDefinitionParser implements BeanDefinitionParser 
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+
 		Object source = parserContext.extractSource(element);
 
 		String defaultServletName = element.getAttribute("default-servlet-name");

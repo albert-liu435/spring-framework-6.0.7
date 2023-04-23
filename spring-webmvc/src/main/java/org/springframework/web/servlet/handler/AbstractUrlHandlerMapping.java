@@ -418,10 +418,12 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 		if (!this.lazyInitHandlers && handler instanceof String handlerName) {
 			ApplicationContext applicationContext = obtainApplicationContext();
 			if (applicationContext.isSingleton(handlerName)) {
+				// 从容器中获取 handler 对象
 				resolvedHandler = applicationContext.getBean(handlerName);
 			}
 		}
 
+		// 尝试从handlerMap中获取对象
 		Object mappedHandler = this.handlerMap.get(urlPath);
 		if (mappedHandler != null) {
 			if (mappedHandler != resolvedHandler) {
@@ -431,6 +433,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 			}
 		}
 		else {
+			// 容器中不存在的处理情况
 			if (urlPath.equals("/")) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Root mapping to " + getHandlerDescription(handler));

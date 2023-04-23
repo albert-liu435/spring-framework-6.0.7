@@ -20,6 +20,7 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
 /**
+ * ContextLoaderListener只是作为一个中间层来建立spring容器和web容器的关联关系，而实际完成以上两个角度的工作是通过ContextLoader来进行的，即在ContextLoader中定义以上逻辑，
  * Bootstrap listener to start up and shut down Spring's root {@link WebApplicationContext}.
  * Simply delegates to {@link ContextLoader} as well as to {@link ContextCleanupListener}.
  *
@@ -30,9 +31,9 @@ import jakarta.servlet.ServletContextListener;
  *
  * @author Juergen Hoeller
  * @author Chris Beams
- * @since 17.02.2003
  * @see #setContextInitializers
  * @see org.springframework.web.WebApplicationInitializer
+ * @since 17.02.2003
  */
 public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
 
@@ -48,6 +49,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	 * the attribute name {@link WebApplicationContext#ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE}
 	 * and the Spring application context will be closed when the {@link #contextDestroyed}
 	 * lifecycle method is invoked on this listener.
+	 *
 	 * @see ContextLoader
 	 * @see #ContextLoaderListener(WebApplicationContext)
 	 * @see #contextInitialized(ServletContextEvent)
@@ -85,6 +87,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	 * WebApplicationContext#ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE} and the Spring
 	 * application context will be closed when the {@link #contextDestroyed} lifecycle
 	 * method is invoked on this listener.
+	 *
 	 * @param context the application context to manage
 	 * @see #contextInitialized(ServletContextEvent)
 	 * @see #contextDestroyed(ServletContextEvent)

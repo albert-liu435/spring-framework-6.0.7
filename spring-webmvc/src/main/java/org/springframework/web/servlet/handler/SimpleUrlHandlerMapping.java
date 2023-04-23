@@ -47,7 +47,7 @@ import org.springframework.util.CollectionUtils;
  * matches (given "/test" -&gt; registered "/t*"). For details on the pattern
  * options, see the {@link org.springframework.web.util.pattern.PathPattern}
  * javadoc.
-
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @author Sam Brannen
@@ -68,10 +68,11 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 
 	/**
 	 * Create a {@code SimpleUrlHandlerMapping} using the supplied URL map.
+	 *
 	 * @param urlMap map with URL paths as keys and handler beans (or handler
-	 * bean names) as values
-	 * @since 5.2
+	 *               bean names) as values
 	 * @see #setUrlMap(Map)
+	 * @since 5.2
 	 */
 	public SimpleUrlHandlerMapping(Map<String, ?> urlMap) {
 		setUrlMap(urlMap);
@@ -79,12 +80,13 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 
 	/**
 	 * Create a {@code SimpleUrlHandlerMapping} using the supplied URL map and order.
+	 *
 	 * @param urlMap map with URL paths as keys and handler beans (or handler
-	 * bean names) as values
-	 * @param order the order value for this {@code SimpleUrlHandlerMapping}
-	 * @since 5.2
+	 *               bean names) as values
+	 * @param order  the order value for this {@code SimpleUrlHandlerMapping}
 	 * @see #setUrlMap(Map)
 	 * @see #setOrder(int)
+	 * @since 5.2
 	 */
 	public SimpleUrlHandlerMapping(Map<String, ?> urlMap, int order) {
 		setUrlMap(urlMap);
@@ -97,6 +99,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	 * This is the typical way of configuring this HandlerMapping.
 	 * <p>Supports direct URL matches and Ant-style pattern matches. For syntax
 	 * details, see the {@link org.springframework.util.AntPathMatcher} javadoc.
+	 *
 	 * @param mappings properties with URLs as keys and bean names as values
 	 * @see #setUrlMap
 	 */
@@ -109,6 +112,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	 * as values. Convenient for population with bean references.
 	 * <p>Supports direct URL matches and Ant-style pattern matches. For syntax
 	 * details, see the {@link org.springframework.util.AntPathMatcher} javadoc.
+	 *
 	 * @param urlMap map with URLs as keys and beans as values
 	 * @see #setMappings
 	 */
@@ -134,21 +138,24 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	 */
 	@Override
 	public void initApplicationContext() throws BeansException {
+		// 处理父类的 initApplicationContext 方法
 		super.initApplicationContext();
 		registerHandlers(this.urlMap);
 	}
 
 	/**
 	 * Register all handlers specified in the URL map for the corresponding paths.
+	 *
 	 * @param urlMap a Map with URL paths as keys and handler beans or bean names as values
-	 * @throws BeansException if a handler couldn't be registered
+	 *               key表示url，value表示handler对象
+	 * @throws BeansException        if a handler couldn't be registered
 	 * @throws IllegalStateException if there is a conflicting handler registered
 	 */
 	protected void registerHandlers(Map<String, Object> urlMap) throws BeansException {
 		if (urlMap.isEmpty()) {
 			logger.trace("No patterns in " + formatMappingName());
-		}
-		else {
+		} else {
+			// 循环处理 urlMap
 			urlMap.forEach((url, handler) -> {
 				// Prepend with slash if not already present.
 				if (!url.startsWith("/")) {
@@ -174,8 +181,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 				map.put("/**", getDefaultHandler());
 			}
 			mappingsLogger.debug(formatMappingName() + " " + map);
-		}
-		else if (logger.isDebugEnabled()) {
+		} else if (logger.isDebugEnabled()) {
 			List<String> patterns = new ArrayList<>();
 			if (getRootHandler() != null) {
 				patterns.add("/");
