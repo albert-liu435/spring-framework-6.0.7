@@ -576,6 +576,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		if (logger.isInfoEnabled()) {
 			logger.info("Initializing Servlet '" + getServletName() + "'");
 		}
+		//开始时间
 		long startTime = System.currentTimeMillis();
 
 		try {

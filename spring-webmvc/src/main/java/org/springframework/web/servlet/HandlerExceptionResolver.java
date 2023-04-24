@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
 
 /**
+ * HandlerExceptionResolver 的作用是解析对请求做处理的过程中产生的异常，但是渲染时所产生的异常不归它管。
  * Interface to be implemented by objects that can resolve exceptions thrown during
  * handler mapping or execution, in the typical case to error views. Implementors are
  * typically registered as beans in the application context.
@@ -41,11 +42,12 @@ public interface HandlerExceptionResolver {
 	 * <p>The returned {@code ModelAndView} may be {@linkplain ModelAndView#isEmpty() empty}
 	 * to indicate that the exception has been resolved successfully but that no view
 	 * should be rendered, for instance by setting a status code.
-	 * @param request current HTTP request
+	 *
+	 * @param request  current HTTP request
 	 * @param response current HTTP response
-	 * @param handler the executed handler, or {@code null} if none chosen at the
-	 * time of the exception (for example, if multipart resolution failed)
-	 * @param ex the exception that got thrown during handler execution
+	 * @param handler  the executed handler, or {@code null} if none chosen at the
+	 *                 time of the exception (for example, if multipart resolution failed)
+	 * @param ex       the exception that got thrown during handler execution
 	 * @return a corresponding {@code ModelAndView} to forward to,
 	 * or {@code null} for default processing in the resolution chain
 	 */

@@ -145,6 +145,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	@Override
 	@Nullable
 	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
+		// 获取当前请求路径
 		String lookupPath = initLookupPath(request);
 		Object handler;
 		if (usesPathPatterns()) {
@@ -337,10 +338,12 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	 */
 	protected Object buildPathExposingHandler(Object rawHandler, String bestMatchingPattern,
 			String pathWithinMapping, @Nullable Map<String, String> uriTemplateVariables) {
-
+		// 通过 handler对象创建 HandlerExecutionChain
 		HandlerExecutionChain chain = new HandlerExecutionChain(rawHandler);
+		// 添加 PathExposingHandlerInterceptor 拦截器
 		chain.addInterceptor(new PathExposingHandlerInterceptor(bestMatchingPattern, pathWithinMapping));
 		if (!CollectionUtils.isEmpty(uriTemplateVariables)) {
+			// 添加 UriTemplateVariablesHandlerInterceptor 拦截器
 			chain.addInterceptor(new UriTemplateVariablesHandlerInterceptor(uriTemplateVariables));
 		}
 		return chain;
@@ -402,6 +405,11 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 	}
 
 	/**
+	 * 在registerHandler 方法中分为两步操作，第一步操作是类型的转换，第二步操作是将类型转换后的结果放入到容器中。在第一步操作中会进行一组判断：
+	 * 判断是否是懒加载和判断handler对象是否是字符串类型，如果符合这个条件则进行对象获取，具体方式是getBean方法调用。第二步是从容器中获取对象如果对象不为空并且类型
+	 * 和第一步处理得到的对象不相同则抛出异常，如果容器中搜索不到该对象则会进行三种不同的操作，操作一url是/将第一步处理结果设置为rootHandler，
+	 * 操作二url是/*将第一步处理结果设置为defaultHandler，操作三url不符合前两种情况放入handlerMap对象中
+	 *
 	 * Register the specified handler for the given URL path.
 	 * @param urlPath the URL the bean should be mapped to
 	 * @param handler the handler instance or handler bean name String

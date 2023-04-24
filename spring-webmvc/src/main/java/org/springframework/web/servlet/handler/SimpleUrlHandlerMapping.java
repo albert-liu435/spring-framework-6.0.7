@@ -26,6 +26,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.util.CollectionUtils;
 
 /**
+ * HandlerMapping接口的实现类，用来mapping handler实例和bean名称
  * Implementation of the {@link org.springframework.web.servlet.HandlerMapping}
  * interface that maps from URLs to request handler beans. Supports both mapping to bean
  * instances and mapping to bean names; the latter is required for non-singleton handlers.
@@ -94,7 +95,51 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	}
 
 
+	//<beans ...>
+	//    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	//       <property name="mappings">
+	//        <props>
+	//           <prop key="/welcome.htm">welcomeController</prop>
+	//           <prop key="/*/welcome.htm">welcomeController</prop>
+	//           <prop key="/helloGuest.htm">helloGuestController</prop>
+	//         </props>
+	//       </property>
+	//    </bean>
+	//
+	//    <bean id="welcomeController"
+	//        class="com.java265.controller.WelcomeController" />
+	//
+	//    <bean id="helloGuestController"
+	//        class="com.java265.controller.HelloGuestController" />
+	//</beans>
+	//————————————————
+	//版权声明：本文为CSDN博主「qq_25073223」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+	//原文链接：https://blog.csdn.net/qq_25073223/article/details/127815795
+
+	//<beans ...>
+	//    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	//       <property name="mappings">
+	//        <value>
+	//           /welcome.htm=welcomeController
+	//           /*/welcome.htm=welcomeController
+	//           /helloGuest.htm=helloGuestController
+	//        </value>
+	//       </property>
+	//    </bean>
+	//
+	//    <bean id="welcomeController"
+	//        class="com.java265.controller.WelcomeController" />
+	//
+	//    <bean id="helloGuestController"
+	//        class="com.java265.controller.HelloGuestController" />
+	//</beans>
+	//————————————————
+	//版权声明：本文为CSDN博主「qq_25073223」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+	//原文链接：https://blog.csdn.net/qq_25073223/article/details/127815795
+
+
 	/**
+	 * 通过属性配置URL到Bean名的映射
 	 * Map URL paths to handler bean names.
 	 * This is the typical way of configuring this HandlerMapping.
 	 * <p>Supports direct URL matches and Ant-style pattern matches. For syntax
@@ -108,6 +153,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	}
 
 	/**
+	 * 配置URL到Bean的映射
 	 * Set a Map with URL paths as keys and handler beans (or handler bean names)
 	 * as values. Convenient for population with bean references.
 	 * <p>Supports direct URL matches and Ant-style pattern matches. For syntax
@@ -144,6 +190,10 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	}
 
 	/**
+	 * 注册所有的处理器
+	 * <p>
+	 * SpringMVC使用过程中通常会在applicationContext.xml文件中编写<mvc:default-servlet-handler/>代码，这段代码就是urlMap的数据来源
+	 * <p>
 	 * Register all handlers specified in the URL map for the corresponding paths.
 	 *
 	 * @param urlMap a Map with URL paths as keys and handler beans or bean names as values
@@ -152,6 +202,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	 * @throws IllegalStateException if there is a conflicting handler registered
 	 */
 	protected void registerHandlers(Map<String, Object> urlMap) throws BeansException {
+
 		if (urlMap.isEmpty()) {
 			logger.trace("No patterns in " + formatMappingName());
 		} else {
@@ -171,6 +222,9 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 		}
 	}
 
+	/**
+	 * 日志打印
+	 */
 	private void logMappings() {
 		if (mappingsLogger.isDebugEnabled()) {
 			Map<String, Object> map = new LinkedHashMap<>(getHandlerMap());

@@ -511,6 +511,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	}
 
 	/**
+	 * 根据给定的请求返回相应的handler
 	 * Look up a handler for the given request, falling back to the default
 	 * handler if no specific one is found.
 	 *
@@ -550,16 +551,30 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			logger.debug("Mapped to " + executionChain.getHandler());
 		}
 
-		// 跨域处理
+//		步骤一：判断是否需要进行跨域处理，具体判断方式有两个，第一个是通过handler进行判断是否需要处理，第二个是通过请求判断是否需要进行跨域处理。
+//
+//		步骤二：从请求中获取跨域配置对象。
+//
+//		步骤三：从handler中获取跨域配置对象。
+//
+//		步骤四：推论具体的跨域配置，如果请求的跨域配置存在会将请求跨域配置和handler的跨域配置进行合并，如果不存在会直接采用handler的跨域配置。
+
+
+// 对handler的跨域判断
+// 对请求的跨域判断
 		if (hasCorsConfigurationSource(handler) || CorsUtils.isPreFlightRequest(request)) {
+			// 从请求中获取跨域配置
 			CorsConfiguration config = getCorsConfiguration(handler, request);
 			if (getCorsConfigurationSource() != null) {
+				// 从 handler中获取跨域配置
 				CorsConfiguration globalConfig = getCorsConfigurationSource().getCorsConfiguration(request);
+				// 确定最终的跨域配置
 				config = (globalConfig != null ? globalConfig.combine(config) : config);
 			}
 			if (config != null) {
 				config.validateAllowCredentials();
 			}
+			// executionChain 对象添加跨域配置
 			executionChain = getCorsHandlerExecutionChain(request, executionChain, config);
 		}
 
@@ -641,12 +656,16 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 * @see #getAdaptedInterceptors()
 	 */
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
+		// 对handler对象进行类型判断，如果类型是HandlerExecutionChain进行强制转换，如果类型不是HandlerExecutionChain会进行对象创建
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain handlerExecutionChain ?
 				handlerExecutionChain : new HandlerExecutionChain(handler));
-
+		// 拦截器处理
+		//处理拦截器对象，循环当前容器中的拦截器列表，如果当前拦截器的类型是MappedInterceptor会对该拦截器的拦截url和当前访问的url进行比较，此处是一个匹配性质的比较，并非字符串相等比较。
+		// 如果比较结果相同这个拦截器会加入到HandlerExecutionChain的拦截器列表中，如果类型不是MappedInterceptor就直接加入到HandlerExecutionChain的拦截器列表中
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
 			if (interceptor instanceof MappedInterceptor mappedInterceptor) {
 				if (mappedInterceptor.matches(request)) {
+					// 验证url地址是否是需要进行拦截,如果需要就加入
 					chain.addInterceptor(mappedInterceptor.getInterceptor());
 				}
 			} else {
@@ -657,7 +676,10 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	}
 
 	/**
+	 * 判断handler对象是否需要进行跨域处理
 	 * Return {@code true} if there is a {@link CorsConfigurationSource} for this handler.
+	 * <p>
+	 * 该方法的主要判断有两个，第一个判断是handler对象是否是CorsConfigurationSource类型，第二个判断是判断corsConfigurationSource是否存在。在这个处理过程中handler对象本质是Controller对象，如果要符合第一个判断可以修改SpringXML配置文件
 	 *
 	 * @since 5.2
 	 */

@@ -47,6 +47,7 @@ import org.springframework.web.context.support.ServletContextResourceLoader;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
+ * HttpServlet的扩展，用来处理web.xml文件中的servlet标签下的init-param标签
  * Simple extension of {@link jakarta.servlet.http.HttpServlet} which treats
  * its config parameters ({@code init-param} entries within the
  * {@code servlet} tag in {@code web.xml}) as bean properties.
@@ -134,6 +135,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	}
 
 	/**
+	 * 创建环境对象
 	 * Create and return a new {@link StandardServletEnvironment}.
 	 * <p>Subclasses may override this in order to configure the environment or
 	 * specialize the environment type returned.
@@ -154,12 +156,27 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
 		// Set bean properties from init parameters.
 		// 读取web.xml中的配置信息，具体方法是getServletConfig() ，提取后创建ServletConfigPropertyValues 对象.读取结果中仅仅将init-param数据进行了提取
+		//    <servlet>
+		//        <servlet-name>HelloWord</servlet-name>
+		//        <servlet-class>
+		//            org.springframework.web.servlet.DispatcherServlet
+		//        </servlet-class>
+		//        <init-param>
+		//            <param-name>contextConfigLocation</param-name>
+		//            <param-value>classpath:config.xml</param-value>
+		//        </init-param>
+		//        <load-on-startup>1</load-on-startup>
+		//    </servlet>
+
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
 				// 将 HttpServletBean 创建
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				// 资源加载器创建,核心对象是 ServletContext
+				//作用：获取Servlet的名称servlet-name标签内容，getServletName
+				//获取Servlet的初始化参数，getInitParameter getInitParameterNames
+				//获取ServletContext域对象
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
 				// 注册自定义编辑器
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
@@ -217,11 +234,13 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
 
 	/**
+	 * web.xml文件中的servlet标签下的init-param标签
 	 * PropertyValues implementation created from ServletConfig init parameters.
 	 */
 	private static class ServletConfigPropertyValues extends MutablePropertyValues {
 
 		/**
+		 * web.xml文件中的servlet标签下的init-param标签
 		 * Create new ServletConfigPropertyValues.
 		 *
 		 * @param config             the ServletConfig we'll use to take PropertyValues from

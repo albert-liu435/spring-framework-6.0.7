@@ -34,6 +34,7 @@ import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
 
 /**
+ * 静态web应用上下文，不用于生产环境，主要用于测试环境进行测试
  * Static {@link org.springframework.web.context.WebApplicationContext}
  * implementation for testing. Not intended for use in production applications.
  *
@@ -122,6 +123,7 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	/**
 	 * The {@link StaticWebApplicationContext} class does not support this method.
+	 *
 	 * @throws UnsupportedOperationException <b>always</b>
 	 */
 	@Override
@@ -131,6 +133,7 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	/**
 	 * The {@link StaticWebApplicationContext} class does not support this method.
+	 *
 	 * @throws UnsupportedOperationException <b>always</b>
 	 */
 	@Override
@@ -159,6 +162,7 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	/**
 	 * This implementation supports file paths beneath the root of the ServletContext.
+	 *
 	 * @see ServletContextResource
 	 */
 	@Override
@@ -169,6 +173,7 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	/**
 	 * This implementation supports pattern matching in unexpanded WARs too.
+	 *
 	 * @see ServletContextResourcePatternResolver
 	 */
 	@Override

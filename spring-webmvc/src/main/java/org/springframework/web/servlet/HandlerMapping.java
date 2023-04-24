@@ -162,6 +162,13 @@ public interface HandlerMapping {
 
 	/**
 	 * 主要目的是通过HttpServletRequest对象找到HandlerExecutionChain 对象
+	 * <p>
+	 * getHandler方法的作用是根据请求找到对应的处理器(Controller对象)，它需要通过请求进入到寻找阶段，具体的入口处理过程如下：
+	 * <p>
+	 * 浏览器访问某个接口地址
+	 * 进入到org.springframework.web.servlet.FrameworkServlet#service方法
+	 * 进入到org.springframework.web.servlet.DispatcherServlet#doDispatch方法
+	 * <p>
 	 * Return a handler and any interceptors for this request. The choice may be made
 	 * on request URL, session state, or any factor the implementing class chooses.
 	 * <p>The returned HandlerExecutionChain contains a handler Object, rather than

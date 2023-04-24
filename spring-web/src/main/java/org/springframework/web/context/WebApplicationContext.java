@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 
 /**
+ * web应用上下文
  * Interface to provide configuration for a web application. This is read-only while
  * the application is running, but may be reloaded if the implementation supports this.
  *
@@ -39,8 +40,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @since January 19, 2001
  * @see ServletContextAware#setServletContext
+ * @since January 19, 2001
  */
 public interface WebApplicationContext extends ApplicationContext {
 
@@ -49,6 +50,7 @@ public interface WebApplicationContext extends ApplicationContext {
 	 * <p>Note: If the startup of the root context fails, this attribute can contain
 	 * an exception or error as value. Use WebApplicationContextUtils for convenient
 	 * lookup of the root WebApplicationContext.
+	 *
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#getWebApplicationContext
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#getRequiredWebApplicationContext
 	 */
@@ -74,6 +76,7 @@ public interface WebApplicationContext extends ApplicationContext {
 
 	/**
 	 * Name of the ServletContext environment bean in the factory.
+	 *
 	 * @see jakarta.servlet.ServletContext
 	 */
 	String SERVLET_CONTEXT_BEAN_NAME = "servletContext";
@@ -82,6 +85,7 @@ public interface WebApplicationContext extends ApplicationContext {
 	 * Name of the ServletContext init-params environment bean in the factory.
 	 * <p>Note: Possibly merged with ServletConfig parameters.
 	 * ServletConfig parameters override ServletContext parameters of the same name.
+	 *
 	 * @see jakarta.servlet.ServletContext#getInitParameterNames()
 	 * @see jakarta.servlet.ServletContext#getInitParameter(String)
 	 * @see jakarta.servlet.ServletConfig#getInitParameterNames()
@@ -91,6 +95,7 @@ public interface WebApplicationContext extends ApplicationContext {
 
 	/**
 	 * Name of the ServletContext attributes environment bean in the factory.
+	 *
 	 * @see jakarta.servlet.ServletContext#getAttributeNames()
 	 * @see jakarta.servlet.ServletContext#getAttribute(String)
 	 */

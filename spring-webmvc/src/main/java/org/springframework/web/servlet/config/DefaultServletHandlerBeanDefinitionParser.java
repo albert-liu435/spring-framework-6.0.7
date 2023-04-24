@@ -45,6 +45,15 @@ import org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler
  */
 class DefaultServletHandlerBeanDefinitionParser implements BeanDefinitionParser {
 
+	/**
+	 * 在SpringMVC使用过程中需要在applicationContext.xml文件中配置<mvc:default-servlet-handler/>信息，该信息定义了默认的Servlet处理器，具体的处理对象是DefaultServletHttpRequestHandler，
+	 * 通过改配置将数据准备完成，在启动时会进行HandlerMapping的注册操作，该操作的目的是将urlMap对象中的数据进行实例化并放入到handlerMap对象中。
+	 *
+	 * @param element       the element that is to be parsed into one or more {@link BeanDefinition BeanDefinitions}
+	 * @param parserContext the object encapsulating the current state of the parsing process;
+	 *                      provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
+	 * @return
+	 */
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {

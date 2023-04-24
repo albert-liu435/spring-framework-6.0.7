@@ -30,7 +30,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 
-/**标准 Servlet 环境，其继承了 StandardEnvironment，Web 应用时使用，除了 StandardEnvironment 外，会自动注册 ServletConfig（DispatcherServlet）、ServletContext 及 JNDI 实例到环境；
+/**
+ * 标准 Servlet 环境，其继承了 StandardEnvironment，Web 应用时使用，除了 StandardEnvironment 外，会自动注册 ServletConfig（DispatcherServlet）、ServletContext 及 JNDI 实例到环境；
  * {@link Environment} implementation to be used by {@code Servlet}-based web
  * applications. All web-related (servlet-based) {@code ApplicationContext} classes
  * initialize an instance by default.
@@ -41,18 +42,24 @@ import org.springframework.web.context.ConfigurableWebEnvironment;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.1
  * @see StandardEnvironment
+ * @since 3.1
  */
 public class StandardServletEnvironment extends StandardEnvironment implements ConfigurableWebEnvironment {
 
-	/** Servlet context init parameters property source name: {@value}. */
+	/**
+	 * Servlet context init parameters property source name: {@value}.
+	 */
 	public static final String SERVLET_CONTEXT_PROPERTY_SOURCE_NAME = "servletContextInitParams";
 
-	/** Servlet config init parameters property source name: {@value}. */
+	/**
+	 * Servlet config init parameters property source name: {@value}.
+	 */
 	public static final String SERVLET_CONFIG_PROPERTY_SOURCE_NAME = "servletConfigInitParams";
 
-	/** JNDI property source name: {@value}. */
+	/**
+	 * JNDI property source name: {@value}.
+	 */
 	public static final String JNDI_PROPERTY_SOURCE_NAME = "jndiProperties";
 
 
@@ -69,6 +76,7 @@ public class StandardServletEnvironment extends StandardEnvironment implements C
 
 	/**
 	 * Create a new {@code StandardServletEnvironment} instance with a specific {@link MutablePropertySources} instance.
+	 *
 	 * @param propertySources property sources to use
 	 * @since 5.3.4
 	 */
@@ -97,6 +105,7 @@ public class StandardServletEnvironment extends StandardEnvironment implements C
 	 * once the actual {@link ServletContext} object becomes available.
 	 * <p>Addition of {@value #JNDI_PROPERTY_SOURCE_NAME} can be disabled with
 	 * {@link JndiLocatorDelegate#IGNORE_JNDI_PROPERTY_NAME}.
+	 *
 	 * @see StandardEnvironment#customizePropertySources
 	 * @see org.springframework.core.env.AbstractEnvironment#customizePropertySources
 	 * @see ServletConfigPropertySource
