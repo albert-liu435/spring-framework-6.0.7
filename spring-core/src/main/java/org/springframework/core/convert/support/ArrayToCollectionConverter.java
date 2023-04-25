@@ -64,6 +64,7 @@ final class ArrayToCollectionConverter implements ConditionalGenericConverter {
 	@Override
 	@Nullable
 	public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		//如果为null,直接返回
 		if (source == null) {
 			return null;
 		}

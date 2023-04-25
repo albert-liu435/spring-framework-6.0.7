@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
 
 /**
  * GenericConverter是converter接口的一个比较精致的实现，它支持多个source和目标类型的转化，同时还提供了source和目标类型的上下文，这个上下文能让你实现基于属性上的注解或信息来进行类型转换。
+ * <p>
  * Generic converter interface for converting between two or more types.
  *
  * <p>This is the most flexible of the Converter SPI interfaces, but also the most complex.
@@ -49,6 +50,7 @@ import org.springframework.util.Assert;
 public interface GenericConverter {
 
 	/**
+	 * 可以转换的类型
 	 * Return the source and target types that this converter can convert between.
 	 * <p>Each entry is a convertible source-to-target type pair.
 	 * <p>For {@link ConditionalConverter conditional converters} this method may return

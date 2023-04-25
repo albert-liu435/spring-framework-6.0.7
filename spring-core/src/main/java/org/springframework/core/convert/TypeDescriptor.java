@@ -536,6 +536,7 @@ public class TypeDescriptor implements Serializable {
 
 
 	/**
+	 * 创建一个类描述符
 	 * Create a new type descriptor for an object.
 	 * <p>Use this factory method to introspect a source object before asking the
 	 * conversion system to convert it to some other type.

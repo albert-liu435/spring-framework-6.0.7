@@ -27,6 +27,7 @@ import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.lang.Nullable;
 
 /**
+ * 从一个集合转换为另一个集合
  * Converts from a Collection to another Collection.
  *
  * <p>First, creates a new Collection of the requested targetType with a size equal to the
@@ -68,23 +69,29 @@ final class CollectionToCollectionConverter implements ConditionalGenericConvert
 		Collection<?> sourceCollection = (Collection<?>) source;
 
 		// Shortcut if possible...
+		// 集合类型
 		boolean copyRequired = !targetType.getType().isInstance(source);
+		// 1. targetType 集合类型没变，不用转换
 		if (!copyRequired && sourceCollection.isEmpty()) {
 			return source;
 		}
+		// 集合元素类型
 		TypeDescriptor elementDesc = targetType.getElementTypeDescriptor();
+		// 2. targetType 集合元素没有指定类型，即 Object，且集合类型没变
 		if (elementDesc == null && !copyRequired) {
 			return source;
 		}
 
 		// At this point, we need a collection copy in any case, even if just for finding out about element copies...
+		//创建一个空集合
 		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), sourceCollection.size());
 
+		// 3. targetType 集合元素没有指定类型，则元素不用转换类型
 		if (elementDesc == null) {
 			target.addAll(sourceCollection);
-		}
-		else {
+			// 4. conversionService 将 sourceElement 转换为 targetElement 类型
+		} else {
 			for (Object sourceElement : sourceCollection) {
 				Object targetElement = this.conversionService.convert(sourceElement,
 						sourceType.elementTypeDescriptor(sourceElement), elementDesc);
