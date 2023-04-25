@@ -76,7 +76,9 @@ public class SimpleUrlHandlerMappingTests {
 		SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping(Collections.singletonMap("/*/baz", controller));
 		mapping.setUrlPathHelper(urlPathHelper);
 		mapping.setApplicationContext(new StaticApplicationContext());
-
+		///foo
+		//
+		//bar/baz
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo%0a%0dbar/baz");
 
 		HandlerExecutionChain hec = mapping.getHandler(request);

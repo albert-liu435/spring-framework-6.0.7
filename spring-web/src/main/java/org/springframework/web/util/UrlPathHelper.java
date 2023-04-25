@@ -344,6 +344,7 @@ public class UrlPathHelper {
 	}
 
 	/**
+	 * 返回请求的path路径
 	 * Return the path within the web application for the given request.
 	 * <p>Detects include request URL if called within a RequestDispatcher include.
 	 *
