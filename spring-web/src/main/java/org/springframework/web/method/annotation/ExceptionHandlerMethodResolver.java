@@ -69,12 +69,21 @@ public class ExceptionHandlerMethodResolver {
 
 
 	/**
+	 * 在传入类中寻找具备ExceptionHandler注解的方法。
+	 * 将第一步得到的方法列表进行单个处理，具体处理逻辑如下：
+	 * 在当前方法中提取Method上的ExceptionHandler注解中的数据，具体数据是异常类列表。
+	 * 将异常数据和当前处理的Method放入mappedMethods中。
+	 *
+	 *
 	 * A constructor that finds {@link ExceptionHandler} methods in the given type.
 	 * @param handlerType the type to introspect
 	 */
 	public ExceptionHandlerMethodResolver(Class<?> handlerType) {
+		// 通过方法过滤器寻找具有 ExceptionHandler 注解的方法
 		for (Method method : MethodIntrospector.selectMethods(handlerType, EXCEPTION_HANDLER_METHODS)) {
+			// 获取ExceptionHandler中的异常
 			for (Class<? extends Throwable> exceptionType : detectExceptionMappings(method)) {
+				// 向 mappedMethods 容器更新缓存
 				addExceptionMapping(exceptionType, method);
 			}
 		}

@@ -713,6 +713,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	}
 
 	/**
+	 * 提供了三种初始化HandlerExceptionResolver对象的方式：
+	 *
+	 * 在Spring容器中通过类型进行搜索，将类型是HandlerExceptionResolver的对象提取后排序赋值给成员变量handlerExceptionResolvers。
+	 * 在Spring容器中通过名称和类型进行搜索，名称是handlerExceptionResolver，将得到的数据赋值给成员变量handlerExceptionResolvers。
+	 * 通过读取DispatcherServlet.properties中org.springframework.web.servlet.HandlerExceptionResolver键值数据将值数据通过反射的方式进行实例化，将实例化后的结果赋值给成员变量handlerExceptionResolvers。
+	 *
+	 *
 	 * Initialize the HandlerExceptionResolver used by this class.
 	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
 	 * we default to no exception resolver.
@@ -1261,12 +1268,12 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * 在getHandler方法中会循环handlerMappings容器，该容器中会有三个数据对象分别是
-	 *
+	 * <p>
 	 * org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 	 * org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping
 	 * org.springframework.web.servlet.handler.SimpleUrlHandlerMapping
-	 *
-	 *
+	 * <p>
+	 * <p>
 	 * Return the HandlerExecutionChain for this request.
 	 * <p>Tries all handler mappings in order.
 	 *
@@ -1322,6 +1329,15 @@ public class DispatcherServlet extends FrameworkServlet {
 	}
 
 	/**
+	 * 进行统一异常处理
+	 * <p>
+	 * 移除request中的HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE属性。
+	 * 执行容器中存在的HandlerExceptionResolver所提供的方法，将方法返回值进行保留。
+	 * 对步骤二中得到的返回值进行异常堆栈的属性设置。
+	 * 进行是否存在视图判断，如果存在视图则进行视图名称设置。
+	 * 暴露异常信息。
+	 * <p>
+	 * <p>
 	 * Determine an error ModelAndView via the registered HandlerExceptionResolvers.
 	 *
 	 * @param request  current HTTP request
@@ -1335,6 +1351,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex) throws Exception {
 
+		// 移除属性
 		// Success and error responses may use different content types
 		request.removeAttribute(HandlerMapping.PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE);
 
@@ -1350,13 +1367,17 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 		if (exMv != null) {
 			if (exMv.isEmpty()) {
+				// 设置异常堆栈
 				request.setAttribute(EXCEPTION_ATTRIBUTE, ex);
 				return null;
 			}
 			// We might still need view name translation for a plain error model...
+			// 是否存在视图名称
 			if (!exMv.hasView()) {
+				// 获取默认视图名称
 				String defaultViewName = getDefaultViewName(request);
 				if (defaultViewName != null) {
+					// 设置视图名称
 					exMv.setViewName(defaultViewName);
 				}
 			}
@@ -1365,6 +1386,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			} else if (logger.isDebugEnabled()) {
 				logger.debug("Using resolved error view: " + exMv);
 			}
+			// 暴露异常信息
 			WebUtils.exposeErrorRequestAttributes(request, ex, getServletName());
 			return exMv;
 		}

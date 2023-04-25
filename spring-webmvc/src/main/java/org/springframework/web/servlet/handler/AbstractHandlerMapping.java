@@ -619,6 +619,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		if (usesPathPatterns()) {
 			request.removeAttribute(UrlPathHelper.PATH_ATTRIBUTE);
 			RequestPath requestPath = getRequestPath(request);
+			// 设置请求地址
 			String lookupPath = requestPath.pathWithinApplication().value();
 			return UrlPathHelper.defaultInstance.removeSemicolonContent(lookupPath);
 		} else {

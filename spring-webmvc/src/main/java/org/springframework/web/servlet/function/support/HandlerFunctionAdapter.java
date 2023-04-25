@@ -40,6 +40,7 @@ import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
 /**
+ * 用于处理实现HandlerFunction接口的实现类。
  * {@code HandlerAdapter} implementation that supports {@link HandlerFunction}s.
  *
  * @author Arjen Poutsma
@@ -57,6 +58,7 @@ public class HandlerFunctionAdapter implements HandlerAdapter, Ordered {
 	/**
 	 * Specify the order value for this HandlerAdapter bean.
 	 * <p>The default value is {@code Ordered.LOWEST_PRECEDENCE}, meaning non-ordered.
+	 *
 	 * @see org.springframework.core.Ordered#getOrder()
 	 */
 	public void setOrder(int order) {
@@ -77,6 +79,7 @@ public class HandlerFunctionAdapter implements HandlerAdapter, Ordered {
 	 * implementation is used.
 	 * <p>A value of 0 or less indicates that the asynchronous operation will never
 	 * time out.
+	 *
 	 * @param timeout the timeout value in milliseconds
 	 */
 	public void setAsyncRequestTimeout(long timeout) {
@@ -91,8 +94,8 @@ public class HandlerFunctionAdapter implements HandlerAdapter, Ordered {
 	@Nullable
 	@Override
 	public ModelAndView handle(HttpServletRequest servletRequest,
-			HttpServletResponse servletResponse,
-			Object handler) throws Exception {
+							   HttpServletResponse servletResponse,
+							   Object handler) throws Exception {
 
 		WebAsyncManager asyncManager = getWebAsyncManager(servletRequest, servletResponse);
 
@@ -101,16 +104,14 @@ public class HandlerFunctionAdapter implements HandlerAdapter, Ordered {
 
 		if (asyncManager.hasConcurrentResult()) {
 			serverResponse = handleAsync(asyncManager);
-		}
-		else {
+		} else {
 			HandlerFunction<?> handlerFunction = (HandlerFunction<?>) handler;
 			serverResponse = handlerFunction.handle(serverRequest);
 		}
 
 		if (serverResponse != null) {
 			return serverResponse.writeTo(servletRequest, servletResponse, new ServerRequestContext(serverRequest));
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -142,17 +143,13 @@ public class HandlerFunctionAdapter implements HandlerAdapter, Ordered {
 		});
 		if (result instanceof ServerResponse response) {
 			return response;
-		}
-		else if (result instanceof Exception exception) {
+		} else if (result instanceof Exception exception) {
 			throw exception;
-		}
-		else if (result instanceof Throwable throwable) {
+		} else if (result instanceof Throwable throwable) {
 			throw new ServletException("Async processing failed", throwable);
-		}
-		else if (result == null) {
+		} else if (result == null) {
 			return null;
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("Unknown result from WebAsyncManager: [" + result + "]");
 		}
 	}

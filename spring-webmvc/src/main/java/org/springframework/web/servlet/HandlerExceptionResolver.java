@@ -23,6 +23,9 @@ import org.springframework.lang.Nullable;
 
 /**
  * HandlerExceptionResolver 的作用是解析对请求做处理的过程中产生的异常，但是渲染时所产生的异常不归它管。
+ * <p>
+ * 最高优先级是ExceptionHandlerExceptionResolver，其次是ResponseStatusExceptionResolver，最后是DefaultHandlerExceptionResolver
+ * <p>
  * Interface to be implemented by objects that can resolve exceptions thrown during
  * handler mapping or execution, in the typical case to error views. Implementors are
  * typically registered as beans in the application context.
@@ -37,6 +40,7 @@ import org.springframework.lang.Nullable;
 public interface HandlerExceptionResolver {
 
 	/**
+	 * 尝试解析对请求做处理的过程中产生的异常
 	 * Try to resolve the given exception that got thrown during handler execution,
 	 * returning a {@link ModelAndView} that represents a specific error page if appropriate.
 	 * <p>The returned {@code ModelAndView} may be {@linkplain ModelAndView#isEmpty() empty}

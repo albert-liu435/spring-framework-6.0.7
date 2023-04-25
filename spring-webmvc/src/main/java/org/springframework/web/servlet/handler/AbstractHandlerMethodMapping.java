@@ -207,6 +207,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	// Handler method detection
 
 	/**
+	 * 初始化
 	 * Detects handler methods at initialization.
 	 *
 	 * @see #initHandlerMethods
@@ -224,11 +225,13 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see #handlerMethodsInitialized
 	 */
 	protected void initHandlerMethods() {
+		//提取容器中存在的Bean对象，如果BeanName不是"scopedTarget."开头的会进行单个对象的处理操作，具体操作是processCandidateBean方法负责。
 		for (String beanName : getCandidateBeanNames()) {
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
 				processCandidateBean(beanName);
 			}
 		}
+		//handlerMethodsInitialized方法执行，该方法的主要目的是进行日志输出
 		handlerMethodsInitialized(getHandlerMethods());
 	}
 
@@ -260,6 +263,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	protected void processCandidateBean(String beanName) {
 		Class<?> beanType = null;
 		try {
+			// 获取 BeanName 对应的Bean类型
 			beanType = obtainApplicationContext().getType(beanName);
 		} catch (Throwable ex) {
 			// An unresolvable bean type, probably from a lazy bean - let's ignore it.
@@ -267,26 +271,38 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				logger.trace("Could not resolve type for bean '" + beanName + "'", ex);
 			}
 		}
+		// 判断类型是否是 handler对象
+		// 主要判断是否具备Controller 或者 RequestMapping 注解
 		if (beanType != null && isHandler(beanType)) {
+			// 确定 handlerMethod
 			detectHandlerMethods(beanName);
 		}
 	}
 
 	/**
+	 * 第一部分：获取handler的类型，获取方式会从Spring容器中获取或者直接获取类数据。
+	 * <p>
+	 * 第二部分：处理handler对象中的每个方法，将方法转换成RequestMappingInfo对象。
+	 * <p>
+	 * 第三部分：将第二部分得到的数据进行注册。
+	 * <p>
 	 * Look for handler methods in the specified handler bean.
 	 *
 	 * @param handler either a bean name or an actual handler instance
 	 * @see #getMappingForMethod
 	 */
 	protected void detectHandlerMethods(Object handler) {
+		// 获取 handler 的类型
 		Class<?> handlerType = (handler instanceof String beanName ?
 				obtainApplicationContext().getType(beanName) : handler.getClass());
 
 		if (handlerType != null) {
+			// 反射加载类
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
+							// 处理单个 method
 							return getMappingForMethod(method, userType);
 						} catch (Throwable ex) {
 							throw new IllegalStateException("Invalid mapping on handler class [" +
@@ -298,6 +314,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			} else if (mappingsLogger.isDebugEnabled()) {
 				mappingsLogger.debug(formatMappings(userType, methods));
 			}
+			// 进行 handlerMethod 注册
 			methods.forEach((method, mapping) -> {
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
 				registerHandlerMethod(handler, invocableMethod, mapping);

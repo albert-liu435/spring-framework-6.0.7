@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.util.StringUtils;
 
 /**
+ * URL与Bean Namemapping关系
  * Implementation of the {@link org.springframework.web.servlet.HandlerMapping}
  * interface that maps from URLs to beans with names that start with a slash ("/"),
  * similar to how Struts maps URLs to action names.
@@ -48,14 +49,17 @@ import org.springframework.util.StringUtils;
 public class BeanNameUrlHandlerMapping extends AbstractDetectingUrlHandlerMapping {
 
 	/**
+	 * 根据给定的beanName检查名称和别名
 	 * Checks name and aliases of the given bean for URLs, starting with "/".
 	 */
 	@Override
 	protected String[] determineUrlsForHandler(String beanName) {
+		// url 列表
 		List<String> urls = new ArrayList<>();
 		if (beanName.startsWith("/")) {
 			urls.add(beanName);
 		}
+		// 获取 beanName的别名
 		String[] aliases = obtainApplicationContext().getAliases(beanName);
 		for (String alias : aliases) {
 			if (alias.startsWith("/")) {
