@@ -72,6 +72,19 @@ import org.springframework.util.StringUtils;
  */
 public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements SingletonBeanRegistry {
 
+	//singletonObjects ：ConcurrentHashMap。最简单最重要的缓存Map。保存关系是 beanName ：bean实例关系。单例的bean在创建完成后都会保存在 singletonObjects 中，后续使用直接从singletonObjects 中获取。
+	//singletonFactories ：HashMap。这是为了解决循环依赖问题，用于提前暴露对象，保存形式是 beanName : ObjectFactory<?>。
+	//earlySingletonObjects ：HashMap。这也是为了解决循环依赖问题。和 singletonFactories 互斥。因为 singletonFactories 保存的是 ObjectFactory。而earlySingletonObjects 个人认为是 singletonFactories 更进一步的缓存，保存的是 ObjectFactory#getObject的结果。
+	//registeredSingletons ：LinkedHashSet，用于保存注册过的beanName，
+	//singletonsCurrentlyInCreation ： 保存当前正在创建的bean。当一个bean开始创建时将保存其beanName，创建完成后将其移除
+	//dependentBeanMap ：保存bean的依赖关系，比如A对象依赖于 B对象，会出现 B ：A。即保存的是key 被value依赖
+	//dependenciesForBeanMap ：保存bean的依赖关系，不过和dependentBeanMap 反了过来。A对象依赖于 B对象，会出现 A ：B。保存的是key 依赖于 value
+	//————————————————
+	//版权声明：本文为CSDN博主「猫吻鱼」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+	//原文链接：https://blog.csdn.net/qq_36882793/article/details/105667530
+
+
+
 	/**
 	 * Maximum number of suppressed exceptions to preserve.
 	 */
@@ -82,40 +95,49 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * 第一级缓存：singletonObjects，用于保存实例化、注入、初始化完成的 bean 实例；
 	 * Cache of singleton objects: bean name to bean instance.
 	 */
+	//	用于保存BeanName和创建bean实例之间的关系，即缓存bean。 beanname -> instance
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/**
 	 * 第三级缓存：singletonFactories，用于保存 bean 创建工厂，以便后面有机会创建代理对象。
 	 * Cache of singleton factories: bean name to ObjectFactory.
 	 */
+	// 用于保存BeanName和常见bean的工厂之间的关系。beanname-> ObjectFactory
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/**
 	 * 第二级缓存：earlySingletonObjects，用于保存实例化完成的 bean 实例；
 	 * Cache of early singleton objects: bean name to bean instance.
 	 */
+	// 也是保存BeanName和创建bean实例之间的关系，与singletonObjects 不同的是，如果一个单例bean被保存在此，则当bean还在创建过程中(比如 A类中有B类属性，当创建A类时发现需要先创建B类，这时候Spring又跑去创建B类，A类就会添加到该集合中，表示正在创建)，就可以通过getBean方法获取到了，其目的是用来检测循环引用。
 	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
 
 	/**
 	 * Set of registered singletons, containing the bean names in registration order.
 	 */
+	// 用来保存当前所有已经注册的bean
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
 	/**
 	 * Names of beans that are currently in creation.
 	 */
+	// 用来保存当前正在创建的Bean。也是为了解决循环依赖的问题
+
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 	/**
 	 * Names of beans currently excluded from in creation checks.
 	 */
+	// 用来保存当前从创建检查中排除的bean名称
+
 	private final Set<String> inCreationCheckExclusions =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 	/**
 	 * Collection of suppressed Exceptions, available for associating related causes.
 	 */
+	// 初始化过程中的异常列表
 	@Nullable
 	private Set<Exception> suppressedExceptions;
 
@@ -136,6 +158,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * value：包含 key 的 Bean Name 列表
 	 * Map between containing bean names: bean name to Set of bean names that the bean contains.
 	 */
+	// 包含的Bean名称之间的映射：BeanName  -> Bean包含的BeanName集合
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
 	/**
@@ -144,12 +167,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * value：依赖 key 的 Bean Name 列表
 	 * Map between dependent bean names: bean name to Set of dependent bean names.
 	 */
+	// bean dependent(依赖的集合) : beanName -> 依赖该beanName 的 bean，即 key代表的bean 被value 所依赖
 	private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
 
 	/**
 	 * Bean 依赖关系容器
 	 * Map between depending bean names: bean name to Set of bean names for the bean's dependencies.
 	 */
+	// bean 被哪些bean依赖 ：  beanName -> beanName 所依赖的 bean。即 key 依赖于value这些bean
 	private final Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<>(64);
 
 
