@@ -59,8 +59,12 @@ import org.springframework.core.type.filter.TypeFilter;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
+// 表示在使用@ComponentScans时，可以再指定多个@ComponentScan，表示
+//   指定多个包扫描路径
 @Repeatable(ComponentScans.class)
 public @interface ComponentScan {
+
+	// 表示需要扫描的组件对应的类路径，可指定多个，和basePackages属性互为别名
 
 	/**
 	 * 扫描路径
@@ -71,6 +75,8 @@ public @interface ComponentScan {
 	 */
 	@AliasFor("basePackages")
 	String[] value() default {};
+
+	// 表示需要扫描的组件对应的包路径，可指定多个，和value属性互为别名
 
 	/**
 	 * 扫描路径
@@ -83,6 +89,8 @@ public @interface ComponentScan {
 	@AliasFor("value")
 	String[] basePackages() default {};
 
+	// 指定需要扫的类或者接口的class，扫描的时候会在这些类或者接口的class所属的包下进行扫描
+
 	/**
 	 * 指定扫描类
 	 * Type-safe alternative to {@link #basePackages} for specifying the packages
@@ -91,6 +99,10 @@ public @interface ComponentScan {
 	 * that serves no purpose other than being referenced by this attribute.
 	 */
 	Class<?>[] basePackageClasses() default {};
+
+
+	// 用来指定bean名称的生成器，默认为BeanNameGenerator，如果在注册bean的时候，不指定bean名称
+	//  将会使用这个bean名称生成器生成bean的名称
 
 	/**
 	 * 命名注册的Bean，可以自定义实现命名Bean，
@@ -120,6 +132,8 @@ public @interface ComponentScan {
 	 */
 	Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
 
+	// 用来指定解析@Scope注解的解析器
+
 	/**
 	 * 用于解析@Scope注解，可通过 AnnotationConfigApplicationContext 的 setScopeMetadataResolver 方法重新设定处理类
 	 * ScopeMetadataResolver scopeMetadataResolver = definition -> new ScopeMetadata();  这里只是new了一个对象作为演示，没有做实际的逻辑操作
@@ -136,6 +150,13 @@ public @interface ComponentScan {
 	 */
 	Class<? extends ScopeMetadataResolver> scopeResolver() default AnnotationScopeMetadataResolver.class;
 
+
+	// 用来指定类的Scope代理模式
+	// 包括的类型有：NO,INTERFACES,TARGET_CLASS
+	// a.DEFAULT和NO的作用相同，表示不创建代理
+	// b.INTERFACES:表示使用JDK来创建代理
+	// c.TARGET_CLASS:表示使用CGLIB来创建代理
+
 	/**
 	 * 用来设置类的代理模式
 	 * Indicates whether proxies should be generated for detected components, which may be
@@ -149,6 +170,7 @@ public @interface ComponentScan {
 	ScopedProxyMode scopedProxy() default ScopedProxyMode.DEFAULT;
 
 	//扫描路径 如 resourcePattern = "**/*.class"
+	// 配置类的扫描路径，为一个匹配符，匹配特定路径，例如："**/*.class"
 
 	/**
 	 * 扫描路径
@@ -160,6 +182,8 @@ public @interface ComponentScan {
 	String resourcePattern() default ClassPathScanningCandidateComponentProvider.DEFAULT_RESOURCE_PATTERN;
 
 
+	// 指定是否启用对@Controller,@Service,@Repository,@Component注解的类的自动检测
+
 	/**
 	 * 指示是否应启用对带有{@code @Component}，{@ code @Repository}，
 	 * {@ code @Service}或{@code @Controller}注释的类的自动检测。
@@ -168,6 +192,8 @@ public @interface ComponentScan {
 	 * {@code @Repository}, {@code @Service}, or {@code @Controller} should be enabled.
 	 */
 	boolean useDefaultFilters() default true;
+
+	// 对扫描的包或者类进行过滤，如果满足条件，不论组件类上是不是有注解，Bean都会被创建
 
 	/**
 	 * 对被扫描的包或类进行过滤，若符合条件，不论组件上是否有注解，Bean对象都将被创建
@@ -192,6 +218,8 @@ public @interface ComponentScan {
 	 */
 	Filter[] includeFilters() default {};
 
+	// 指定扫描过程中忽略哪些类
+
 	/**
 	 * 指定哪些类型不适合进行组件扫描。
 	 * 用法同 includeFilters 一样
@@ -200,6 +228,8 @@ public @interface ComponentScan {
 	 * @see #resourcePattern
 	 */
 	Filter[] excludeFilters() default {};
+
+	// 用来指定是否对指定路径下扫描到的bean进行延迟初始化
 
 	/**
 	 * 指定是否应注册扫描的Bean以进行延迟初始化。
@@ -213,6 +243,8 @@ public @interface ComponentScan {
 	boolean lazyInit() default false;
 
 
+	// 用来完成includeFilters或者execludeFilters的过滤器注解
+
 	/**
 	 * 用于 includeFilters 或 excludeFilters 的类型筛选器
 	 * Declares the type filter to be used as an {@linkplain ComponentScan#includeFilters
@@ -221,6 +253,8 @@ public @interface ComponentScan {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({})
 	@interface Filter {
+
+		// 指定要使用的过滤类型，默认按照注解进行过滤
 
 		/**
 		 * 要使用的过滤器类型，默认为 ANNOTATION 注解类型
@@ -233,6 +267,13 @@ public @interface ComponentScan {
 		 * @see #pattern
 		 */
 		FilterType type() default FilterType.ANNOTATION;
+
+
+		// 指定要过滤的类型
+		// a.如果type为FilterType.ANNOTATION，value表示要过滤掉value属性所指定的类
+		// b.如果type为FilterType.ASSIGNABLE_TYPE，value表示要过滤掉的类
+		// c.如果type为FilterType.CUSTOM，value表示过滤规则，对应一个实现了TypeFilter接口的过滤规则类.
+
 
 		/**
 		 * 过滤器的参数，参数必须为class数组，单个参数可以不加大括号
@@ -247,6 +288,8 @@ public @interface ComponentScan {
 		 */
 		@AliasFor("classes")
 		Class<?>[] value() default {};
+
+		// 和value的作用相同，classes和value互为别名
 
 		/**
 		 * 作用同上面的 value 相同
@@ -315,6 +358,10 @@ public @interface ComponentScan {
 		 */
 		@AliasFor("value")
 		Class<?>[] classes() default {};
+
+		// 该参数主要用来处理type为ASPECTJ和REGEX的类型
+		// a.当type为ASPECTJ时，pattern可以用来指定一个ASPECTJ表达式
+		// b.当type为REGEX时，pattern可以用来指定一个正则表达式
 
 		/**
 		 * 这个参数是 classes 或 value 的替代参数，主要用于 ASPECTJ 类型和  REGEX 类型

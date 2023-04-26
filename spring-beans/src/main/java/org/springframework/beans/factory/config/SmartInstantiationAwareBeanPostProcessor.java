@@ -41,8 +41,9 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * <p>The default implementation returns {@code null}.
 	 * Specific implementations should try to predict the bean type as
 	 * far as known/cached already, without extra processing steps.
+	 *
 	 * @param beanClass the raw class of the bean
-	 * @param beanName the name of the bean
+	 * @param beanName  the name of the bean
 	 * @return the type of the bean, or {@code null} if not predictable
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
@@ -57,8 +58,9 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * <p>The default implementation returns the given bean class as-is.
 	 * Specific implementations should fully evaluate their processing steps
 	 * in order to create/initialize a potential proxy class upfront.
+	 *
 	 * @param beanClass the raw class of the bean
-	 * @param beanName the name of the bean
+	 * @param beanName  the name of the bean
 	 * @return the type of the bean (never {@code null})
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @since 6.0
@@ -70,8 +72,9 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	/**
 	 * Determine the candidate constructors to use for the given bean.
 	 * <p>The default implementation returns {@code null}.
+	 *
 	 * @param beanClass the raw class of the bean (never {@code null})
-	 * @param beanName the name of the bean
+	 * @param beanName  the name of the bean
 	 * @return the candidate constructors, or {@code null} if none specified
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
@@ -97,7 +100,8 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * for the affected bean has been built for a call to this method already,
 	 * it will be exposes as final bean reference by default).
 	 * <p>The default implementation returns the given {@code bean} as-is.
-	 * @param bean the raw bean instance
+	 *
+	 * @param bean     the raw bean instance
 	 * @param beanName the name of the bean
 	 * @return the object to expose as bean reference
 	 * (typically with the passed-in bean instance as default)

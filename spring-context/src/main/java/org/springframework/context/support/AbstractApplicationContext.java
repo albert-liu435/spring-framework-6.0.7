@@ -88,6 +88,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
+ * 抽象实现类
  * Abstract implementation of the {@link org.springframework.context.ApplicationContext}
  * interface. Doesn't mandate the type of storage used for configuration; simply
  * implements common context functionality. Uses the Template Method design pattern,
@@ -175,7 +176,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/**
+	/**唯一ID
 	 * Unique id for this context, if any.
 	 */
 	private String id = ObjectUtils.identityToString(this);

@@ -21,6 +21,7 @@ import org.springframework.beans.PropertyValues;
 import org.springframework.lang.Nullable;
 
 /**
+ * BeanPostProcessor的子端口
  * Subinterface of {@link BeanPostProcessor} that adds a before-instantiation callback,
  * and a callback after instantiation but before explicit properties are set or
  * autowiring occurs.
@@ -75,12 +76,6 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**
 	 * 在bean初始化之后会被调用.在调用InitializingBean的afterPropertiesSet方法或者init-method指定的方法执行之后调用.
-	 * @Nullable
-	 * Perform operations after the bean has been instantiated, via a constructor or factory method,
-	 * but before Spring property population (from explicit properties or autowiring) occurs.
-	 * <p>This is the ideal callback for performing custom field injection on the given bean
-	 * instance, right before Spring's autowiring kicks in.
-	 * <p>The default implementation returns {@code true}.
 	 *
 	 * @param bean     the bean instance created, with properties not having been set yet
 	 * @param beanName the name of the bean
@@ -89,6 +84,11 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * Returning {@code false} will also prevent any subsequent InstantiationAwareBeanPostProcessor
 	 * instances being invoked on this bean instance.
 	 * @throws org.springframework.beans.BeansException in case of errors
+	 * @Nullable Perform operations after the bean has been instantiated, via a constructor or factory method,
+	 * but before Spring property population (from explicit properties or autowiring) occurs.
+	 * <p>This is the ideal callback for performing custom field injection on the given bean
+	 * instance, right before Spring's autowiring kicks in.
+	 * <p>The default implementation returns {@code true}.
 	 * @see #postProcessBeforeInstantiation
 	 */
 	default boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {

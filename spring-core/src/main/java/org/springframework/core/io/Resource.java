@@ -31,6 +31,10 @@ import org.springframework.util.FileCopyUtils;
 
 /**
  * 资源接口
+ * 从实际类型的底层资源（如文件或类路径资源）中抽象出来的资源描述符的接口。
+ * <p>
+ * 如果每个资源以物理形式存在，则可以为其打开InputStream，但只能为某些资源返回URL或File句柄。实际行为是特定于实现的。
+ * <p>
  * Interface for a resource descriptor that abstracts from the actual
  * type of underlying resource, such as a file or class path resource.
  *
@@ -57,6 +61,7 @@ import org.springframework.util.FileCopyUtils;
 public interface Resource extends InputStreamSource {
 
 	/**
+	 * 判断资源是否存在
 	 * Determine whether this resource actually exists in physical form.
 	 * <p>This method performs a definitive existence check, whereas the
 	 * existence of a {@code Resource} handle only guarantees a valid
@@ -65,6 +70,7 @@ public interface Resource extends InputStreamSource {
 	boolean exists();
 
 	/**
+	 * 是否可读
 	 * Indicate whether non-empty contents of this resource can be read via
 	 * {@link #getInputStream()}.
 	 * <p>Will be {@code true} for typical resource descriptors that exist
@@ -81,6 +87,7 @@ public interface Resource extends InputStreamSource {
 	}
 
 	/**
+	 * 是否能打开
 	 * Indicate whether this resource represents a handle with an open stream.
 	 * If {@code true}, the InputStream cannot be read multiple times,
 	 * and must be read and closed to avoid resource leaks.
@@ -91,6 +98,7 @@ public interface Resource extends InputStreamSource {
 	}
 
 	/**
+	 * 是否是问你件
 	 * Determine whether this resource represents a file in a file system.
 	 * <p>A value of {@code true} strongly suggests (but does not guarantee)
 	 * that a {@link #getFile()} call will succeed.
@@ -104,6 +112,7 @@ public interface Resource extends InputStreamSource {
 	}
 
 	/**
+	 * 返回此资源的URL句柄。
 	 * Return a URL handle for this resource.
 	 *
 	 * @throws IOException if the resource cannot be resolved as URL,
@@ -112,6 +121,7 @@ public interface Resource extends InputStreamSource {
 	URL getURL() throws IOException;
 
 	/**
+	 * 返回此资源的URI句柄。
 	 * Return a URI handle for this resource.
 	 *
 	 * @throws IOException if the resource cannot be resolved as URI,
@@ -121,6 +131,7 @@ public interface Resource extends InputStreamSource {
 	URI getURI() throws IOException;
 
 	/**
+	 * 返回此资源的文件句柄。
 	 * Return a File handle for this resource.
 	 *
 	 * @throws java.io.FileNotFoundException if the resource cannot be resolved as
@@ -147,6 +158,7 @@ public interface Resource extends InputStreamSource {
 	}
 
 	/**
+	 * 返回文件内容为byte数组
 	 * Return the contents of this resource as a byte array.
 	 *
 	 * @return the contents of this resource as byte array
@@ -160,6 +172,7 @@ public interface Resource extends InputStreamSource {
 	}
 
 	/**
+	 * 返回文件内容为字符串
 	 * Returns the contents of this resource as a string, using the specified
 	 * charset.
 	 *
@@ -175,6 +188,7 @@ public interface Resource extends InputStreamSource {
 	}
 
 	/**
+	 * 确定此资源的内容长度。
 	 * Determine the content length for this resource.
 	 *
 	 * @throws IOException if the resource cannot be resolved
@@ -183,6 +197,7 @@ public interface Resource extends InputStreamSource {
 	long contentLength() throws IOException;
 
 	/**
+	 * 最后修改时间
 	 * Determine the last-modified timestamp for this resource.
 	 *
 	 * @throws IOException if the resource cannot be resolved
@@ -191,6 +206,7 @@ public interface Resource extends InputStreamSource {
 	long lastModified() throws IOException;
 
 	/**
+	 * 创建相对于此资源的资源。
 	 * Create a resource relative to this resource.
 	 *
 	 * @param relativePath the relative path (relative to this resource)
@@ -200,6 +216,7 @@ public interface Resource extends InputStreamSource {
 	Resource createRelative(String relativePath) throws IOException;
 
 	/**
+	 * 返回文件名称
 	 * Determine the filename for this resource &mdash; typically the last
 	 * part of the path &mdash; for example, {@code "myfile.txt"}.
 	 * <p>Returns {@code null} if this type of resource does not
@@ -210,6 +227,7 @@ public interface Resource extends InputStreamSource {
 	String getFilename();
 
 	/**
+	 * 返回此资源的描述
 	 * Return a description for this resource,
 	 * to be used for error output when working with the resource.
 	 * <p>Implementations are also encouraged to return this value

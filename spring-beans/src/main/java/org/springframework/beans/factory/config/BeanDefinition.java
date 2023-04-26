@@ -42,6 +42,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	// Bean的生命周期，默认只提供sington和prototype两种，在WebApplicationContext中还会有request, session, globalSession, application, websocket 等
 
 	/**
+	 * 单例模式
 	 * Scope identifier for the standard singleton scope: {@value}.
 	 * <p>Note that extended bean factories might support further scopes.
 	 *

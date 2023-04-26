@@ -49,6 +49,7 @@ import org.springframework.util.ResourceUtils;
 public abstract class AbstractResource implements Resource {
 
 	/**
+	 * 判断是否可以打开
 	 * This implementation checks whether a File can be opened,
 	 * falling back to whether an InputStream can be opened.
 	 * <p>This will cover both directories and content resources.
@@ -56,6 +57,7 @@ public abstract class AbstractResource implements Resource {
 	@Override
 	public boolean exists() {
 		// Try file existence: can we find the file in the file system?
+
 		if (isFile()) {
 			try {
 				return getFile().exists();
@@ -91,6 +93,7 @@ public abstract class AbstractResource implements Resource {
 	}
 
 	/**
+	 * 是否是文件
 	 * This implementation always returns {@code false}.
 	 */
 	@Override

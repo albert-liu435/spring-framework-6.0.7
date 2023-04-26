@@ -24,6 +24,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 独立的xml应用上下文，从class 路径下面加载files,将普通路径解释为包含包路径的类路径资源名称
+ * 对于测试工具以及嵌入在JAR中的应用程序上下文都很有用。
  * Standalone XML application context, taking the context definition files
  * from the class path, interpreting plain paths as class path resource names
  * that include the package path (e.g. "mypackage/myresource.txt"). Useful for
@@ -80,7 +82,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	}
 
 	/**
-	 * 加载指定的资源
+	 * 加载指定的资源路径
 	 * Create a new ClassPathXmlApplicationContext, loading the definitions
 	 * from the given XML file and automatically refreshing the context.
 	 *
@@ -91,7 +93,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 		this(new String[]{configLocation}, true, null);
 	}
 
-	/**
+	/**加载指定的资源路径数组
 	 * Create a new ClassPathXmlApplicationContext, loading the definitions
 	 * from the given XML files and automatically refreshing the context.
 	 *
@@ -211,6 +213,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 		Assert.notNull(clazz, "Class argument must not be null");
 		this.configResources = new Resource[paths.length];
 		for (int i = 0; i < paths.length; i++) {
+			//获取加载的资源
 			this.configResources[i] = new ClassPathResource(paths[i], clazz);
 		}
 		refresh();

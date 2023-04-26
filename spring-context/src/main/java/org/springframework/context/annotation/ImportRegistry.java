@@ -20,6 +20,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.Nullable;
 
 /**
+ * 导入类的注册表
  * Registry of imported class {@link AnnotationMetadata}.
  *
  * @author Juergen Hoeller

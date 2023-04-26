@@ -17,6 +17,7 @@
 package org.springframework.core;
 
 /**
+ * 用于检测GraalVM本机映像环境的常见委托。
  * A common delegate for detecting a GraalVM native image environment.
  *
  * @author Sebastien Deleuze

@@ -27,6 +27,7 @@ import org.springframework.core.annotation.AliasFor;
 
 /**
  * 该注解标注在某一个配置类里面的某个创建Bean的方法上，用于指定该Bean为单实例还是多实例，不指定，默认值为单实例。
+ * <p>
  * When used as a type-level annotation in conjunction with
  * {@link org.springframework.stereotype.Component @Component},
  * {@code @Scope} indicates the name of a scope to use for instances of

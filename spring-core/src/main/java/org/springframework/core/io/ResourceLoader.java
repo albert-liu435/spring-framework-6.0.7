@@ -73,6 +73,7 @@ public interface ResourceLoader {
 	Resource getResource(String location);
 
 	/**
+	 * 获取类加载器
 	 * Expose the {@link ClassLoader} used by this {@code ResourceLoader}.
 	 * <p>Clients which need to access the {@code ClassLoader} directly can do so
 	 * in a uniform manner with the {@code ResourceLoader}, rather than relying

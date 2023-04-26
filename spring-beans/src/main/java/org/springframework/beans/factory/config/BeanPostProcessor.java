@@ -59,6 +59,11 @@ import org.springframework.lang.Nullable;
  */
 public interface BeanPostProcessor {
 
+// 下面前两个方法是BeanPostProcessor中的两个方法
+// 该方法是Spring后置处理器中的方法
+// 该方法是在Bean实例化(new)之后，初始化(设置各种属性)之前会被调用
+// 在调用afterPropertiesSet方法之前会被调用
+
 	/**
 	 * 实例化、依赖注入完毕，在调用显示的初始化之前完成一些定制的初始化任务
 	 * Apply this {@code BeanPostProcessor} to the given new bean instance <i>before</i> any bean
@@ -80,6 +85,9 @@ public interface BeanPostProcessor {
 	}
 
 	/**
+	 * 在bean初始化之后会被调用
+	 * 在调用InitializingBean的afterPropertiesSet方法或者init-method指定的方法执行之后调用 .
+	 * <p>
 	 * 创建Bean的过程中，执行完初始化方法之后，接着会被调用.
 	 * <p>
 	 * 实例化、依赖注入、初始化完毕时执行

@@ -26,6 +26,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.core.annotation.AliasFor;
 
 /**
+ * 指示一个方法生成一个由Spring容器管理的bean。
  * Indicates that a method produces a bean to be managed by the Spring container.
  *
  * <h3>Overview</h3>
@@ -75,7 +76,7 @@ import org.springframework.core.annotation.AliasFor;
  *         return obj;
  *     }
  * </pre>
- *
+ * <p>
  * The semantics of the above-mentioned annotations match their use at the component
  * class level: {@code @Profile} allows for selective inclusion of certain beans.
  * {@code @Scope} changes the bean's scope from singleton to the specified scope.
@@ -188,7 +189,7 @@ import org.springframework.core.annotation.AliasFor;
  *         // instantiate, configure and return pspc ...
  *     }
  * </pre>
- *
+ * <p>
  * By marking this method as {@code static}, it can be invoked without causing instantiation of its
  * declaring {@code @Configuration} class, thus avoiding the above-mentioned lifecycle conflicts.
  * Note however that {@code static} {@code @Bean} methods will not be enhanced for scoping and AOP
@@ -202,7 +203,6 @@ import org.springframework.core.annotation.AliasFor;
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 3.0
  * @see Configuration
  * @see Scope
  * @see DependsOn
@@ -211,6 +211,7 @@ import org.springframework.core.annotation.AliasFor;
  * @see org.springframework.stereotype.Component
  * @see org.springframework.beans.factory.annotation.Autowired
  * @see org.springframework.beans.factory.annotation.Value
+ * @since 3.0
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -218,43 +219,65 @@ import org.springframework.core.annotation.AliasFor;
 public @interface Bean {
 
 	/**
+	 * 用来指定bean的名称，当声明bean的名称时没有指定属性名，将会使用该属性
+	 * 例如：@Bean("myCustomer")
+	 * AliasFor表示的是name和value互为别名，指定name或者value都可以
+	 *
+	 * <p>
+	 * <p>
 	 * Alias for {@link #name}.
 	 * <p>Intended to be used when no other attributes are needed, for example:
 	 * {@code @Bean("customBeanName")}.
-	 * @since 4.3.3
+	 *
 	 * @see #name
+	 * @since 4.3.3
 	 */
 	@AliasFor("name")
 	String[] value() default {};
 
 	/**
+	 * 用来表示bean的名称，可以在@Bean中显示使用该属性指定bean的名称
 	 * The name of this bean, or if several names, a primary bean name plus aliases.
 	 * <p>If left unspecified, the name of the bean is the name of the annotated method.
 	 * If specified, the method name is ignored.
 	 * <p>The bean name and aliases may also be configured via the {@link #value}
 	 * attribute if no other attributes are declared.
+	 *
 	 * @see #value
 	 */
 	@AliasFor("value")
 	String[] name() default {};
 
+
+	// 表示是否使用候选bean，使用了autowire指定了自动注入模式的bean，在spring
+	//  实例化bean的时候就会去查找这些标记了自动注入的bean，这些bean就是候选bean
+	//  此处可以设置是否在初始化时使用这些候选bean，默认是使用
+
 	/**
 	 * Is this bean a candidate for getting autowired into some other bean?
 	 * <p>Default is {@code true}; set this to {@code false} for internal delegates
 	 * that are not meant to get in the way of beans of the same type in other places.
+	 *
 	 * @since 5.1
 	 */
 	boolean autowireCandidate() default true;
 
 	/**
+	 * 指定bean的初始化方法，为某一个bean中的一个方法名，不受修饰符的限制，可以为private或者final修饰的
+	 * 在bean实例化及属性赋值完成之后会执行
 	 * The optional name of a method to call on the bean instance during initialization.
 	 * Not commonly used, given that the method may be called programmatically directly
 	 * within the body of a Bean-annotated method.
 	 * <p>The default value is {@code ""}, indicating no init method to be called.
+	 *
 	 * @see org.springframework.beans.factory.InitializingBean
 	 * @see org.springframework.context.ConfigurableApplicationContext#refresh()
 	 */
 	String initMethod() default "";
+
+
+	// 指定bean的自动销毁方法，在bean的生命周期完成之后【即：调用容器的close方法时】，同样不受修饰符的限制
+	//  会自动执行.
 
 	/**
 	 * The optional name of a method to call on the bean instance upon closing the
@@ -280,6 +303,7 @@ public @interface Bean {
 	 * <p>Note: Only invoked on beans whose lifecycle is under the full control of the
 	 * factory, which is always the case for singletons but not guaranteed for any
 	 * other scope.
+	 *
 	 * @see org.springframework.beans.factory.DisposableBean
 	 * @see org.springframework.context.ConfigurableApplicationContext#close()
 	 */

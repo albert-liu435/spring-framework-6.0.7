@@ -27,6 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 
 /**
+ * 抽象实现类
  * Convenient base class for {@link org.springframework.context.ApplicationContext}
  * implementations, drawing configuration from XML documents containing bean definitions
  * understood by an {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
@@ -55,6 +56,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	}
 
 	/**
+	 * 根据给定的父类ApplicationContext创建AbstractXmlApplicationContext
 	 * Create a new AbstractXmlApplicationContext with the given parent context.
 	 *
 	 * @param parent the parent context

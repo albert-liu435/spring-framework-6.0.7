@@ -20,6 +20,7 @@ import org.springframework.beans.BeansException;
 
 /**
  * BeanFactoryPostProcessor 操作 bean 的元数据配置. 也就是说,Spring IoC 容器允许 BeanFactoryPostProcessor 读取配置元数据, 并可能在容器实例化除 BeanFactoryPostProcessor 实例之外的任何 bean 之前 更改它
+ *
  * <p>
  * Factory hook that allows for custom modification of an application context's
  * bean definitions, adapting the bean property values of the context's underlying

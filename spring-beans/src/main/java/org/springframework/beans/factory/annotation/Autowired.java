@@ -23,6 +23,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Autowired注解装配顺序总结
+ * <p>
+ * （1）先默认按照类型去容器中查找类型相同的bean，然后装配；
+ * <p>
+ * （2）如果容器中存在着多个类型相同的Bean，则再按照属性的名称去优先装配名称相同的Bean；
+ * <p>
+ * （3）如果容器中存在着多个类型相同，名称不同的Bean，可以结合@Qualifier注解来指定需要装配哪一个Bean，即：@Autowired + @Qualifier注解可以根据类型加名称指定要装配的Bean；
+ * <p>
+ * （4）默认情况下，如果容器中找不到类型匹配的Bean，则会抛出在容器中找不到Bean的异常，即：NoSuchBeanDefinitionException，可以通过指定@Autowired注解中的required属性值为false，在找不到相同类型的bean时忽略Bean的装配；
+ * <p>
+ * （5）如果容器中存在着多个类型相同的Bean，则可以通过@Primary注解来指定默认优先装配的Bean。但是如果同时使用了@Primary指定了优先装配的Bean，然后还使用了@Qualifier注解指定了指定名称的Bean，则会使用@Qualifier注解指定的名称对应的Bean进行装配，即：@Qualifier的优先级比@Primary的高。
+ * <p>
+ * <p>
+ * <p>
+ * 至此，Spring自动装配中的@Autowired，@Qualifier，@Primary注解介绍完毕！下篇
+ * <p>
+ * <p>
  * Marks a constructor, field, setter method, or config method as to be autowired by
  * Spring's dependency injection facilities. This is an alternative to the JSR-330
  * {@link jakarta.inject.Inject} annotation, adding required-vs-optional semantics.
@@ -93,10 +110,10 @@ import java.lang.annotation.Target;
  * @author Juergen Hoeller
  * @author Mark Fisher
  * @author Sam Brannen
- * @since 2.5
  * @see AutowiredAnnotationBeanPostProcessor
  * @see Qualifier
  * @see Value
+ * @since 2.5
  */
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -104,6 +121,9 @@ import java.lang.annotation.Target;
 public @interface Autowired {
 
 	/**
+	 * 表示待装配的Bean是否必须，默认为true，
+	 * 如果要装配的Bean不存在，会抛出异常
+	 * <p>
 	 * Declares whether the annotated dependency is required.
 	 * <p>Defaults to {@code true}.
 	 */
