@@ -1924,9 +1924,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
-	 * 在 getBean 方法中， getObjectForBeanInstance 是个高频率使用的方法，无论是从缓存中获得 bean还是根据不同的 scope 策略加载 bean。总之，我们得到 bean的实例后要做的第一步就是调用这个方法来检测一下正确性，其实就是用于检测当前 bean 是否是 FactoryBean 类型的 bean，如果是，那么需要调用该 bean 对应的 FactoryBean 实例中的 getObject() 作为返回值。
+	 * 在 getBean 方法中， getObjectForBeanInstance 是个高频率使用的方法，无论是从缓存中获得 bean还是根据不同的 scope 策略加载 bean。总之，我们得到 bean的实例后要做的第一步就是调用这个方法来检测一下正确性，其实就是用于检测当前 bean 是否是 FactoryBean 类型的 bean，
+	 * 如果是，那么需要调用该 bean 对应的 FactoryBean 实例中的 getObject() 作为返回值。
 	 * <p>
-	 * 无论是从缓存中获取到的 bean 还是通过不同的 scope 策略加载的 bean 都只是最原始的 bean 状态，并不一定是我们最终想要的 bean。举个例子，假如我们需要对工厂 bean 进行处理，那么这里得到的其实是工厂 bean 的初始状态，但是我们真正需要的是工厂 bean中定义的 factory-method 方法中返回的 bean，而 getObjectForBeanInstance()
+	 * 无论是从缓存中获取到的 bean 还是通过不同的 scope 策略加载的 bean 都只是最原始的 bean 状态，并不一定是我们最终想要的 bean。举个例子，假如我们需要对工厂 bean 进行处理，那么这里得到的其实是工厂 bean 的初始状态，
+	 * 但是我们真正需要的是工厂 bean中定义的 factory-method 方法中返回的 bean，而 getObjectForBeanInstance()
 	 * 方法就是完成这个工作的。
 	 * Get the object for the given bean instance, either the bean
 	 * instance itself or its created object in case of a FactoryBean.

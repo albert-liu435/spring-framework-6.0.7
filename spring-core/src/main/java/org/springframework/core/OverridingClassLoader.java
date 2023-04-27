@@ -23,6 +23,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.FileCopyUtils;
 
 /**
+ * OverridingClassLoader 是 Spring 自定义的类加载器，默认会先自己加载(excludedPackages 或 excludedClasses 例外)，只有加载不到才会委托给双亲加载，这就破坏了 JDK 的双亲委派模式。
  * {@code ClassLoader} that does <i>not</i> always delegate to the parent loader
  * as normal class loaders do. This enables, for example, instrumentation to be
  * forced in the overriding ClassLoader, or a "throwaway" class loading behavior
@@ -36,7 +37,9 @@ import org.springframework.util.FileCopyUtils;
  */
 public class OverridingClassLoader extends DecoratingClassLoader {
 
-	/** Packages that are excluded by default. */
+	/**
+	 * Packages that are excluded by default.
+	 */
 	public static final String[] DEFAULT_EXCLUDED_PACKAGES = new String[]
 			{"java.", "javax.", "sun.", "oracle.", "javassist.", "org.aspectj.", "net.sf.cglib."};
 
@@ -53,6 +56,7 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 
 	/**
 	 * Create a new OverridingClassLoader for the given ClassLoader.
+	 *
 	 * @param parent the ClassLoader to build an overriding ClassLoader for
 	 */
 	public OverridingClassLoader(@Nullable ClassLoader parent) {
@@ -61,7 +65,8 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 
 	/**
 	 * Create a new OverridingClassLoader for the given ClassLoader.
-	 * @param parent the ClassLoader to build an overriding ClassLoader for
+	 *
+	 * @param parent           the ClassLoader to build an overriding ClassLoader for
 	 * @param overrideDelegate the ClassLoader to delegate to for overriding
 	 * @since 4.3
 	 */
@@ -99,6 +104,7 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 	/**
 	 * Determine whether the specified class is eligible for overriding
 	 * by this class loader.
+	 *
 	 * @param className the class name to check
 	 * @return whether the specified class is eligible
 	 * @see #isExcluded
@@ -111,6 +117,7 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 	 * Load the specified class for overriding purposes in this ClassLoader.
 	 * <p>The default implementation delegates to {@link #findLoadedClass},
 	 * {@link #loadBytesForClass} and {@link #defineClass}.
+	 *
 	 * @param name the name of the class
 	 * @return the Class object, or {@code null} if no class defined for that name
 	 * @throws ClassNotFoundException if the class for the given name couldn't be loaded
@@ -132,6 +139,7 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 	 * to be turned into a Class object through a {@link #defineClass} call.
 	 * <p>The default implementation delegates to {@link #openStreamForClass}
 	 * and {@link #transformIfNecessary}.
+	 *
 	 * @param name the name of the class
 	 * @return the byte content (with transformers already applied),
 	 * or {@code null} if no class defined for that name
@@ -148,8 +156,7 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 			byte[] bytes = FileCopyUtils.copyToByteArray(is);
 			// Transform if necessary and use the potentially transformed bytes.
 			return transformIfNecessary(name, bytes);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new ClassNotFoundException("Cannot load resource for class [" + name + "]", ex);
 		}
 	}
@@ -158,6 +165,7 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 	 * Open an InputStream for the specified class.
 	 * <p>The default implementation loads a standard class file through
 	 * the parent ClassLoader's {@code getResourceAsStream} method.
+	 *
 	 * @param name the name of the class
 	 * @return the InputStream containing the byte code for the specified class
 	 */
@@ -171,7 +179,8 @@ public class OverridingClassLoader extends DecoratingClassLoader {
 	/**
 	 * Transformation hook to be implemented by subclasses.
 	 * <p>The default implementation simply returns the given bytes as-is.
-	 * @param name the fully-qualified name of the class being transformed
+	 *
+	 * @param name  the fully-qualified name of the class being transformed
 	 * @param bytes the raw bytes of the class
 	 * @return the transformed bytes (never {@code null};
 	 * same as the input bytes if the transformation produced no changes)
