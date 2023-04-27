@@ -133,13 +133,16 @@ public class PropertyPlaceholderHelper {
 	protected String parseStringValue(
 			String value, PlaceholderResolver placeholderResolver, @Nullable Set<String> visitedPlaceholders) {
 
+		//2. 首先考虑有占位符的情况,默认是${}
 		int startIndex = value.indexOf(this.placeholderPrefix);
 		if (startIndex == -1) {
 			return value;
 		}
-
+		//1. 对每一个key进行处理
 		StringBuilder result = new StringBuilder(value);
+
 		while (startIndex != -1) {
+			// 考虑 key 占位符嵌套 ${${${}}}，先查找外层 ${} 成对出现的最后一个 '}'
 			int endIndex = findPlaceholderEndIndex(result, startIndex);
 			if (endIndex != -1) {
 				String placeholder = result.substring(startIndex + this.placeholderPrefix.length(), endIndex);
@@ -151,8 +154,10 @@ public class PropertyPlaceholderHelper {
 					throw new IllegalArgumentException(
 							"Circular placeholder reference '" + originalPlaceholder + "' in property definitions");
 				}
+				//3. 如果 key 有占位符，即 key=${abc}，则递归调用本方法查找 key 的真实值
 				// Recursive invocation, parsing placeholders contained in the placeholder key.
 				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);
+				//4. 真正的从 key-value 集合中获得 key 对应的真实值
 				// Now obtain the value for the fully resolved key...
 				String propVal = placeholderResolver.resolvePlaceholder(placeholder);
 				if (propVal == null && this.valueSeparator != null) {

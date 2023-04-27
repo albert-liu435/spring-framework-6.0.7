@@ -50,6 +50,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	/**
+	 * 缓存别名和bean真实名称
 	 * Map from alias to canonical name.
 	 */
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);

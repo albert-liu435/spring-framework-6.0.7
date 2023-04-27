@@ -59,6 +59,7 @@ public interface Ordered {
 
 
 	/**
+	 * 返回order
 	 * Get the order value of this object.
 	 * <p>Higher values are interpreted as lower priority. As a consequence,
 	 * the object with the lowest value has the highest priority (somewhat

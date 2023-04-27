@@ -32,7 +32,7 @@ import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
 
 /**
- * 用于加载properties的抽象实现类
+ * 用于加载properties的抽象类
  * Base class for JavaBean-style components that need to load properties
  * from one or more resources. Supports local properties as well, with
  * configurable overriding.
@@ -88,6 +88,8 @@ public abstract class PropertiesLoaderSupport {
 	public void setLocation(Resource location) {
 		this.locations = new Resource[]{location};
 	}
+
+	//注意：后声明的文件覆盖先声明的文件，以最后一个文件为准
 
 	/**
 	 * Set locations of properties files to be loaded.
@@ -146,6 +148,7 @@ public abstract class PropertiesLoaderSupport {
 
 
 	/**
+	 * 合并Properties
 	 * Return a merged Properties instance containing both the
 	 * loaded properties and properties set on this FactoryBean.
 	 */
@@ -172,6 +175,7 @@ public abstract class PropertiesLoaderSupport {
 	}
 
 	/**
+	 * 加载配制文件到 Properties 中
 	 * Load properties into the given instance.
 	 *
 	 * @param props the Properties instance to load into
@@ -180,11 +184,13 @@ public abstract class PropertiesLoaderSupport {
 	 */
 	protected void loadProperties(Properties props) throws IOException {
 		if (this.locations != null) {
+			//1.遍历声明的Resource文件地址
 			for (Resource location : this.locations) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Loading properties file from " + location);
 				}
 				try {
+					//2.获得Resource文件流，并加载内容到Properties对象中
 					PropertiesLoaderUtils.fillProperties(
 							props, new EncodedResource(location, this.fileEncoding), this.propertiesPersister);
 				} catch (FileNotFoundException | UnknownHostException | SocketException ex) {
